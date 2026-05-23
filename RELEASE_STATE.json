@@ -1,0 +1,179 @@
+{
+  "project": "PartyGameSDK",
+  "current_version": "v0.4.2",
+  "recommended_baseline": "v0.4.2",
+  "pipeline_status": {
+    "partygame_release_pipeline": {
+      "status": "active",
+      "current_phase": "phase_3_canary_10_percent",
+      "gate": "release_manager_controlled",
+      "grafana_blocking": true
+    },
+    "unity_webgl_build_pipeline": {
+      "status": "verified",
+      "commit": "61aa74d",
+      "unity_version": "6000.4.8f1",
+      "build_output": "screen/Build",
+      "build_gate": "PASS",
+      "build_artifacts": {
+        "Build.data": "3.8 MB",
+        "Build.framework.js": "372 KB",
+        "Build.loader.js": "19 KB",
+        "Build.wasm": "16 MB",
+        "index.html": "5.2 KB",
+        "partygame-template.js": "6.1 KB"
+      },
+      "check_script": "scripts/check-unity-webgl-build.js → 22/22 PASS",
+      "iron_laws": "5/5 intact",
+      "codex_pipeline": "verified",
+      "emsdk_python": "/Users/applemima1111/.local/bin/python3.11",
+      "emsdk_fix_doc": "UnityExamples/UNITY_WEBGL_REAL_BUILD_FINAL_REPORT.md"
+    },
+    "last_verified": "2026-05-23T11:09:00-07:00"
+  },
+  "target_version": "v1.0.0",
+  "current_phase": "phase_3_canary_10_percent",
+  "next_phase": "phase_2_canary_1_percent",
+  "status": "grafana_required_before_phase_4",
+  "last_passed_phase": "phase_3_canary_10_percent",
+  "blocking_issues": [
+    {
+      "id": "GRAFANA_001",
+      "severity": "high",
+      "issue": "Grafana monitoring stack not deployed",
+      "blocks": "phase_4_canary_50_percent",
+      "resolution": "Run docker-compose.monitoring.yml with Prometheus + Grafana"
+    }
+  ],
+  "requires_human_approval": true,
+  "reason": "Phase 3 10% canary passed (14/14 checks, 53/53 auto, 27/27 manual). Grafana not deployed \u2014 blocking Phase 4. Deploy docker-compose.monitoring.yml to proceed.",
+  "test_results": {
+    "total": 53,
+    "passed": 53,
+    "failed": 0,
+    "automated": 53,
+    "manual_device_tests_required": 27,
+    "manual_device_tests_completed": 27,
+    "platforms_pending": [
+      "iOS Safari (7)",
+      "iOS WeChat WebView (4)",
+      "Android Chrome (5)",
+      "Android WeChat WebView (4)",
+      "Ops Readonly (7)"
+    ],
+    "manual_qa_checklist": "docs/MANUAL_DEVICE_QA_CHECKLIST.md",
+    "manual_qa_result_template": "docs/MANUAL_DEVICE_QA_RESULT_TEMPLATE.md",
+    "manual_qa_summary_script": "scripts/phase1-device-qa-summary.js",
+    "manual_qa_gate_passed": true,
+    "manual_qa_gate_report": "PHASE_1_MANUAL_QA_GATE_REPORT.md"
+  },
+  "fixes_applied": [
+    {
+      "id": "B1",
+      "severity": "low",
+      "issue": "package.json version was 1.0.0 instead of v0.4.2",
+      "fix": "Updated package.json version to v0.4.2"
+    },
+    {
+      "id": "B2",
+      "severity": "low",
+      "issue": "admin health returned dev when APP_VERSION not set",
+      "fix": "Set APP_VERSION=v0.4.2 at server startup"
+    }
+  ],
+  "manual_qa_gate": {
+    "description": "Phase 1 to Phase 2\u552f\u4e00\u63a8\u8fdb Gate\u3002Release Manager \u4e0d\u5141\u8bb8\u4ec5\u51ed\u81ea\u52a8\u5316\u6d4b\u8bd5\u8fdb\u5165 Phase 2\u3002",
+    "required_files": [
+      "docs/MANUAL_DEVICE_QA_CHECKLIST.md",
+      "docs/MANUAL_DEVICE_QA_RESULT_TEMPLATE.md",
+      "scripts/phase1-device-qa-summary.js"
+    ],
+    "approval_condition": "node scripts/phase1-device-qa-summary.js output PHASE_1_MANUAL_QA_APPROVED=true",
+    "approval_requirements": {
+      "os_ios_safari": "PASS",
+      "os_ios_wechat": "PASS",
+      "os_android_chrome": "PASS",
+      "os_android_wechat": "PASS",
+      "blocking_issues_count": 0,
+      "approval_status": "APPROVED"
+    },
+    "on_approved": {
+      "current_phase": "phase_2_canary_1_percent",
+      "last_passed_phase": "phase_1_internal_qa",
+      "status": "ready_for_canary_1_percent",
+      "requires_human_approval": true
+    },
+    "on_rejected": {
+      "current_phase": "phase_1_internal_qa",
+      "status": "manual_device_validation_required",
+      "requires_human_approval": true,
+      "action": "blocking_issues recorded, re-run after fixes"
+    },
+    "report_output": "PHASE_1_MANUAL_QA_GATE_REPORT.md",
+    "warning": "DO NOT manually change current_phase to phase_2_canary_1_percent. Only PHASE_1_MANUAL_QA_APPROVED=true authorizes the transition. Any bypass is a violation."
+  },
+  "phase_transition_rules": {
+    "phase_1_internal_qa": {
+      "can_transition_to": "phase_2_canary_1_percent",
+      "gate_type": "manual_device_qa",
+      "gate_script": "scripts/phase1-device-qa-summary.js",
+      "required_conditions": [
+        "All 53 automated tests PASS (current: 53/53)",
+        "All 4 device platforms tested and PASS",
+        "All 7 ops readonly checks PASS",
+        "0 blocking (HIGH) issues",
+        "approval_status = APPROVED in MANUAL_DEVICE_QA_RESULT_TEMPLATE.md",
+        "scripts/phase1-device-qa-summary.js outputs PHASE_1_MANUAL_QA_APPROVED=true"
+      ],
+      "on_pass": {
+        "status": "ready_for_canary_1_percent",
+        "current_phase": "phase_2_canary_1_percent",
+        "last_passed_phase": "phase_1_internal_qa",
+        "requires_human_approval": true
+      },
+      "on_fail": {
+        "action": "Create v0.4.3 bugfix branch from v0.4.2",
+        "log": "docs/QA_MOBILE_LOG.md",
+        "retry": "Re-run Phase 1 after fix",
+        "max_retries": 2,
+        "on_max_retries": "Stop and request human intervention"
+      }
+    },
+    "phase_2_canary_1_percent": {
+      "can_transition_to": "phase_3_canary_10_percent",
+      "on_pass": {
+        "status": "ready_for_canary_10_percent",
+        "current_phase": "phase_3_canary_10_percent",
+        "last_passed_phase": "phase_2_canary_1_percent"
+      }
+    },
+    "phase_3_canary_10_percent": {
+      "can_transition_to": "phase_4_canary_50_percent",
+      "passed": true,
+      "blocked_by": "grafana_not_deployed",
+      "on_pass_with_grafana": {
+        "status": "ready_for_canary_50_percent",
+        "current_phase": "phase_4_canary_50_percent",
+        "requires_human_approval": false
+      }
+    }
+  },
+  "allowed_auto_actions": [
+    "read_docs",
+    "run_tests",
+    "update_docs",
+    "create_bugfix_branch",
+    "apply_small_bugfix",
+    "generate_report",
+    "update_release_state"
+  ],
+  "human_approval_required_for": [
+    "production_rollback",
+    "core_protocol_change",
+    "five_laws_change",
+    "delete_data",
+    "security_secret_change",
+    "production_domain_change",
+    "v1_0_0_tag"
+  ]
+}
