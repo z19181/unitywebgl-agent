@@ -57,7 +57,7 @@ function prometheusText() {
   const now = Date.now();
   state.msgRate.lastMinute = state.msgRate.lastMinute.filter(t => now - t < 60000);
   const rate = state.msgRate.lastMinute.length;
-  const activeRooms = getActiveRooms();
+  const activeRooms = getActiveRooms() || 0;
 
   const lines = [
     `# HELP partygame_info Server information`,
@@ -130,8 +130,9 @@ function prometheusText() {
 }
 
 function jsonSummary() {
-  return {
-    activeRooms: getActiveRooms(),
+  const ar = getActiveRooms();
+  const res = {
+    activeRooms: typeof ar === 'number' ? ar : 0,
     totalRoomsCreated: state.roomsCreated,
     totalRoomsDestroyed: state.roomsDestroyed,
     activeConnections: state.wsConnections,
@@ -143,6 +144,9 @@ function jsonSummary() {
     byType: { ...state.msgByType },
     byEvent: { ...state.msgByEvent },
   };
+  // If getActiveRooms returned a promise, attach it for consumers that await
+  if (ar && typeof ar.then === 'function') res.activeRooms = ar;
+  return res;
 }
 
 module.exports = { state, increment, trackError, trackReconnect, trackMessage, trackEventDuration, prometheusText, jsonSummary, setRoomCountFn };

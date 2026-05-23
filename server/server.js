@@ -13,6 +13,9 @@ const { ErrorCode, sendErrorCode } = require('./errors');
 let store;
 const storeModule = require('./store');
 
+// v0.3.4: Admin API
+const { createAdminRouter } = require('./admin');
+
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
@@ -303,7 +306,18 @@ const PORT = process.env.PORT || 3000;
 
 (async () => {
   store = await storeModule.createStore();
-  metrics.setRoomCountFn(() => store.getRoomCount().then(n => n, () => 0));
+  // v0.3.3: Sync room count for metrics (MemoryStore getRoomCount is sync, Redis is async)
+  if (store.constructor.name === 'MemoryStore') {
+    metrics.setRoomCountFn(() => store.rooms.size);
+  } else {
+    metrics.setRoomCountFn(() => store.getRoomCount().then(n => n, () => 0));
+  }
+
+  // v0.3.4: Admin API (mounted BEFORE static to take priority over index.html)
+  const admin = createAdminRouter({ store, metrics, activeSockets, broadcastToControllers });
+  app.use('/admin', admin.router);
+  // Admin UI static files (catch-all for non-API /admin/* paths)
+  app.use('/admin', express.static(__dirname + '/../admin'));
 
   server.listen(PORT, () => {
     log.info('startup', { port: PORT, version: '0.3.1', store: process.env.STORE_TYPE || 'memory' });

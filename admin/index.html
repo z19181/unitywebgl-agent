@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PartyGameSDK Admin</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <header>
+    <h1>🎮 PartyGameSDK Admin</h1>
+    <span id="healthBadge">● checking...</span>
+  </header>
+
+  <div id="metricsRow">
+    <div class="card" id="cardRooms"><span class="val">-</span><span class="lbl">Active Rooms</span></div>
+    <div class="card" id="cardPlayers"><span class="val">-</span><span class="lbl">Players</span></div>
+    <div class="card" id="cardControllers"><span class="val">-</span><span class="lbl">Controllers</span></div>
+    <div class="card" id="cardWS"><span class="val">-</span><span class="lbl">WS Connections</span></div>
+    <div class="card" id="cardErrors"><span class="val">-</span><span class="lbl">Errors Total</span></div>
+    <div class="card" id="cardUptime"><span class="val">-</span><span class="lbl">Uptime</span></div>
+  </div>
+
+  <section>
+    <h2>🏠 Rooms</h2>
+    <table id="roomsTable">
+      <thead><tr><th>Room ID</th><th>Players</th><th>Max</th><th>Screen</th><th>Created</th><th>Actions</th></tr></thead>
+      <tbody id="roomsBody"><tr><td colspan="6">Loading...</td></tr></tbody>
+    </table>
+  </section>
+
+  <section id="roomDetail" style="display:none">
+    <h2>🔍 Room Detail — <span id="detailRoomId"></span></h2>
+    <div id="detailInfo"></div>
+    <h3>Players</h3>
+    <table><thead><tr><th>PI</th><th>Name</th><th>Connected</th></tr></thead>
+    <tbody id="detailPlayers"></tbody></table>
+    <br>
+    <button class="btn danger" onclick="closeRoom(currentDetailRoom)">✕ Close Room</button>
+    <button class="btn" onclick="document.getElementById('roomDetail').style.display='none'">← Back</button>
+  </section>
+
+  <script src="admin.js"></script>
+</body>
+</html>
