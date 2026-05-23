@@ -72,6 +72,103 @@
       text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
     
+    /* ========= 房间关闭遮罩 ========= */
+    #roomClosedOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      z-index: 3000;
+    }
+    
+    #roomClosedOverlay.show {
+      display: flex;
+    }
+    
+    #roomClosedOverlay h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #ff6b6b;
+    }
+    
+    #roomClosedOverlay p {
+      font-size: 18px;
+      opacity: 0.8;
+    }
+    
+    /* ========= 手动输入房间号 ========= */
+    #manualJoinContainer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.95);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      z-index: 2500;
+      padding: 20px;
+    }
+    
+    #manualJoinContainer.show {
+      display: flex;
+    }
+    
+    #manualJoinContainer h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    
+    #manualJoinContainer input {
+      width: 80%;
+      max-width: 300px;
+      padding: 15px;
+      font-size: 24px;
+      text-align: center;
+      border: 2px solid #7395ff;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      outline: none;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+    
+    #manualJoinContainer input:focus {
+      border-color: #51cf66;
+    }
+    
+    #manualJoinContainer button {
+      margin-top: 15px;
+      padding: 12px 30px;
+      font-size: 18px;
+      background: #7395ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    
+    #manualJoinContainer button:hover {
+      background: #5a7de0;
+    }
+    
+    #manualJoinContainer .hint {
+      margin-top: 15px;
+      font-size: 14px;
+      opacity: 0.6;
+    }
+    
     /* ========= 蓄力按钮 ========= */
     #chargeButton {
       flex: 1;
@@ -87,8 +184,13 @@
       transition: all 0.1s ease;
       position: relative;
       overflow: hidden;
-      /* 禁用移动端默认触摸行为 */
-      touch-action: none;
+      /* 禁用输入 (B.4 要求) */
+      pointer-events: auto;
+    }
+    
+    #chargeButton.disabled {
+      opacity: 0.3;
+      pointer-events: none;
     }
     
     #chargeButton:active, #chargeButton.charging {
@@ -162,6 +264,20 @@
     <div id="powerBarContainer"></div>
   </div>
   
+  <!-- 手动输入房间号 (A.6 要求) -->
+  <div id="manualJoinContainer">
+    <h2>🎮 加入房间</h2>
+    <input type="text" id="roomIdInput" placeholder="输入房间号" maxlength="6">
+    <button onclick="manualJoin()">加入</button>
+    <div class="hint">提示：让房主分享链接，或手动输入 6 位房间号</div>
+  </div>
+  
+  <!-- 房间关闭遮罩 (B.4 要求) -->
+  <div id="roomClosedOverlay">
+    <h2>🚫 房间已关闭</h2>
+    <p id="roomClosedReason">房主已关闭房间</p>
+  </div>
+  
   <!-- 日志面板（调试用） -->
   <div id="logPanel"></div>
   
@@ -186,6 +302,7 @@
     let isCharging = false;
     let chargePower = 0;
     let chargeInterval = null;
+    let isRoomClosed = false;  // B.4 要求：房间是否关闭
     
     // DOM 元素
     const statusBarEl = document.getElementById('statusBar');
@@ -197,6 +314,10 @@
     const buttonTextEl = document.getElementById('buttonText');
     const powerBarContainerEl = document.getElementById('powerBarContainer');
     const logPanelEl = document.getElementById('logPanel');
+    const manualJoinContainerEl = document.getElementById('manualJoinContainer');
+    const roomIdInputEl = document.getElementById('roomIdInput');
+    const roomClosedOverlayEl = document.getElementById('roomClosedOverlay');
+    const roomClosedReasonEl = document.getElementById('roomClosedReason');
     
     // ========================================
     // 日志
@@ -228,16 +349,17 @@
         log('WebSocket connected');
         statusBarEl.textContent = '🟢 已连接，正在加入房间...';
         
-        // 读取 roomId
+        // A.4 要求：从 URL 参数读取 roomId
         roomId = getRoomIdFromUrl();
         
         if (!roomId) {
-          statusBarEl.textContent = '❌ 缺少 roomId，请在 URL 中添加 ?room=XXX';
-          log('No roomId in URL');
+          // A.6 要求：手动输入 roomId 的 fallback
+          log('No roomId in URL, showing manual input');
+          showManualJoin();
           return;
         }
         
-        // 发送 join_room
+        // A.4 要求：自动 join_room
         joinRoom(roomId);
       };
       
@@ -277,6 +399,14 @@
             handleRoomJoined(message);
             break;
             
+          case 'room_not_found':
+            handleRoomNotFound(message);
+            break;
+            
+          case 'room_closed':  // B.3 要求：收到 room_closed
+            handleRoomClosed(message);
+            break;
+            
           case 'player_joined':  // 其他玩家加入
             log(`Player ${message.playerIndex} joined`);
             break;
@@ -300,7 +430,49 @@
     }
     
     // ========================================
-    // 广播消息处理（第 12 条要求）
+    // 房间关闭处理 (B.4 要求)
+    // ========================================
+    function handleRoomClosed(message) {
+      log(`Room closed: ${message.reason}`);
+      
+      // 设置房间关闭标志 (B.9 要求)
+      isRoomClosed = true;
+      
+      // B.4 要求：禁用输入按钮
+      chargeButtonEl.classList.add('disabled');
+      
+      // B.4 要求：显示"房间已关闭"
+      let reasonText = '房间已关闭';
+      if (message.reason === 'host_closed') {
+        reasonText = '房主已关闭房间';
+      } else if (message.reason === 'host_disconnected') {
+        reasonText = '房主已断开连接';
+      }
+      
+      roomClosedReasonEl.textContent = reasonText;
+      roomClosedOverlayEl.classList.add('show');
+      
+      // 重置玩家信息显示
+      playerInfoEl.classList.remove('joined');
+      statusBarEl.textContent = '🚫 房间已关闭';
+      
+      log(`[Controller] ✓ Room closed, input disabled`);
+    }
+    
+    // ========================================
+    // 房间未找到处理 (B.6 要求)
+    // ========================================
+    function handleRoomNotFound(message) {
+      log(`Room not found: ${message.roomId}, reason: ${message.reason}`);
+      
+      alert(`❌ 房间不存在或已关闭\n\n房间号: ${message.roomId}\n\n请检查房间号是否正确，或让房主重新创建房间。`);
+      
+      // 显示手动输入界面
+      showManualJoin();
+    }
+    
+    // ========================================
+    // 广播消息处理
     // ========================================
     function handleBroadcast(message) {
       log(`Received broadcast: ${message.type}`);
@@ -332,7 +504,7 @@
           scores = data;
         }
         
-        // 兼容数字和字符串 key（用户建议的修复）
+        // 兼容数字和字符串 key
         const scoreValue = scores?.[playerIndex] ?? scores?.[String(playerIndex)] ?? 0;
         
         if (playerIndex !== null && scoreValue > 0) {
@@ -354,8 +526,9 @@
     // 房间加入处理
     // ========================================
     function getRoomIdFromUrl() {
+      // A.4 要求：从 URL 参数读取 roomId
       const params = new URLSearchParams(window.location.search);
-      return params.get('room');
+      return params.get('roomId');  // 注意：是 roomId，不是 room
     }
     
     function joinRoom(roomIdToJoin) {
@@ -381,6 +554,9 @@
       playerIndex = Number(message.playerIndex);
       roomId = message.roomId;
       
+      // 隐藏手动输入界面
+      hideManualJoin();
+      
       // 显示 playerIndex
       playerIndexEl.textContent = `🎮 已加入房间！玩家 ${playerIndex}`;
       roomInfoEl.textContent = `房间 ${roomId}`;
@@ -393,9 +569,55 @@
     }
     
     // ========================================
+    // 手动输入房间号 (A.6 要求)
+    // ========================================
+    function showManualJoin() {
+      manualJoinContainerEl.classList.add('show');
+    }
+    
+    function hideManualJoin() {
+      manualJoinContainerEl.classList.remove('show');
+    }
+    
+    function manualJoin() {
+      const inputRoomId = roomIdInputEl.value.trim().toUpperCase();
+      
+      if (!inputRoomId) {
+        alert('请输入房间号');
+        return;
+      }
+      
+      if (inputRoomId.length !== 6) {
+        alert('房间号必须是 6 位字符');
+        return;
+      }
+      
+      log(`Manual join: roomId=${inputRoomId}`);
+      
+      // 隐藏手动输入界面
+      hideManualJoin();
+      
+      // 加入房间
+      joinRoom(inputRoomId);
+    }
+    
+    // 回车键加入
+    roomIdInputEl.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        manualJoin();
+      }
+    });
+    
+    // ========================================
     // 蓄力输入（第 5 条要求）
     // ========================================
     function startCharge() {
+      // B.4 要求：房间关闭后不能再发送 game_message
+      if (isRoomClosed) {
+        log('Cannot start charge: room is closed');
+        return;
+      }
+      
       if (!ws || ws.readyState !== WebSocket.OPEN) {
         log('WebSocket not connected');
         return;
@@ -439,6 +661,12 @@
       if (chargeInterval) {
         clearInterval(chargeInterval);
         chargeInterval = null;
+      }
+      
+      // B.4 要求：房间关闭后不能再发送 game_message
+      if (isRoomClosed) {
+        log('Cannot end charge: room is closed');
+        return;
       }
       
       // 计算力量（0.0 ~ 1.0）
@@ -509,16 +737,16 @@
       
       // 检查 URL 中是否有 roomId
       const urlRoomId = getRoomIdFromUrl();
-      if (!urlRoomId) {
-        statusBarEl.innerHTML = '❌ 缺少 roomId<br>请在 URL 中添加 ?room=XXX';
-        log('No roomId in URL');
-        return;
+      
+      if (urlRoomId) {
+        log(`Found roomId in URL: ${urlRoomId}`);
+        // 自动连接 WebSocket (会在 onopen 中自动 join)
+        connectWebSocket();
+      } else {
+        log('No roomId in URL, showing manual input');
+        // 先连接 WebSocket，然后显示手动输入界面
+        connectWebSocket();
       }
-      
-      log(`Found roomId in URL: ${urlRoomId}`);
-      
-      // 连接 WebSocket
-      connectWebSocket();
     });
     
     // 页面关闭时清理

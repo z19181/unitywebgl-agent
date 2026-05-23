@@ -33,6 +33,8 @@ const MSG_TYPE = {
   JOIN_ROOM: 'join_room',
   ROOM_JOINED: 'room_joined',
   ROOM_NOT_FOUND: 'room_not_found',
+  CLOSE_ROOM: 'close_room',
+  ROOM_CLOSED: 'room_closed',
   
   // 控制器管理
   PLAYER_JOINED: 'player_joined',
@@ -78,6 +80,10 @@ function handleMessage(ws, message) {
     // 房间管理
     case MSG_TYPE.CREATE_ROOM:
       handleCreateRoom(ws, message);
+      break;
+      
+    case MSG_TYPE.CLOSE_ROOM:
+      handleCloseRoom(ws, message);
       break;
       
     case MSG_TYPE.JOIN_ROOM:
@@ -138,17 +144,65 @@ function handleCreateRoom(ws, message) {
     roomId
   };
   
-  // 生成二维码 URL（简化：直接用 URL）
-  const qrUrl = `http://${getServerHost()}/controller?room=${roomId}`;
+  // 生成 joinUrl（A.2 要求）
+  const joinUrl = `http://${getServerHost()}/controller.html?roomId=${roomId}`;
   
-  // 返回 room_created
+  // 返回 room_created（A.1 要求：生成 joinUrl）
   ws.send(JSON.stringify({
     event: MSG_TYPE.ROOM_CREATED,
     roomId,
-    qrUrl
+    joinUrl
   }));
   
-  console.log(`[${ws.id}] Room created: ${roomId}`);
+  console.log(`[${ws.id}] Room created: ${roomId}, joinUrl: ${joinUrl}`);
+}
+
+/**
+ * 处理 screen 主动关闭房间（B.1 要求）
+ */
+function handleCloseRoom(ws, message) {
+  // 验证：必须是 screen
+  if (ws.data.role !== 'screen') {
+    sendError(ws, 'Only screen can close room');
+    return;
+  }
+  
+  const { roomId } = ws.data;
+  
+  if (!roomId || !rooms.has(roomId)) {
+    sendError(ws, 'Room not found');
+    return;
+  }
+  
+  // 广播 room_closed 给所有 controllers（B.3 要求）
+  broadcastRoomClosed(roomId, 'host_closed');
+  
+  // 删除房间（B.5 要求）
+  rooms.delete(roomId);
+  
+  console.log(`[${ws.id}] Room ${roomId} closed by host`);
+}
+
+/**
+ * 广播 room_closed 事件（B.3 要求）
+ */
+function broadcastRoomClosed(roomId, reason) {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  
+  const message = JSON.stringify({
+    event: MSG_TYPE.ROOM_CLOSED,
+    reason
+  });
+  
+  // 通知所有 controllers
+  room.controllers.forEach((info, controllerWs) => {
+    if (controllerWs.readyState === WebSocket.OPEN) {
+      controllerWs.send(message);
+    }
+  });
+  
+  console.log(`[Server] Broadcast room_closed to controllers: roomId=${roomId}, reason=${reason}`);
 }
 
 /**
@@ -162,11 +216,12 @@ function handleCreateRoom(ws, message) {
 function handleJoinRoom(ws, message) {
   const { roomId } = message;
   
-  // 验证 roomId
+  // 验证 roomId（B.6 要求：closed room 无法再次 join）
   if (!roomId || !rooms.has(roomId)) {
     ws.send(JSON.stringify({
       event: MSG_TYPE.ROOM_NOT_FOUND,
-      roomId
+      roomId,
+      reason: 'Room not found or already closed'
     }));
     console.warn(`[${ws.id}] Room not found: ${roomId}`);
     return;
@@ -325,19 +380,13 @@ function handleDisconnect(ws) {
   const room = rooms.get(roomId);
   
   if (role === 'screen') {
-    // screen 断开：销毁房间
+    // screen 断开：自动销毁房间（B.2 要求）
+    // 广播 room_closed（B.3 要求）
+    broadcastRoomClosed(roomId, 'host_disconnected');
+    
+    // 删除房间（B.5 要求）
     rooms.delete(roomId);
     console.log(`[${ws.id}] Room ${roomId} destroyed (screen disconnected)`);
-    
-    // 通知所有 controllers
-    room.controllers.forEach((info, controllerWs) => {
-      if (controllerWs.readyState === WebSocket.OPEN) {
-        controllerWs.send(JSON.stringify({
-          event: 'room_destroyed',
-          roomId
-        }));
-      }
-    });
     
   } else if (role === 'controller') {
     // controller 断开：通知 screen
@@ -366,9 +415,9 @@ function sendError(ws, errorMsg) {
 }
 
 function getServerHost() {
-  // 简化：返回 localhost:3000
-  // 生产环境应该从 request 中读取
-  return 'localhost:3000';
+  // 从环境变量读取端口
+  const port = process.env.PORT || 3000;
+  return `localhost:${port}`;
 }
 
 // ========== 启动服务器 ==========

@@ -46,7 +46,20 @@
       letter-spacing: 2px;
     }
     
-    #qrUrl {
+    #qrCodeContainer {
+      margin: 10px 0;
+      text-align: center;
+    }
+    
+    #qrCodeContainer img {
+      width: 150px;
+      height: 150px;
+      border-radius: 8px;
+      background: white;
+      padding: 5px;
+    }
+    
+    #joinUrl {
       font-size: 11px;
       word-break: break-all;
       color: #ffd43b;
@@ -66,6 +79,28 @@
     
     #copyBtn:hover {
       background: #5a7de0;
+    }
+    
+    #closeRoomBtn {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: bold;
+      width: 100%;
+    }
+    
+    #closeRoomBtn:hover {
+      background: #fa5252;
+    }
+    
+    #closeRoomBtn:disabled {
+      background: #666;
+      cursor: not-allowed;
     }
     
     /* ========= 玩家列表 UI ========= */
@@ -160,8 +195,17 @@
     <h3>🎮 房间信息</h3>
     <div>房间 ID:</div>
     <div id="roomId">等待创建...</div>
+    
+    <!-- QR Code 显示 (A.3 要求) -->
+    <div id="qrCodeContainer" style="display:none;">
+      <img id="qrCodeImg" src="" alt="QR Code">
+    </div>
+    
+    <!-- joinUrl 显示 (A.2 要求) -->
+    <div id="joinUrl"></div>
+    
     <button id="copyBtn" onclick="copyRoomUrl()">复制控制器链接</button>
-    <div id="qrUrl"></div>
+    <button id="closeRoomBtn" onclick="closeRoom()" style="display:none;">关闭房间</button>
   </div>
   
   <!-- 玩家列表 -->
@@ -193,6 +237,7 @@
       unityBuildUrl: 'Build',
       unityLoaderUrl: 'Build/Build.loader.js',
       enableDebugLog: true,
+      qrCodeApi: 'https://api.qrserver.com/v1/create-qr-code/'
     };
     
     // ========================================
@@ -205,10 +250,14 @@
     
     // DOM 元素
     const roomIdEl = document.getElementById('roomId');
-    const qrUrlEl = document.getElementById('qrUrl');
+    const qrCodeContainerEl = document.getElementById('qrCodeContainer');
+    const qrCodeImgEl = document.getElementById('qrCodeImg');
+    const joinUrlEl = document.getElementById('joinUrl');
     const playersEl = document.getElementById('players');
     const statusBarEl = document.getElementById('statusBar');
     const loadingOverlay = document.getElementById('loadingOverlay');
+    const copyBtnEl = document.getElementById('copyBtn');
+    const closeRoomBtnEl = document.getElementById('closeRoomBtn');
     
     // ========================================
     // 日志
@@ -225,7 +274,7 @@
     function copyRoomUrl() {
       if (!currentRoomId) return;
       
-      const url = `${window.location.origin}/controller?room=${currentRoomId}`;
+      const url = `${window.location.origin}/controller.html?roomId=${currentRoomId}`;
       
       if (navigator.clipboard) {
         navigator.clipboard.writeText(url).then(() => {
@@ -235,6 +284,42 @@
         // 降级方案
         prompt('复制此链接发给朋友：', url);
       }
+    }
+    
+    // ========================================
+    // 关闭房间 (B.1 要求)
+    // ========================================
+    function closeRoom() {
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        log('WebSocket not connected');
+        return;
+      }
+      
+      if (!confirm('确定要关闭房间吗？所有玩家将被踢出。')) {
+        return;
+      }
+      
+      // 发送 close_room (B.1 要求)
+      const message = { event: 'close_room' };
+      ws.send(JSON.stringify(message));
+      log('Sent: close_room');
+      
+      // 禁用按钮
+      closeRoomBtnEl.disabled = true;
+      closeRoomBtnEl.textContent = '房间已关闭';
+    }
+    
+    // ========================================
+    // 显示 QR Code (A.3 要求)
+    // ========================================
+    function showQRCode(url) {
+      // 使用 qrserver.com API 生成 QR Code
+      const qrUrl = `${CONFIG.qrCodeApi}?size=200x200&data=${encodeURIComponent(url)}`;
+      
+      qrCodeImgEl.src = qrUrl;
+      qrCodeContainerEl.style.display = 'block';
+      
+      log(`QR Code generated for: ${url}`);
     }
     
     // ========================================
@@ -285,12 +370,16 @@
             handleRoomCreated(message);
             break;
             
-          case 'player_joined':  // 注意：你的协议是 player_joined（不是 player_joined）
+          case 'player_joined':
             handlePlayerJoined(message);
             break;
             
           case 'player_left':
             handlePlayerLeft(message);
+            break;
+            
+          case 'room_closed':
+            handleRoomClosed(message);
             break;
             
           case 'game_message':
@@ -315,12 +404,20 @@
     function handleRoomCreated(message) {
       currentRoomId = message.roomId;
       
-      // 显示 roomId
+      // 显示 roomId (A.3 要求)
       roomIdEl.textContent = currentRoomId;
       
-      // 显示 qrUrl / controller 加入链接
-      const controllerUrl = `${window.location.origin}/controller?room=${currentRoomId}`;
-      qrUrlEl.innerHTML = `<div style="margin-top:8px;font-size:11px;color:#aaa;">控制器链接：</div><div style="word-break:break-all;font-size:10px;color:#ffd43b;">${controllerUrl}</div>`;
+      // 显示 joinUrl (A.2 要求)
+      const controllerUrl = message.joinUrl || `${window.location.origin}/controller.html?roomId=${currentRoomId}`;
+      joinUrlEl.innerHTML = `<div style="margin-top:8px;font-size:11px;color:#aaa;">控制器链接：</div><div style="word-break:break-all;font-size:10px;color:#ffd43b;">${controllerUrl}</div>`;
+      
+      // 显示 QR Code (A.3 要求)
+      showQRCode(controllerUrl);
+      
+      // 显示关闭房间按钮 (B.1 要求)
+      closeRoomBtnEl.style.display = 'block';
+      closeRoomBtnEl.disabled = false;
+      closeRoomBtnEl.textContent = '关闭房间';
       
       log(`Room created: ${currentRoomId}`);
       
@@ -329,7 +426,28 @@
     }
     
     // ========================================
-    // 玩家加入处理（第 A 条要求）
+    // 房间关闭处理 (B.3 要求)
+    // ========================================
+    function handleRoomClosed(message) {
+      log(`Room closed: ${message.reason}`);
+      
+      // 显示提示
+      alert(`房间已关闭\n原因: ${message.reason === 'host_closed' ? '房主主动关闭' : '房主断开连接'}`);
+      
+      // 重置 UI
+      currentRoomId = null;
+      roomIdEl.textContent = '已关闭';
+      qrCodeContainerEl.style.display = 'none';
+      joinUrlEl.innerHTML = '';
+      closeRoomBtnEl.style.display = 'none';
+      
+      // 清空玩家列表
+      players = [];
+      renderPlayerList();
+    }
+    
+    // ========================================
+    // 玩家加入处理
     // ========================================
     function handlePlayerJoined(message) {
       const { playerIndex, playerName, playerCount } = message;
