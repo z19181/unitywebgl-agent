@@ -169,7 +169,7 @@
   <!-- 玩家列表 -->
   <div id="playerList">
     <h3>👥 玩家列表</h3>
-    <div id="players">暂无玩家</div>
+    <div id="players"><div style="opacity:0.5;">暂无玩家</div></div>
   </div>
   
   <!-- Unity 容器 -->
@@ -287,12 +287,16 @@
             handleRoomCreated(message);
             break;
             
-          case 'player_joined':  // 注意：你的协议是 player_joined（不是 player_joined）
+          case 'player_joined':
             handlePlayerJoined(message);
             break;
-            
+
           case 'player_left':
             handlePlayerLeft(message);
+            break;
+
+          case 'players.changed':   // v0.2.2
+            handlePlayersChanged(message);
             break;
 
           case 'room_closed':
@@ -326,7 +330,8 @@
       
       // 显示 qrUrl / controller 加入链接 + QR Code
       const controllerUrl = `${window.location.origin}/controller?room=${currentRoomId}`;
-      qrUrlEl.innerHTML = `<div style="font-size:11px;color:#aaa;">扫码加入：</div><div id="qrcode"></div><div style="margin-top:8px;font-size:11px;color:#aaa;">或复制链接：</div><div style="word-break:break-all;font-size:10px;color:#ffd43b;">${controllerUrl}</div>`;
+      qrUrlEl.innerHTML = `<div style="font-size:11px;color:#aaa;">扫码加入（最多${message.maxPlayers || 4}人）：</div><div id="qrcode"></div><div style="margin-top:8px;font-size:11px;color:#aaa;">或复制链接：</div><div style="word-break:break-all;font-size:10px;color:#ffd43b;">${controllerUrl}</div>`;
+      window.currentMaxPlayers = message.maxPlayers || 4;
       try {
         var qr = qrcode(0, 'M');
         qr.addData(controllerUrl);
@@ -346,38 +351,55 @@
     // 玩家加入处理（第 A 条要求）
     // ========================================
     function handlePlayerJoined(message) {
-      const { playerIndex, playerName, playerCount } = message;
-      
-      // 显示 playerIndex 和 playerCount
-      log(`Player joined: ${playerName} (index: ${playerIndex}, total: ${playerCount})`);
-      
-      // 更新玩家列表
-      if (!players.includes(playerIndex)) {
-        players.push(playerIndex);
+      const { playerIndex, playerName, playerCount, players: newPlayers } = message;
+
+      // v0.2.2: 如果有完整列表则使用
+      if (Array.isArray(newPlayers)) {
+        players = newPlayers;
+      } else if (!players.find(p => p.playerIndex === playerIndex)) {
+        players.push({ playerIndex, playerName });
       }
-      
+
+      log(`Player joined: ${playerName} (index: ${playerIndex}, total: ${playerCount})`);
       renderPlayerList();
     }
     
     function handlePlayerLeft(message) {
-      const { playerIndex, playerCount } = message;
-      
+      const { playerIndex, playerCount, players: newPlayers } = message;
+
+      // v0.2.2: 如果有完整列表则使用
+      if (Array.isArray(newPlayers)) {
+        players = newPlayers;
+      } else {
+        players = players.filter(p => p.playerIndex !== playerIndex);
+      }
+
       log(`Player left: index ${playerIndex}, total: ${playerCount}`);
-      
-      // 更新玩家列表
-      players = players.filter(p => p !== playerIndex);
       renderPlayerList();
     }
     
+    // v0.2.2: 处理 players.changed
+    function handlePlayersChanged(message) {
+      const { players: newPlayers } = message;
+      if (Array.isArray(newPlayers)) {
+        players = newPlayers;
+      }
+      log(`Players changed: ${players.map(p => `P${p.playerIndex}(${p.playerName})`).join(', ')}`);
+      renderPlayerList();
+    }
+
     function renderPlayerList() {
+      const currentCount = players.length;
+      const max = window.currentMaxPlayers || '?';
       if (players.length === 0) {
         playersEl.innerHTML = '<div style="opacity:0.5;">暂无玩家</div>';
         return;
       }
-      
-      let html = '';
+
+      let html = `<div style="margin-bottom:8px;font-size:11px;color:#aaa;">${currentCount}/${max} 人</div>`;
       players.forEach(p => {
-        html += `<div class="player-item">Player ${p}</div>`;
+        const isMe = p.playerIndex === window.myPlayerIndex ? ' (我)' : '';
+        html += `<div class="player-item">P${p.playerIndex} ${p.playerName}${isMe}</div>`;
       });
       playersEl.innerHTML = html;
     }

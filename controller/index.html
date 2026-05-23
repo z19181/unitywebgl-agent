@@ -138,11 +138,15 @@
     #logPanel.show {
       display: block;
     }
-    
+
     .log-entry {
       margin-bottom: 2px;
       opacity: 0.8;
     }
+
+    /* v0.2.2: 玩家列表 */
+    #playersPanel::-webkit-scrollbar { width: 4px; }
+    #playersPanel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px; }
   </style>
 </head>
 <body>
@@ -154,6 +158,11 @@
       <div id="roomInfo">房间 XXXXXX</div>
     </div>
     <div id="scoreDisplay">分数: 0</div>
+  </div>
+
+  <!-- 玩家列表面板 (v0.2.2) -->
+  <div id="playersPanel" style="display:none; background:rgba(0,0,0,0.3); padding:8px 16px; font-size:12px; flex-shrink:0; max-height:80px; overflow-y:auto;">
+    <div id="playersList" style="color:#a5d8ff;"></div>
   </div>
   
   <!-- 蓄力按钮 -->
@@ -182,11 +191,13 @@
     let ws = null;
     let roomId = null;
     let playerIndex = null;
+    let playerName = null;
     let score = 0;
     let isCharging = false;
     let chargePower = 0;
     let chargeInterval = null;
-    let isRoomOpen = false;  // v0.2.1: room closed state
+    let isRoomOpen = false;   // v0.2.1: room closed state
+    let players = [];          // v0.2.2: 当前玩家列表
     
     // DOM 元素
     const statusBarEl = document.getElementById('statusBar');
@@ -198,6 +209,8 @@
     const buttonTextEl = document.getElementById('buttonText');
     const powerBarContainerEl = document.getElementById('powerBarContainer');
     const logPanelEl = document.getElementById('logPanel');
+    const playersPanelEl = document.getElementById('playersPanel');
+    const playersListEl = document.getElementById('playersList');
     
     // ========================================
     // 日志
@@ -278,14 +291,18 @@
             handleRoomJoined(message);
             break;
             
-          case 'player_joined':  // 其他玩家加入
-            log(`Player ${message.playerIndex} joined`);
+          case 'player_joined':  // v0.2.2
+            handlePlayerJoinedCtrl(message);
             break;
-            
+
           case 'player_left':
-            log(`Player ${message.playerIndex} left`);
+            handlePlayerLeftCtrl(message);
             break;
-            
+
+          case 'players.changed':   // v0.2.2
+            handlePlayersChangedCtrl(message);
+            break;
+
           case 'broadcast':
             // 日志埋点：收到 broadcast
             handleBroadcast(message);
@@ -382,20 +399,74 @@
     }
     
     function handleRoomJoined(message) {
-      // 确保 playerIndex 是数字（兼容字符串和数字）
       playerIndex = Number(message.playerIndex);
+      playerName = message.playerName || `Player ${playerIndex}`;
       roomId = message.roomId;
-      
-      // 显示 playerIndex
+
+      // v0.2.2: 初始化玩家列表
+      if (Array.isArray(message.players)) {
+        players = message.players;
+      } else {
+        players = [{ playerIndex, playerName }];
+      }
+
       playerIndexEl.textContent = `🎮 已加入房间！玩家 ${playerIndex}`;
       roomInfoEl.textContent = `房间 ${roomId}`;
       playerInfoEl.classList.add('joined');
-      
-      log(`Joined room ${roomId} as Player ${playerIndex}`);
-      
-      // 更新状态栏
+
+      log(`Joined room ${roomId} as Player ${playerIndex} (max: ${message.maxPlayers || 4})`);
+
+      // v0.2.2: 显示玩家列表面板
+      playersPanelEl.style.display = 'block';
+      renderPlayersListCtrl();
+
       statusBarEl.innerHTML = `🎮 已加入房间！玩家 ${playerIndex}`;
       isRoomOpen = true;
+    }
+
+    // ========================================
+    // v0.2.2: 玩家列表处理
+    // ========================================
+    function handlePlayerJoinedCtrl(message) {
+      const { playerIndex: pi, playerName: pn, players: pl } = message;
+      if (Array.isArray(pl)) {
+        players = pl;
+      } else if (!players.find(p => p.playerIndex === pi)) {
+        players.push({ playerIndex: pi, playerName: pn });
+      }
+      log(`Player ${pi} (${pn}) joined`);
+      renderPlayersListCtrl();
+    }
+
+    function handlePlayerLeftCtrl(message) {
+      const { playerIndex: pi, players: pl } = message;
+      if (Array.isArray(pl)) {
+        players = pl;
+      } else {
+        players = players.filter(p => p.playerIndex !== pi);
+      }
+      log(`Player ${pi} left`);
+      renderPlayersListCtrl();
+    }
+
+    function handlePlayersChangedCtrl(message) {
+      const { players: pl } = message;
+      if (Array.isArray(pl)) {
+        players = pl;
+      }
+      renderPlayersListCtrl();
+    }
+
+    function renderPlayersListCtrl() {
+      if (players.length === 0) {
+        playersListEl.textContent = '暂无其他玩家';
+        return;
+      }
+      const texts = players.map(p => {
+        const marker = p.playerIndex === playerIndex ? '★ ' : '· ';
+        return `${marker}P${p.playerIndex} ${p.playerName}`;
+      });
+      playersListEl.textContent = texts.join('  |  ');
     }
 
     // ========================================
@@ -406,7 +477,6 @@
       const reasonText = reason === 'host_closed' ? '主持人关闭了房间' : '主机已断开';
       isRoomOpen = false;
 
-      // 禁用蓄力按钮
       chargeButtonEl.style.opacity = '0.3';
       chargeButtonEl.style.pointerEvents = 'none';
       chargeInterval = null;
@@ -414,7 +484,7 @@
       powerBarContainerEl.style.height = '0%';
       buttonTextEl.innerHTML = '房间已关闭';
 
-      // 更新状态栏
+      playersPanelEl.style.display = 'none';
       statusBarEl.innerHTML = `🔴 ${reasonText} (${roomId})`;
       log(`Room closed: ${reasonText}`);
     }
