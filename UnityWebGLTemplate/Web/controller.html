@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>PartyGame Controller</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      width: 100dvw; height: 100dvh; display:flex; flex-direction:column;
+      overflow: hidden; position:fixed; top:0; left:0; right:0; bottom:0;
+    }
+    #statusBar {
+      background: rgba(0,0,0,0.3); padding: 12px 20px;
+      display:flex; justify-content:space-between; align-items:center;
+      font-size:14px; flex-shrink:0; color:white;
+    }
+    #playerInfo { font-weight:bold; font-size:18px; color:#51cf66; }
+    #status     { font-size:13px; }
+    #score      { font-size:32px; font-weight:bold; color:#ffd43b; text-shadow:0 2px 10px rgba(0,0,0,0.3); }
+    #playersList { display:flex; gap:4px; padding:4px 20px; flex-wrap:wrap; max-height:60px; overflow-y:auto; }
+    .pg-badge {
+      background:rgba(255,255,255,0.15); padding:2px 10px; border-radius:12px;
+      font-size:12px; color:#a5d8ff;
+    }
+    #inputArea {
+      flex:1; margin:20px; border-radius:50%; display:flex; flex-direction:column;
+      justify-content:center; align-items:center; cursor:pointer;
+      background: radial-gradient(circle, #fff 0%, #e9ecef 100%);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3), inset 0 2px 10px rgba(255,255,255,0.8);
+      transition:0.1s; touch-action:none; position:relative;
+    }
+    #inputArea:active, #inputArea.holding {
+      background: radial-gradient(circle, #51cf66 0%, #2f9e44 100%);
+      transform:scale(0.95);
+    }
+    #inputText {
+      font-size:24px; font-weight:bold; color:#333; pointer-events:none;
+    }
+    #inputArea:active #inputText, #inputArea.holding #inputText {
+      color:white;
+    }
+    #powerBar {
+      position:absolute; bottom:0; left:0; right:0; height:0%;
+      background: linear-gradient(to top, #51cf66 0%, #ffd43b 70%, #ff6b6b 100%);
+      transition:height 0.05s linear; pointer-events:none; opacity:0.3;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="statusBar">
+    <div>
+      <div id="playerInfo">Player ?</div>
+      <div id="status" style="font-size:11px;opacity:0.7;">⚡ Connecting...</div>
+    </div>
+    <div id="score">Score: 0</div>
+  </div>
+
+  <div id="playersList"></div>
+
+  <div id="inputArea">
+    <div id="inputText">Tap!</div>
+    <div id="powerBar"></div>
+  </div>
+
+  <!-- PartyGameSDK -->
+  <script src="partygame-sdk.js"></script>
+  <script src="controller-base.js"></script>
+
+  <script>
+    // ── Custom: Tap/Charge Input ──
+    var chargePower = 0;
+    var chargeInterval = null;
+    var isHolding = false;
+
+    var inputArea   = document.getElementById('inputArea');
+    var inputText   = document.getElementById('inputText');
+    var powerBar    = document.getElementById('powerBar');
+
+    // Init SDK
+    ControllerInit({ gameName: 'PartyGameSDK' });
+
+    /* ── Tap Mode ── */
+    inputArea.addEventListener('click', function (e) {
+      if (isHolding) return;
+      sendTap();
+    });
+
+    /* ── Charge Mode (hold to charge) ── */
+    inputArea.addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      isHolding = true;
+      chargePower = 0;
+      sendChargeStart();
+      inputArea.classList.add('holding');
+      inputText.innerHTML = 'Charging...<br>Release!';
+      chargeInterval = setInterval(function () {
+        chargePower = Math.min(chargePower + 2, 100);
+        powerBar.style.height = chargePower + '%';
+      }, 16);
+    }, { passive: false });
+
+    inputArea.addEventListener('touchend', function (e) {
+      e.preventDefault();
+      if (!isHolding) return;
+      isHolding = false;
+      if (chargeInterval) { clearInterval(chargeInterval); chargeInterval = null; }
+      var power = chargePower / 100;
+      sendChargeEnd(power);
+      inputArea.classList.remove('holding');
+      inputText.innerHTML = 'Tap!';
+      powerBar.style.height = '0%';
+      chargePower = 0;
+    }, { passive: false });
+
+    /* ── Mouse (desktop test) ── */
+    inputArea.addEventListener('mousedown', function (e) {
+      e.preventDefault();
+      isHolding = true;
+      chargePower = 0;
+      sendChargeStart();
+      inputArea.classList.add('holding');
+      inputText.innerHTML = 'Charging...<br>Release!';
+      chargeInterval = setInterval(function () {
+        chargePower = Math.min(chargePower + 2, 100);
+        powerBar.style.height = chargePower + '%';
+      }, 16);
+    });
+
+    inputArea.addEventListener('mouseup', function (e) {
+      e.preventDefault();
+      if (!isHolding) return;
+      isHolding = false;
+      if (chargeInterval) { clearInterval(chargeInterval); chargeInterval = null; }
+      var power = chargePower / 100;
+      sendChargeEnd(power);
+      inputArea.classList.remove('holding');
+      inputText.innerHTML = 'Tap!';
+      powerBar.style.height = '0%';
+      chargePower = 0;
+    });
+  </script>
+</body>
+</html>
