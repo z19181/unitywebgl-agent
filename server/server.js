@@ -19,13 +19,18 @@ app.use('/controller', express.static(__dirname + '/../controller'));
  * {
  *   roomId: string,
  *   screenSocket: WebSocket | null,
- *   controllers: Map<WebSocket, { playerIndex, playerName }>,
+ *   controllers: Map<WebSocket, { playerIndex, playerName, reconnectToken?, disconnected? }>,
+ *   disconnectedControllers: Map<string, { ws, playerIndex, playerName, timer }>,  // v0.2.3: 断开等待重连
  *   players: [{ playerIndex, playerName }],  // v0.2.2: 有序玩家列表
  *   nextPlayerIndex: number,
- *   maxPlayers: number                       // v0.2.2: 最大玩家数
+ *   maxPlayers: number,                      // v0.2.2: 最大玩家数
+ *   reconnectSecret: string                  // v0.2.3: 房间重连密钥
  * }
  */
 const rooms = new Map(); // roomId -> roomObject
+
+// v0.2.3: 重连等待时间（毫秒）
+const RECONNECT_TIMEOUT = 10 * 1000;  // 10秒
 
 // ========== 消息类型常量 ==========
 const MSG_TYPE = {
@@ -42,6 +47,11 @@ const MSG_TYPE = {
   PLAYER_LEFT: 'player_left',
   PLAYERS_CHANGED: 'players.changed', // v0.2.2
   PLAYER_REJECTED: 'player_rejected',
+
+  // v0.2.3 重连
+  RECONNECT: 'reconnect',
+  RECONNECTED: 'reconnected',
+  RECONNECT_FAILED: 'reconnect_failed',
 
   // 游戏消息
   GAME_MESSAGE: 'game_message',
@@ -105,6 +115,10 @@ function handleMessage(ws, message) {
 
     case MSG_TYPE.SCREEN_READY:
       handleScreenReady(ws);
+      break;
+
+    case MSG_TYPE.RECONNECT:
+      handleReconnect(ws, message);
       break;
 
     default:
@@ -172,9 +186,11 @@ function handleCreateRoom(ws, message) {
     roomId,
     screenSocket: ws,
     controllers: new Map(),   // ws → { playerIndex, playerName }
+    disconnectedControllers: new Map(),  // v0.2.3: token → { ws, playerIndex, playerName, timer }
     players: [],              // v0.2.2: 有序列表
     nextPlayerIndex: 0,
-    maxPlayers                // v0.2.2
+    maxPlayers,               // v0.2.2
+    reconnectSecret: crypto.randomBytes(16).toString('hex')  // v0.2.3
   };
 
   rooms.set(roomId, room);
@@ -190,7 +206,8 @@ function handleCreateRoom(ws, message) {
     event: MSG_TYPE.ROOM_CREATED,
     roomId,
     qrUrl,
-    maxPlayers  // v0.2.2: 返回 maxPlayers
+    maxPlayers,  // v0.2.2: 返回 maxPlayers
+    reconnectSecret: room.reconnectSecret  // v0.2.3: 房间重连密钥（仅 screen 可见）
   }));
 
   console.log(`[${ws.id}] Room created: ${roomId} (maxPlayers=${maxPlayers})`);
@@ -235,6 +252,7 @@ function handleJoinRoom(ws, message) {
 
   const playerIndex = room.nextPlayerIndex++;
   const playerName = message.playerName || `Player ${playerIndex}`;
+  const reconnectToken = crypto.randomBytes(16).toString('hex');  // v0.2.3
 
   ws.data = {
     role: 'controller',
@@ -242,7 +260,7 @@ function handleJoinRoom(ws, message) {
     playerIndex
   };
 
-  room.controllers.set(ws, { playerIndex, playerName });
+  room.controllers.set(ws, { playerIndex, playerName, reconnectToken });
   room.players = getPlayersList(room);
 
   // 通知 controller
@@ -252,7 +270,8 @@ function handleJoinRoom(ws, message) {
     playerIndex,
     playerName,
     maxPlayers: room.maxPlayers,
-    players: room.players  // v0.2.2: 带上当前玩家列表
+    players: room.players,  // v0.2.2: 带上当前玩家列表
+    reconnectToken          // v0.2.3: 重连令牌
   }));
 
   // 通知 screen: player_joined
@@ -399,26 +418,111 @@ function handleDisconnect(ws) {
     console.log(`[${ws.id}] Room ${roomId} closed (screen disconnected)`);
 
   } else if (role === 'controller') {
-    // controller 断开:更新玩家列表，通知所有人
-    room.controllers.delete(ws);
-    room.players = getPlayersList(room);
+    // v0.2.3: 立即通知（让游戏逻辑及时响应），同时允许重连
+    const controllerInfo = room.controllers.get(ws);
+    if (controllerInfo) {
+      // 先从 active controllers 删除
+      room.controllers.delete(ws);
+      room.players = getPlayersList(room);
 
-    // 通知 screen: player_left
-    sendToScreen(room, {
-      event: MSG_TYPE.PLAYER_LEFT,
-      playerIndex,
-      playerCount: room.controllers.size,
-      players: room.players  // v0.2.2: 带上更新后的列表
-    });
+      // 立即通知 screen: player_left
+      sendToScreen(room, {
+        event: MSG_TYPE.PLAYER_LEFT,
+        playerIndex,
+        playerCount: room.controllers.size,
+        players: room.players
+      });
 
-    // v0.2.2: 通知所有 controllers: players.changed
-    broadcastToControllers(room, {
-      event: MSG_TYPE.PLAYERS_CHANGED,
-      players: room.players
-    });
+      // 立即通知剩余 controllers: players.changed
+      broadcastToControllers(room, {
+        event: MSG_TYPE.PLAYERS_CHANGED,
+        players: room.players
+      });
 
-    console.log(`[${ws.id}] Player ${playerIndex} left room ${roomId} [${room.controllers.size}/${room.maxPlayers}]`);
+      // 移动到 disconnectedControllers，启动重连倒计时
+      const timer = setTimeout(() => {
+        if (room.disconnectedControllers.has(controllerInfo.reconnectToken)) {
+          room.disconnectedControllers.delete(controllerInfo.reconnectToken);
+          console.log(`[${ws.id}] Player ${playerIndex} reconnect timeout, removed from room ${roomId}`);
+        }
+      }, RECONNECT_TIMEOUT);
+
+      room.disconnectedControllers.set(controllerInfo.reconnectToken, {
+        ws,
+        playerIndex: controllerInfo.playerIndex,
+        playerName: controllerInfo.playerName,
+        reconnectToken: controllerInfo.reconnectToken,
+        timer
+      });
+
+      console.log(`[${ws.id}] Player ${playerIndex} disconnected, waiting for reconnect (${RECONNECT_TIMEOUT}ms)`);
+    }
   }
+}
+
+// ========== v0.2.3 重连处理 ==========
+
+/**
+ * Controller 发送 reconnect，尝试使用 reconnectToken 重连
+ */
+function handleReconnect(ws, message) {
+  const { reconnectToken, roomId } = message;
+
+  if (!reconnectToken || !roomId) {
+    ws.send(JSON.stringify({ event: MSG_TYPE.RECONNECT_FAILED, reason: 'missing token or roomId' }));
+    return;
+  }
+
+  if (!rooms.has(roomId)) {
+    ws.send(JSON.stringify({ event: MSG_TYPE.RECONNECT_FAILED, reason: 'room not found' }));
+    return;
+  }
+
+  const room = rooms.get(roomId);
+
+  // 查找 disconnectedControllers
+  if (!room.disconnectedControllers.has(reconnectToken)) {
+    ws.send(JSON.stringify({ event: MSG_TYPE.RECONNECT_FAILED, reason: 'invalid or expired token' }));
+    return;
+  }
+
+  const disconnectedInfo = room.disconnectedControllers.get(reconnectToken);
+
+  // 取消倒计时
+  clearTimeout(disconnectedInfo.timer);
+
+  // 恢复连接
+  const { playerIndex, playerName } = disconnectedInfo;
+
+  ws.data = {
+    role: 'controller',
+    roomId,
+    playerIndex
+  };
+
+  // 从 disconnectedControllers 移回 controllers
+  room.controllers.set(ws, { playerIndex, playerName, reconnectToken });
+  room.disconnectedControllers.delete(reconnectToken);
+  room.players = getPlayersList(room);
+
+  // 通知 controller: reconnected
+  ws.send(JSON.stringify({
+    event: MSG_TYPE.RECONNECTED,
+    playerIndex,
+    playerName,
+    roomId,
+    players: room.players
+  }));
+
+  // 通知 screen: player_reconnected (可选)
+  sendToScreen(room, {
+    event: 'player_reconnected',
+    playerIndex,
+    playerName,
+    playerCount: room.controllers.size
+  });
+
+  console.log(`[${ws.id}] Player ${playerIndex} (${playerName}) reconnected to room ${roomId}`);
 }
 
 // ========== 工具函数 ==========

@@ -183,6 +183,7 @@
       chargeSpeed: 2,        // 能量条增长速度（% per frame）
       maxCharge: 100,         // 最大蓄力值
       enableDebugLog: true,   // 是否显示调试日志
+      reconnectTimeout: 10000, // v0.2.3: 重连等待时间（ms）
     };
     
     // ========================================
@@ -198,6 +199,7 @@
     let chargeInterval = null;
     let isRoomOpen = false;   // v0.2.1: room closed state
     let players = [];          // v0.2.2: 当前玩家列表
+    let reconnectToken = null; // v0.2.3: 重连令牌
     
     // DOM 元素
     const statusBarEl = document.getElementById('statusBar');
@@ -234,7 +236,7 @@
     // ========================================
     function connectWebSocket() {
       log(`Connecting to ${CONFIG.serverUrl}...`);
-      statusBarEl.textContent = '⚫ 正在连接服务器...';
+      statusBarEl.textContent = '⚡ 正在连接服务器...';
       
       ws = new WebSocket(CONFIG.serverUrl);
       
@@ -251,6 +253,19 @@
           return;
         }
         
+        // v0.2.3: 检查是否有保存的 reconnectToken
+        const savedToken = localStorage.getItem(`reconnect_${roomId}`);
+        if (savedToken) {
+          log(`Found saved reconnectToken, trying reconnect...`);
+          reconnectToken = savedToken;
+          ws.send(JSON.stringify({
+            event: 'reconnect',
+            reconnectToken,
+            roomId
+          }));
+          return;
+        }
+        
         // 发送 join_room
         joinRoom(roomId);
       };
@@ -263,7 +278,7 @@
         log('WebSocket disconnected');
         statusBarEl.textContent = '🔴 连接断开，正在重连...';
         
-        // 重置状态
+        // 重置状态（但保留 reconnectToken）
         playerIndex = null;
         playerInfoEl.classList.remove('joined');
         
@@ -289,6 +304,14 @@
         switch (eventType) {
           case 'room_joined':
             handleRoomJoined(message);
+            break;
+            
+          case 'reconnected':  // v0.2.3
+            handleReconnected(message);
+            break;
+            
+          case 'reconnect_failed':  // v0.2.3
+            handleReconnectFailed(message);
             break;
             
           case 'player_joined':  // v0.2.2
@@ -318,6 +341,60 @@
         
       } catch (error) {
         log(`Error handling message: ${error.message}`);
+      }
+    }
+    
+    // ========================================
+    // v0.2.3 重连处理
+    // ========================================
+    function handleReconnected(message) {
+      playerIndex = Number(message.playerIndex);
+      playerName = message.playerName || `Player ${playerIndex}`;
+      roomId = message.roomId;
+      reconnectToken = message.reconnectToken || reconnectToken;  // 更新 token（可能刷新）
+      
+      // 保存到 localStorage
+      if (reconnectToken) {
+        localStorage.setItem(`reconnect_${roomId}`, reconnectToken);
+      }
+      
+      // 更新 players 列表
+      if (Array.isArray(message.players)) {
+        players = message.players;
+      }
+      
+      playerIndexEl.textContent = `🎮 已加入房间！玩家 ${playerIndex}`;
+      roomInfoEl.textContent = `房间 ${roomId}`;
+      playerInfoEl.classList.add('joined');
+      
+      log(`Reconnected to room ${roomId} as Player ${playerIndex}`);
+      
+      // 显示玩家列表面板
+      playersPanelEl.style.display = 'block';
+      renderPlayersListCtrl();
+      
+      statusBarEl.innerHTML = `🎮 已重连！玩家 ${playerIndex}`;
+      isRoomOpen = true;
+      
+      // 启用按钮
+      chargeButtonEl.style.opacity = '1';
+      chargeButtonEl.style.pointerEvents = 'auto';
+      buttonTextEl.innerHTML = '按住蓄力<br>松开跳跃';
+    }
+    
+    function handleReconnectFailed(message) {
+      log(`Reconnect failed: ${message.reason}`);
+      
+      // 清除保存的 token
+      if (roomId) {
+        localStorage.removeItem(`reconnect_${roomId}`);
+      }
+      reconnectToken = null;
+      
+      // 重新加入房间（新玩家）
+      if (roomId) {
+        log('Rejoin as new player...');
+        joinRoom(roomId);
       }
     }
     
@@ -402,7 +479,14 @@
       playerIndex = Number(message.playerIndex);
       playerName = message.playerName || `Player ${playerIndex}`;
       roomId = message.roomId;
-
+      reconnectToken = message.reconnectToken || null;  // v0.2.3
+      
+      // v0.2.3: 保存到 localStorage
+      if (reconnectToken) {
+        localStorage.setItem(`reconnect_${roomId}`, reconnectToken);
+        log(`Saved reconnectToken to localStorage`);
+      }
+      
       // v0.2.2: 初始化玩家列表
       if (Array.isArray(message.players)) {
         players = message.players;
@@ -423,7 +507,7 @@
       statusBarEl.innerHTML = `🎮 已加入房间！玩家 ${playerIndex}`;
       isRoomOpen = true;
     }
-
+    
     // ========================================
     // v0.2.2: 玩家列表处理
     // ========================================
@@ -468,7 +552,7 @@
       });
       playersListEl.textContent = texts.join('  |  ');
     }
-
+    
     // ========================================
     // 房间关闭处理 (v0.2.1)
     // ========================================
@@ -487,6 +571,12 @@
       playersPanelEl.style.display = 'none';
       statusBarEl.innerHTML = `🔴 ${reasonText} (${roomId})`;
       log(`Room closed: ${reasonText}`);
+      
+      // v0.2.3: 清除 reconnectToken
+      if (roomId) {
+        localStorage.removeItem(`reconnect_${roomId}`);
+      }
+      reconnectToken = null;
     }
     
     // ========================================
