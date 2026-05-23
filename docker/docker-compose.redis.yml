@@ -1,0 +1,55 @@
+# v0.3.1 Multi-instance deployment with Redis
+#
+# Start:
+#   docker-compose -f docker/docker-compose.redis.yml up -d
+#
+# State sharing: ✅ (Redis)
+# Cross-instance message routing: ⚠️ NOT IMPLEMENTED
+#   → screen and all controllers of one room must connect to the SAME instance
+#   → Use sticky sessions (Nginx hash on roomId) or Redis Pub/Sub (v0.3.2+)
+
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+
+  partygame-1:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - '3001:3000'
+    environment:
+      - PORT=3000
+      - STORE_TYPE=redis
+      - REDIS_URL=redis://redis:6379
+      - LOG_FORMAT=${LOG_FORMAT:-pretty}
+      - SERVER_HOST=localhost:3001
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  partygame-2:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - '3002:3000'
+    environment:
+      - PORT=3000
+      - STORE_TYPE=redis
+      - REDIS_URL=redis://redis:6379
+      - LOG_FORMAT=${LOG_FORMAT:-pretty}
+      - SERVER_HOST=localhost:3002
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
