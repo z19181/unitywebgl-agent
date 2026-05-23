@@ -2,7 +2,7 @@
 
 **发布日期:** 2026-05-23  
 **版本类型:** 管理工具 — Admin API + UI  
-**基调:** 轻量管理 — 7 个 API 端点 + 玩家/房间/错误全部可见
+**基调:** 轻量可管理 — 7 个 API 端点，房间/玩家/错误全部可见可控
 
 ---
 
@@ -13,120 +13,213 @@
 | **版本号** | v0.3.4 |
 | **Git Tag** | `v0.3.4` |
 | **Commit** | `376b7ea` |
-| **分支** | `platform/v0.3.4` |
+| **分支** | `platform/v0.3.4` (从 `platform/v0.3.3` 新建) |
 | **基线** | v0.3.3 |
 | **测试** | **71/71 PASS** ✓ |
-| **协议** | 零修改 |
 
 ---
 
 ## 2. 新增能力
 
-### 2.1 Admin API
+### 2.1 Admin API — 7 个端点
 
-`server/admin.js` — 7 个端点，统一 JSON 响应:
+| Method | Path | 说明 | Auth |
+|---|---|---|---|
+| `GET` | `/admin/health` | 服务健康、版本、uptime | 公开 |
+| `GET` | `/admin/rooms` | 所有活跃房间列表 (roomId/players/max/screen) | Bearer* |
+| `GET` | `/admin/rooms/:roomId` | 房间详情 + 玩家/连接状态 | Bearer* |
+| `GET` | `/admin/rooms/:roomId/players` | 玩家列表 (PI/name/connected) | Bearer* |
+| `GET` | `/admin/rooms/:roomId/controllers` | 控制器列表 | Bearer* |
+| `GET` | `/admin/metrics-summary` | 概要指标 (rooms/connections/errors/byType) | Bearer* |
+| `POST` | `/admin/rooms/:roomId/close` | 关闭房间 → 广播 `room_closed` → 清理 Redis | Bearer* |
 
-| Method | Path | 说明 |
-|---|---|---|
-| `GET` | `/admin/health` | 服务健康状态 |
-| `GET` | `/admin/rooms` | 所有活跃房间列表 |
-| `GET` | `/admin/rooms/:roomId` | 房间详情 + 玩家/连接 |
-| `GET` | `/admin/rooms/:roomId/players` | 玩家列表 |
-| `GET` | `/admin/rooms/:roomId/controllers` | 控制器列表 |
-| `GET` | `/admin/metrics-summary` | 概要指标 |
-| `POST` | `/admin/rooms/:roomId/close` | 关闭房间 |
+> *Bearer = 仅当 `ADMIN_TOKEN` 已设置时要求
 
 **统一响应格式:**
+
 ```json
-{ "ok": true, "data": { ... }, "error": null }
-{ "ok": false, "data": null, "error": { "code": "ROOM_NOT_FOUND", "message": "..." } }
+{ "ok": true,  "data": { "rooms": [...] }, "error": null }
+{ "ok": false, "data": null, "error": { "code": "ROOM_NOT_FOUND", "message": "Room not found" } }
 ```
 
-### 2.2 Admin Auth
+### 2.2 Bearer Token Auth
 
-| 环境 | 行为 |
-|---|---|
-| `ADMIN_TOKEN` 未设置 + 非 production | 允许所有访问，打印 warning |
-| `ADMIN_TOKEN` 已设置 | 需要 `Authorization: Bearer <token>` 头 |
-| `NODE_ENV=production` + 未设置 | **启动失败**，强制设置 |
-
-### 2.3 Admin UI
-
-`admin/` 目录 — 3 文件:
-
-| 文件 | 说明 |
-|---|---|
-| `index.html` | 页面结构 (header / metrics cards / rooms table / detail panel) |
-| `admin.js` | fetch 逻辑 + 5s 自动刷新 + room close + token prompt |
-| `admin.css` | Dark theme CSS |
-
-**页面结构:**
-
-```
-┌──────────────────────────────────────────┐
-│ 🎮 PartyGameSDK Admin    ● Healthy      │  header
-├──────────────────────────────────────────┤
-│ [3 Active Rooms] [2 Players] [2 Ctrl]    │  metrics cards
-│ [4 WS] [0 Errors] [5m Uptime]           │
-├──────────────────────────────────────────┤
-│ 🏠 Rooms                                │
-│ Room ID  │ Players │ Screen │ Actions   │  rooms table
-│ ABC123   │ 2/4     │ 🟢     │ Detail ✕  │
-├──────────────────────────────────────────┤
-│ 🔍 Room Detail                          │
-│ Players: [P0 ●] [P1 ●]  [✕ Close Room] │  detail panel
-└──────────────────────────────────────────┘
-```
-
----
-
-## 3. 修改文件清单
-
-| 文件 | 类型 | 说明 |
+| 环境 | `ADMIN_TOKEN` 设置 | 行为 |
 |---|---|---|
-| `server/admin.js` | 新增 | Admin API (7 endpoints + auth) |
-| `admin/index.html` | 新增 | Admin UI 页面 |
-| `admin/admin.js` | 新增 | Admin UI 逻辑 |
-| `admin/admin.css` | 新增 | Admin UI 样式 |
-| `server/server.js` | 修改 | +8 行 (admin mount + room count fix) |
-| `server/metrics/index.js` | 修改 | +2 行 (sync room count fallback) |
-| `docker/nginx/nginx.conf` | 修改 | +8 行 (/admin proxy) |
+| dev (default) | 未设置 | ⚠️ 打印 warning，允许所有访问 |
+| dev | 已设置 | 🔒 需要 `Authorization: Bearer <token>` |
+| production (`NODE_ENV=production`) | 未设置 | ❌ **启动失败** (防止生产无保护) |
+| production | 已设置 | 🔒 需要 `Authorization: Bearer <token>` |
 
----
+### 2.3 Admin UI — Dark Theme
 
-## 4. 测试结果
-
-| 套件 | 结果 |
+| 组件 | 说明 |
 |---|---|
-| MemoryStore 回归 (A+B+C+D+E+F) | 60/60 ✅ |
-| Admin 专项 (A1-A11) | 11/11 ✅ |
-| **总计** | **71/71** ✅ |
+| Header | 服务名称 + 健康状态指示器 (🟢/🔴) |
+| Metrics Cards | 6 张卡片: Rooms / Players / Controllers / WS / Errors / Uptime |
+| Rooms Table | roomId / playerCount / max / screen status / Detail + Close |
+| Detail Panel | 玩家列表 (PI/name/connected) + Close Room 按钮 |
+| Auto-refresh | 每 5 秒自动刷新房间和指标 |
+| Token Prompt | 页面加载时弹窗输入 admin token |
+
+### 2.4 Close Room 管理操作
+
+`POST /admin/rooms/:roomId/close`:
+1. 向房间内所有 controllers 广播 `room_closed` (reason: `admin_closed`)
+2. 关闭 screen WebSocket
+3. 调用 `store.deleteRoom()` 清理 Redis/Memory
+4. `metrics.increment('roomsDestroyed')`
+
+### 2.5 Metrics Summary
+
+`GET /admin/metrics-summary`:
+```json
+{
+  "activeRooms": 5,
+  "activeConnections": 12,
+  "activeControllers": 8,
+  "totalMessages": 1420,
+  "msgRatePerMinute": 35,
+  "reconnects": { "attempts": 4, "successes": 3 },
+  "errors": { "1001": 1, "5001": 2 },
+  "byType": { "input.tap": 520, "state.score_update": 300 },
+  "byEvent": { "game_message": 520, "broadcast": 300 }
+}
+```
 
 ---
 
-## 5. Docker 运行
+## 3. Admin API 文档
+
+### GET /admin/health
 
 ```bash
-docker-compose -f docker/docker-compose.monitoring.yml up -d
+curl http://localhost:3000/admin/health
+# {"ok":true,"data":{"status":"ok","version":"0.3.4","uptime":123.4},"error":null}
+```
 
-# Admin UI
-open https://localhost/admin
+### GET /admin/rooms
 
-# With auth
-ADMIN_TOKEN=my-secret docker-compose up -d
-# → Admin UI will prompt for token
+```bash
+curl http://localhost:3000/admin/rooms
+# {"ok":true,"data":{"rooms":[{"roomId":"ABC123","maxPlayers":4,"playerCount":2,...}],"count":1},"error":null}
+```
+
+### GET /admin/rooms/:roomId
+
+```bash
+curl http://localhost:3000/admin/rooms/ABC123
+# {"ok":true,"data":{"roomId":"ABC123","maxPlayers":4,"players":[...],"hasScreen":true,...},"error":null}
+```
+
+### GET /admin/rooms/:roomId/players
+
+```bash
+curl http://localhost:3000/admin/rooms/ABC123/players
+# {"ok":true,"data":{"players":[{"playerIndex":0,"playerName":"P0","connected":true}]},"error":null}
+```
+
+### GET /admin/rooms/:roomId/controllers
+
+```bash
+curl http://localhost:3000/admin/rooms/ABC123/controllers
+# {"ok":true,"data":{"controllers":[{"playerIndex":0,"playerName":"P0","connected":true}]},"error":null}
+```
+
+### GET /admin/metrics-summary
+
+```bash
+curl http://localhost:3000/admin/metrics-summary
+# {"ok":true,"data":{"activeRooms":5,...},"error":null}
+```
+
+### POST /admin/rooms/:roomId/close
+
+```bash
+curl -X POST http://localhost:3000/admin/rooms/ABC123/close
+# {"ok":true,"data":{"roomId":"ABC123","closed":true},"error":null}
+```
+
+**With auth:**
+
+```bash
+curl -H "Authorization: Bearer my-secret-token" http://localhost:3000/admin/rooms
 ```
 
 ---
 
-## 6. 已知限制
+## 4. 鉴权说明
 
-| 限制 | 说明 |
+### 环境变量
+
+```bash
+# 开发模式 (无保护)
+node server/server.js
+
+# 开发模式 (有保护)
+ADMIN_TOKEN=my-dev-token node server/server.js
+
+# 生产模式 (强制保护)
+NODE_ENV=production ADMIN_TOKEN=my-prod-token node server/server.js
+```
+
+### 请求头
+
+```
+Authorization: Bearer <ADMIN_TOKEN>
+```
+
+### 行为矩阵
+
+| NODE_ENV | ADMIN_TOKEN | 结果 |
+|---|---|---|
+| (default) | (empty) | ⚠️ Warning + 开放 |
+| (default) | `"abc"` | 🔒 Bearer "abc" |
+| `production` | (empty) | ❌ 启动拒绝 |
+| `production` | `"abc"` | 🔒 Bearer "abc" |
+
+---
+
+## 5. 安全边界
+
+| 边界 | 状态 |
 |---|---|
-| **只读 + close** | 不支持创建房间、修改配置 |
-| **无分页** | rooms list 全量返回 |
-| **无 WebSocket** | Admin UI 通过 HTTP 轮询 (5s) |
-| **Auth 简单** | Bearer token，无 JWT/权限分级 |
+| **Admin 不参与 game_message 链路** | ✅ 独立路由，不拦截/修改/观察游戏消息 |
+| **close room 复用既有 room lifecycle** | ✅ 广播 `room_closed` → `store.deleteRoom()` → 与 `handleCloseRoom` 一致 |
+| **不改变 playerIndex 注入** | ✅ `handleGameMessage` 未修改 |
+| **不改变 game_message.type 透明转发** | ✅ server 从未解析 type 字段 |
+| **五条铁律全部保持** | ✅ |
+
+---
+
+## 6. 测试结果
+
+### v0.3.4 专项 (11/11)
+
+| ID | 测试 | ✅ |
+|---|---|---|
+| A1 | `/admin/health` returns ok | ✅ |
+| A2 | `/admin/rooms` accessible (dev mode) | ✅ |
+| A3 | Create room → visible in `/admin/rooms` | ✅ |
+| A4 | `/admin/rooms/:id` returns detail | ✅ |
+| A5 | `/admin/rooms/:id/players` returns players | ✅ |
+| A6 | `/admin/rooms/:id/controllers` returns controllers | ✅ |
+| A7 | `/admin/metrics-summary` returns data | ✅ |
+| A8 | POST close room → room removed | ✅ |
+| A9 | close → controller receives `room_closed` | ✅ |
+| A10 | Admin UI files exist (4 files) | ✅ |
+| A11 | Protocol unaffected (game_message with fake PI) | ✅ |
+
+### v0.3.x 全系列
+
+| 版本 | 测试 | 核心 |
+|---|---|---|
+| v0.3.0 | 60/60 | Logger + Prometheus + Docker |
+| v0.3.1 | 80/80 | Store + Redis 多实例 |
+| v0.3.2 | 70/70 | Nginx/HTTPS/WSS + sticky |
+| v0.3.3 | 70/70 | Grafana Dashboard |
+| v0.3.4 | 71/71 | Admin Backend |
+| **累计** | **>290 tests** | **0 failures** |
 
 ---
 
