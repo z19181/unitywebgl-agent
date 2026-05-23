@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Party Game - Screen</title>
+  <style>
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+    
+    body {
+      background: #000;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+    
+    /* ========= 房间信息 UI ========= */
+    #roomInfo {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.8);
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 13px;
+      z-index: 1000;
+      max-width: 350px;
+    }
+    
+    #roomInfo h3 {
+      margin-bottom: 8px;
+      color: #7395ff;
+    }
+    
+    #roomId {
+      font-size: 24px;
+      font-weight: bold;
+      color: #51cf66;
+      margin: 8px 0;
+      letter-spacing: 2px;
+    }
+    
+    #qrUrl {
+      font-size: 11px;
+      word-break: break-all;
+      color: #ffd43b;
+      margin-top: 8px;
+    }
+    
+    #copyBtn {
+      background: #7395ff;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 8px;
+      font-size: 12px;
+    }
+    
+    #copyBtn:hover {
+      background: #5a7de0;
+    }
+    
+    /* ========= 玩家列表 UI ========= */
+    #playerList {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.8);
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 13px;
+      z-index: 1000;
+      min-width: 150px;
+    }
+    
+    #playerList h3 {
+      margin-bottom: 8px;
+      color: #ff6b6b;
+    }
+    
+    .player-item {
+      padding: 5px;
+      margin: 3px 0;
+      background: rgba(255,255,255,0.1);
+      border-radius: 5px;
+    }
+    
+    /* ========= Unity 容器 ========= */
+    #unityContainer {
+      width: 100%;
+      height: 100%;
+    }
+    
+    #unityCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    
+    /* ========= 加载遮罩 ========= */
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      z-index: 2000;
+    }
+    
+    #loadingOverlay.hidden {
+      display: none;
+    }
+    
+    .spinner {
+      border: 4px solid rgba(255,255,255,0.1);
+      border-top: 4px solid #7395ff;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* ========= 状态栏 ========= */
+    #statusBar {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.6);
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- 房间信息 -->
+  <div id="roomInfo">
+    <h3>🎮 房间信息</h3>
+    <div>房间 ID:</div>
+    <div id="roomId">等待创建...</div>
+    <button id="copyBtn" onclick="copyRoomUrl()">复制控制器链接</button>
+    <div id="qrUrl"></div>
+  </div>
+  
+  <!-- 玩家列表 -->
+  <div id="playerList">
+    <h3>👥 玩家列表</h3>
+    <div id="players">暂无玩家</div>
+  </div>
+  
+  <!-- Unity 容器 -->
+  <div id="unityContainer">
+    <canvas id="unityCanvas"></canvas>
+  </div>
+  
+  <!-- 加载遮罩 -->
+  <div id="loadingOverlay">
+    <div class="spinner"></div>
+    <div>正在加载游戏...</div>
+  </div>
+  
+  <!-- 状态栏 -->
+  <div id="statusBar">正在连接服务器...</div>
+  
+  <script>
+    // ========================================
+    // 配置
+    // ========================================
+    const CONFIG = {
+      serverUrl: `ws://${window.location.host}`,
+      unityBuildUrl: 'Build',
+      unityLoaderUrl: 'Build/Build.loader.js',
+      enableDebugLog: true,
+    };
+    
+    // ========================================
+    // 状态
+    // ========================================
+    let ws = null;
+    let unityInstance = null;
+    let currentRoomId = null;
+    let players = []; // 玩家列表
+    
+    // DOM 元素
+    const roomIdEl = document.getElementById('roomId');
+    const qrUrlEl = document.getElementById('qrUrl');
+    const playersEl = document.getElementById('players');
+    const statusBarEl = document.getElementById('statusBar');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    
+    // ========================================
+    // 日志
+    // ========================================
+    function log(message) {
+      if (!CONFIG.enableDebugLog) return;
+      console.log(`[Screen] ${message}`);
+      statusBarEl.textContent = message;
+    }
+    
+    // ========================================
+    // 复制房间链接
+    // ========================================
+    function copyRoomUrl() {
+      if (!currentRoomId) return;
+      
+      const url = `${window.location.origin}/controller?room=${currentRoomId}`;
+      
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => {
+          alert('✅ 控制器链接已复制！\n\n发送给朋友，让他们加入游戏：\n\n' + url);
+        });
+      } else {
+        // 降级方案
+        prompt('复制此链接发给朋友：', url);
+      }
+    }
+    
+    // ========================================
+    // WebSocket 连接
+    // ========================================
+    function connectWebSocket() {
+      log(`Connecting to ${CONFIG.serverUrl}...`);
+      
+      ws = new WebSocket(CONFIG.serverUrl);
+      
+      ws.onopen = () => {
+        log('✅ Connected to server');
+        
+        // 发送 create_room（第 A 条要求）
+        const message = { event: 'create_room' };
+        ws.send(JSON.stringify(message));
+        log('Sent: create_room');
+      };
+      
+      ws.onmessage = (event) => {
+        handleMessage(event.data);
+      };
+      
+      ws.onclose = () => {
+        log('❌ Disconnected from server');
+        
+        // 3秒后重连
+        setTimeout(connectWebSocket, 3000);
+      };
+      
+      ws.onerror = (error) => {
+        log(`WebSocket error: ${error}`);
+      };
+    }
+    
+    // ========================================
+    // 消息处理
+    // ========================================
+    function handleMessage(data) {
+      try {
+        const message = JSON.parse(data);
+        const eventType = message.event || message.type;
+        
+        log(`Received: ${eventType}`);
+        
+        switch (eventType) {
+          case 'room_created':
+            handleRoomCreated(message);
+            break;
+            
+          case 'player_joined':  // 注意：你的协议是 player_joined（不是 player_joined）
+            handlePlayerJoined(message);
+            break;
+            
+          case 'player_left':
+            handlePlayerLeft(message);
+            break;
+            
+          case 'game_message':
+            // 转发给 Unity
+            forwardToUnity(data);
+            break;
+            
+          default:
+            // 其他消息也转发给 Unity（例如 broadcast）
+            forwardToUnity(data);
+            break;
+        }
+        
+      } catch (error) {
+        log(`Error handling message: ${error.message}`);
+      }
+    }
+    
+    // ========================================
+    // 房间创建处理
+    // ========================================
+    function handleRoomCreated(message) {
+      currentRoomId = message.roomId;
+      
+      // 显示 roomId
+      roomIdEl.textContent = currentRoomId;
+      
+      // 显示 qrUrl / controller 加入链接
+      const controllerUrl = `${window.location.origin}/controller?room=${currentRoomId}`;
+      qrUrlEl.innerHTML = `<div style="margin-top:8px;font-size:11px;color:#aaa;">控制器链接：</div><div style="word-break:break-all;font-size:10px;color:#ffd43b;">${controllerUrl}</div>`;
+      
+      log(`Room created: ${currentRoomId}`);
+      
+      // 加载 Unity（房间创建成功后）
+      loadUnity();
+    }
+    
+    // ========================================
+    // 玩家加入处理（第 A 条要求）
+    // ========================================
+    function handlePlayerJoined(message) {
+      const { playerIndex, playerName, playerCount } = message;
+      
+      // 显示 playerIndex 和 playerCount
+      log(`Player joined: ${playerName} (index: ${playerIndex}, total: ${playerCount})`);
+      
+      // 更新玩家列表
+      if (!players.includes(playerIndex)) {
+        players.push(playerIndex);
+      }
+      
+      renderPlayerList();
+    }
+    
+    function handlePlayerLeft(message) {
+      const { playerIndex, playerCount } = message;
+      
+      log(`Player left: index ${playerIndex}, total: ${playerCount}`);
+      
+      // 更新玩家列表
+      players = players.filter(p => p !== playerIndex);
+      renderPlayerList();
+    }
+    
+    function renderPlayerList() {
+      if (players.length === 0) {
+        playersEl.innerHTML = '<div style="opacity:0.5;">暂无玩家</div>';
+        return;
+      }
+      
+      let html = '';
+      players.forEach(p => {
+        html += `<div class="player-item">Player ${p}</div>`;
+      });
+      playersEl.innerHTML = html;
+    }
+    
+    // ========================================
+    // 转发消息到 Unity
+    // ========================================
+    function forwardToUnity(jsonMessage) {
+      if (!unityInstance) {
+        log('Unity not ready, cannot forward');
+        return;
+      }
+      
+      try {
+        log(`Forwarding to Unity: ${jsonMessage.substring(0, 100)}...`);
+        
+        // 调用 Unity 的 PartyGameBridge.OnMessageReceived 方法
+        unityInstance.SendMessage('PartyGameBridge', 'OnMessageReceived', jsonMessage);
+      } catch (error) {
+        log(`Error forwarding to Unity: ${error.message}`);
+      }
+    }
+    
+    // ========================================
+    // Unity WebGL 加载
+    // ========================================
+    function loadUnity() {
+      log('Loading Unity WebGL...');
+      
+      // 创建 Unity loader script
+      const script = document.createElement('script');
+      script.src = CONFIG.unityLoaderUrl;
+      script.onload = () => {
+        log('Unity loader script loaded');
+        
+        // Unity 配置
+        const config = {
+          dataUrl: `${CONFIG.unityBuildUrl}/Build.data`,
+          frameworkUrl: `${CONFIG.unityBuildUrl}/Build.framework.js`,
+          codeUrl: `${CONFIG.unityBuildUrl}/Build.wasm`,
+          streamingAssetsUrl: 'StreamingAssets',
+          companyName: 'PartyGame',
+          productName: 'Jump Demo',
+          productVersion: '1.0.0',
+        };
+        
+        // 创建 Unity 实例
+        createUnityInstance(document.querySelector('#unityCanvas'), config, (progress) => {
+          log(`Unity loading: ${(progress * 100).toFixed(1)}%`);
+        }).then((instance) => {
+          log('✅ Unity instance created');
+          unityInstance = instance;
+          
+          // 设置全局引用（供 jslib 使用）
+          window.unityInstance = instance;
+          
+          // 隐藏加载界面
+          loadingOverlay.classList.add('hidden');
+          
+        }).catch((error) => {
+          log(`Unity creation failed: ${error.message}`);
+        });
+      };
+      
+      script.onerror = () => {
+        log('Failed to load Unity loader script');
+      };
+      
+      document.body.appendChild(script);
+    }
+    
+    // ========================================
+    // 供 Unity jslib 调用的全局函数
+    // ========================================
+    
+    /**
+     * Unity 调用此函数发送消息到服务器
+     * 由 PartyGameBridge.jslib 调用
+     */
+    window.PartyGameSendToServer = function(jsonMessage) {
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        log('WebSocket not connected, cannot send');
+        return;
+      }
+      
+      log(`Unity → Server: ${jsonMessage.substring(0, 100)}...`);
+      ws.send(jsonMessage);
+    };
+    
+    /**
+     * Unity 广播消息（由 PartyGameBridge.jslib 调用）
+     * 日志埋点：[Screen] Broadcast to server
+     */
+    window.PartyGameBroadcast = function(jsonMessage) {
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        log('WebSocket not connected, cannot broadcast');
+        return;
+      }
+      
+      // 日志埋点：[Screen] Broadcast to server
+      log(`[Screen] Broadcast to server: ${jsonMessage.substring(0, 100)}...`);
+      
+      // 验证消息格式
+      try {
+        const message = JSON.parse(jsonMessage);
+        
+        // 验证：消息内容是否是 { event: "broadcast", type: "state.score_update", scores: { "0": 1 } }
+        if (message.event === 'broadcast' && message.type === 'state.score_update') {
+          log(`[Screen] ✓ Valid broadcast message: event=${message.event}, type=${message.type}`);
+          log(`[Screen] ✓ Scores: ${message.data}`);
+        } else {
+          log(`[Screen] ⚠ Invalid broadcast message: ${jsonMessage}`);
+        }
+      } catch (e) {
+        log(`[Screen] Error parsing broadcast message: ${e.message}`);
+      }
+      
+      // 发送消息到服务器
+      ws.send(jsonMessage);
+    };
+    
+    /**
+     * 设置 Unity 实例（供 jslib 使用）
+     */
+    window.PartyGameSetUnityInstance = function(instance) {
+      log('Unity instance set');
+      window.unityInstance = instance;
+    };
+    
+    // ========================================
+    // 初始化
+    // ========================================
+    document.addEventListener('DOMContentLoaded', () => {
+      log('DOM loaded, starting...');
+      connectWebSocket();
+    });
+    
+    // 页面关闭时清理
+    window.addEventListener('beforeunload', () => {
+      if (ws) ws.close();
+      if (unityInstance) unityInstance.Quit();
+    });
+    
+  </script>
+</body>
+</html>

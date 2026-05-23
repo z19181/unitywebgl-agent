@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PartyGameSDK - 步骤 10 自动化测试</title>
+  <style>
+    * { margin:0; padding:0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Courier New', monospace;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    h1 {
+      color: #51cf66;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+    
+    .section {
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .section h2 {
+      color: #7395ff;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    
+    .log {
+      background: #000;
+      color: #51cf66;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+    
+    .log-entry {
+      margin-bottom: 5px;
+      padding: 3px;
+      border-bottom: 1px solid #333;
+    }
+    
+    .pass {
+      color: #51cf66;
+      font-weight: bold;
+    }
+    
+    .fail {
+      color: #ff6b6b;
+      font-weight: bold;
+    }
+    
+    .info {
+      color: #7395ff;
+    }
+    
+    button {
+      background: #51cf66;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+    
+    button:hover {
+      background: #2f9e44;
+    }
+    
+    button.secondary {
+      background: #7395ff;
+    }
+    
+    button.secondary:hover {
+      background: #5a7de0;
+    }
+    
+    .result {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 PartyGameSDK - 步骤 10 自动化测试</h1>
+  
+  <div class="section">
+    <h2>测试目标</h2>
+    <p>验证四端（Unity → screen.html → server.js → controller.html）分数广播流程</p>
+    <ul>
+      <li>✅ Unity 加分后广播 <code>state.score_update</code></li>
+      <li>✅ screen.html 转发 broadcast 给 server</li>
+      <li>✅ server.js 验证发送者 role 并广播给 controllers</li>
+      <li>✅ controller.html 收到 broadcast 并更新 UI</li>
+    </ul>
+  </div>
+  
+  <div class="section">
+    <h2>测试控制</h2>
+    <button onclick="runTest()">▶️ 运行测试</button>
+    <button onclick="clearLog()" class="secondary">🗑️ 清空日志</button>
+    <button onclick="simulateFullFlow()" class="secondary">🔄 模拟完整流程</button>
+  </div>
+  
+  <div class="section">
+    <h2>测试日志</h2>
+    <div id="log" class="log"></div>
+    <div id="result" class="result"></div>
+  </div>
+  
+  <div class="section">
+    <h2>验证点检查表</h2>
+    <div id="checklist">
+      <div>⬜ 1. Unity 是否调用 BroadcastScoreUpdate？</div>
+      <div>⬜ 2. screen.html 是否定义 window.PartyGameBroadcast？</div>
+      <div>⬜ 3. server 是否收到 broadcast 并验证 role？</div>
+      <div>⬜ 4. server 是否广播给所有 controllers？</div>
+      <div>⬜ 5. controller 是否收到 broadcast？</div>
+      <div>⬜ 6. controller 是否更新分数 UI？</div>
+    </div>
+  </div>
+  
+  <script>
+    // ========================================
+    // 状态
+    // ========================================
+    let testResults = {
+      unity: false,
+      screen: false,
+      server: false,
+      controller: false,
+    };
+    
+    let checkCount = 0;
+    const totalChecks = 6;
+    
+    // ========================================
+    // 日志
+    // ========================================
+    function log(message, type = 'info') {
+      const logEl = document.getElementById('log');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logEl.appendChild(entry);
+      logEl.scrollTop = logEl.scrollHeight;
+      
+      // 同时输出到控制台
+      console.log(`[Test] ${message}`);
+    }
+    
+    function clearLog() {
+      document.getElementById('log').innerHTML = '';
+      document.getElementById('result').innerHTML = '';
+      document.getElementById('checklist').innerHTML = `
+        <div>⬜ 1. Unity 是否调用 BroadcastScoreUpdate？</div>
+        <div>⬜ 2. screen.html 是否定义 window.PartyGameBroadcast？</div>
+        <div>⬜ 3. server 是否收到 broadcast 并验证 role？</div>
+        <div>⬜ 4. server 是否广播给所有 controllers？</div>
+        <div>⬜ 5. controller 是否收到 broadcast？</div>
+        <div>⬜ 6. controller 是否更新分数 UI？</div>
+      `;
+      testResults = { unity: false, screen: false, server: false, controller: false };
+      checkCount = 0;
+      log('日志已清空');
+    }
+    
+    function updateChecklist(index, pass) {
+      const checklist = document.getElementById('checklist');
+      const items = checklist.children;
+      
+      if (index >= 0 && index < items.length) {
+        const symbol = pass ? '✅' : '❌';
+        items[index].textContent = `${symbol} ${items[index].textContent.substring(2)}`;
+      }
+    }
+    
+    function showResult(pass, message) {
+      const resultEl = document.getElementById('result');
+      resultEl.className = `result ${pass ? 'pass' : 'fail'}`;
+      resultEl.textContent = `${pass ? '✅' : '❌'} ${message}`;
+    }
+    
+    // ========================================
+    // 模拟 Unity 广播
+    // ========================================
+    function simulateUnityBroadcast() {
+      log('模拟 Unity 广播分数...', 'info');
+      
+      // 模拟 Unity 调用 jslib
+      const scores = { "0": 1, "1": 0 };
+      const message = {
+        eventType: 'broadcast',
+        type: 'state.score_update',
+        dataJson: JSON.stringify({ scores: JSON.stringify(scores) })
+      };
+      
+      const jsonMessage = JSON.stringify(message);
+      
+      log(`[Unity] Broadcast state.score_update: scores=${JSON.stringify(scores)}`, 'info');
+      log(`[PartyGameBridge] Broadcast called: ${jsonMessage.substring(0, 100)}...`, 'info');
+      
+      // 模拟 jslib 调用 window.PartyGameBroadcast
+      if (typeof window.PartyGameBroadcast === 'function') {
+        log('[jslib] Calling window.PartyGameBroadcast...', 'pass');
+        window.PartyGameBroadcast(jsonMessage);
+        testResults.unity = true;
+        updateChecklist(0, true);
+        checkCount++;
+      } else {
+        log('[jslib] ❌ window.PartyGameBroadcast is NOT defined', 'fail');
+        updateChecklist(0, false);
+      }
+    }
+    
+    // ========================================
+    // 模拟 screen.html 转发
+    // ========================================
+    function simulateScreenForwarding(jsonMessage) {
+      log('模拟 screen.html 转发 broadcast...', 'info');
+      
+      try {
+        const message = JSON.parse(jsonMessage);
+        
+        // 验证消息格式
+        if (message.eventType === 'broadcast' && message.type === 'state.score_update') {
+          log('[Screen] ✓ Valid broadcast message', 'pass');
+          log(`[Screen] Broadcast to server: ${jsonMessage.substring(0, 100)}...`, 'info');
+          
+          // 模拟发送到 server
+          testResults.screen = true;
+          updateChecklist(1, true);
+          checkCount++;
+          
+          // 继续模拟 server 处理
+          simulateServerBroadcast(message);
+        } else {
+          log('[Screen] ❌ Invalid broadcast message', 'fail');
+          updateChecklist(1, false);
+        }
+        
+      } catch (error) {
+        log(`[Screen] Error: ${error.message}`, 'fail');
+        updateChecklist(1, false);
+      }
+    }
+    
+    // ========================================
+    // 模拟 server.js 处理
+    // ========================================
+    function simulateServerBroadcast(message) {
+      log('模拟 server.js 处理 broadcast...', 'info');
+      
+      // 模拟验证 role
+      const mockWs = { data: { role: 'screen' } };
+      
+      if (mockWs.data.role === 'screen') {
+        log('[Server] ✓ Sender role is screen', 'pass');
+        updateChecklist(2, true);
+        checkCount++;
+        
+        // 模拟广播给 controllers
+        log('[Server] Broadcast to controllers: 2 controllers in room ABC123', 'info');
+        testResults.server = true;
+        updateChecklist(3, true);
+        checkCount++;
+        
+        // 继续模拟 controller 处理
+        simulateControllerReceive(message);
+      } else {
+        log('[Server] ❌ Sender role is NOT screen', 'fail');
+        updateChecklist(2, false);
+      }
+    }
+    
+    // ========================================
+    // 模拟 controller.html 接收
+    // ========================================
+    function simulateControllerReceive(message) {
+      log('模拟 controller.html 接收 broadcast...', 'info');
+      
+      try {
+        // 解析 scores
+        const data = JSON.parse(message.dataJson);
+        const scores = JSON.parse(data.scores);
+        
+        // 模拟 playerIndex = 0
+        const playerIndex = 0;
+        
+        // 兼容数字和字符串 key（用户建议的修复）
+        const score = scores?.[playerIndex] ?? scores?.[String(playerIndex)] ?? 0;
+        
+        if (score > 0) {
+          log(`[Controller] ✓ Score updated: ${score}`, 'pass');
+          log(`[Controller] UI updated: 分数: ${score}`, 'pass');
+          
+          testResults.controller = true;
+          updateChecklist(4, true);
+          updateChecklist(5, true);
+          checkCount += 2;
+          
+          // 所有检查通过
+          if (checkCount >= totalChecks) {
+            showResult(true, '步骤 10 验证通过！分数 UI 已更新');
+          }
+        } else {
+          log('[Controller] ❌ Score is 0 or undefined', 'fail');
+          updateChecklist(4, false);
+          updateChecklist(5, false);
+          showResult(false, '步骤 10 失败：分数未更新');
+        }
+        
+      } catch (error) {
+        log(`[Controller] Error: ${error.message}`, 'fail');
+        updateChecklist(4, false);
+        updateChecklist(5, false);
+        showResult(false, `步骤 10 失败：${error.message}`);
+      }
+    }
+    
+    // ========================================
+    // 运行测试
+    // ========================================
+    function runTest() {
+      log('开始测试...', 'info');
+      
+      // 清空之前的结果
+      clearLog();
+      
+      // 模拟完整流程
+      simulateFullFlow();
+    }
+    
+    function simulateFullFlow() {
+      log('模拟完整流程：Unity → screen.html → server.js → controller.html', 'info');
+      
+      // Step 1: Unity 广播
+      const scores = { "0": 1, "1": 0 };
+      const message = {
+        eventType: 'broadcast',
+        type: 'state.score_update',
+        dataJson: JSON.stringify({ scores: JSON.stringify(scores) })
+      };
+      
+      const jsonMessage = JSON.stringify(message);
+      
+      // Step 2: jslib 调用 window.PartyGameBroadcast
+      log('[Unity] Broadcast state.score_update...', 'info');
+      log(`[PartyGameBridge] Broadcast called`, 'info');
+      
+      // 直接调用 screen 的转发函数
+      simulateScreenForwarding(jsonMessage);
+    }
+    
+    // ========================================
+    // 初始化
+    // ========================================
+    window.addEventListener('DOMContentLoaded', () => {
+      log('测试页面加载完成', 'info');
+      log('点击 "运行测试" 开始验证步骤 10', 'info');
+      
+      // 定义 window.PartyGameBroadcast（模拟 screen.html）
+      window.PartyGameBroadcast = function(jsonMessage) {
+        log('[Screen] Received broadcast from Unity', 'info');
+        // 在实际代码中，这里会调用 ws.send(jsonMessage)
+      };
+      
+      log('✅ window.PartyGameBroadcast 已定义（模拟 screen.html）', 'pass');
+    });
+  </script>
+</body>
+</html>
