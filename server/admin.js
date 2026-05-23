@@ -69,10 +69,12 @@ function createAdminRouter({ store, metrics, activeSockets, broadcastToControlle
       const room = await store.getRoom(req.params.roomId);
       if (!room) return res.json({ ok: false, data: null, error: { code: 'ROOM_NOT_FOUND', message: 'Room not found' } });
       const players = await store.getPlayers(room.roomId);
+      const connectedCount = players.filter(p => p.socketId && activeSockets.has(p.socketId)).length;
       res.json({ ok: true, data: {
         roomId: room.roomId,
         maxPlayers: room.maxPlayers,
         playerCount: players.length,
+        connectedPlayerCount: connectedCount,
         players: players.map(p => ({ playerIndex: p.playerIndex, playerName: p.playerName, socketId: p.socketId, connected: !!activeSockets.get(p.socketId) })),
         nextPlayerIndex: room.nextPlayerIndex,
         hasScreen: !!getScreenSocket(room.roomId),
