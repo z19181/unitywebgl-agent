@@ -130,6 +130,25 @@
       height: 100%;
       display: block;
     }
+
+    /* v0.4.2: SDK-only mode overlay */
+    #sdkOnlyOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      z-index: 500;
+      text-align: center;
+      padding: 40px;
+    }
+    #sdkOnlyOverlay.visible { display: flex; }
+    #sdkOnlyIcon { font-size: 64px; margin-bottom: 20px; }
+    #sdkOnlyTitle { font-size: 28px; font-weight: bold; margin-bottom: 12px; color: #7395ff; }
+    #sdkOnlySubtitle { font-size: 16px; color: #aaa; margin-bottom: 24px; max-width: 500px; line-height: 1.5; }
     
     /* ========= 加载遮罩 ========= */
     #loadingOverlay {
@@ -201,6 +220,14 @@
   <div id="unityContainer">
     <canvas id="unityCanvas"></canvas>
   </div>
+
+  <!-- v0.4.2: SDK-only mode (when Unity Build not found) -->
+  <div id="sdkOnlyOverlay" class="visible">
+    <div id="sdkOnlyIcon">🎮</div>
+    <div id="sdkOnlyTitle">SDK-Only Mode</div>
+    <div id="sdkOnlySubtitle">Unity WebGL Build 未检测到。<br>房间创建、Controller 加入、消息转发功能正常。<br>运行 <code>scripts/build-jumpjump-webgl.sh</code> 以生成 Unity Build。</div>
+    <div id="sdkOnlyStatus" style="font-size:13px;color:#51cf66;margin-top:16px;"></div>
+  </div>
   
   <!-- 加载遮罩 -->
   <div id="loadingOverlay">
@@ -230,6 +257,7 @@
     let unityInstance = null;
     let currentRoomId = null;
     let players = []; // 玩家列表
+    let isSdkOnlyMode = true;  // v0.4.2: true until Unity Build loads successfully
     
     // DOM 元素
     const roomIdEl = document.getElementById('roomId');
@@ -237,6 +265,8 @@
     const playersEl = document.getElementById('players');
     const statusBarEl = document.getElementById('statusBar');
     const loadingOverlay = document.getElementById('loadingOverlay');
+    const sdkOnlyOverlay = document.getElementById('sdkOnlyOverlay');
+    const sdkOnlyStatus = document.getElementById('sdkOnlyStatus');
     
     // ========================================
     // 日志
@@ -468,6 +498,12 @@
     // 转发消息到 Unity
     // ========================================
     function forwardToUnity(jsonMessage) {
+      // v0.4.2: In SDK-only mode, skip Unity forwarding (room/connection still works)
+      if (isSdkOnlyMode) {
+        log(`SDK-only: skipped forward → ${jsonMessage.substring(0, 60)}...`);
+        sdkOnlyStatus.textContent = `📩 ${new Date().toLocaleTimeString()} — 收到消息（SDK 转发模式）`;
+        return;
+      }
       if (!unityInstance) {
         log('Unity not ready, cannot forward');
         return;
@@ -487,6 +523,22 @@
     // Unity WebGL 加载
     // ========================================
     function loadUnity() {
+      // v0.4.2: First check if Build exists before attempting to load
+      fetch(CONFIG.unityLoaderUrl, { method: 'HEAD' })
+        .then(res => {
+          if (!res.ok) throw new Error('Build not found');
+          return loadUnityReal();
+        })
+        .catch(() => {
+          log('Unity Build not found — entering SDK-only mode');
+          isSdkOnlyMode = true;
+          if (sdkOnlyOverlay) sdkOnlyOverlay.classList.add('visible');
+          if (sdkOnlyStatus) sdkOnlyStatus.textContent = '✅ 房间已创建 — SDK 转发模式已启用';
+          if (loadingOverlay) loadingOverlay.classList.add('hidden');
+        });
+    }
+
+    function loadUnityReal() {
       log('Loading Unity WebGL...');
       
       // 创建 Unity loader script
@@ -512,20 +564,30 @@
         }).then((instance) => {
           log('✅ Unity instance created');
           unityInstance = instance;
+          isSdkOnlyMode = false;
           
           // 设置全局引用（供 jslib 使用）
           window.unityInstance = instance;
+          
+          // Hide the SDK-only overlay if it was showing
+          if (sdkOnlyOverlay) sdkOnlyOverlay.classList.remove('visible');
           
           // 隐藏加载界面
           loadingOverlay.classList.add('hidden');
           
         }).catch((error) => {
           log(`Unity creation failed: ${error.message}`);
+          isSdkOnlyMode = true;
+          if (sdkOnlyOverlay) sdkOnlyOverlay.classList.add('visible');
+          if (loadingOverlay) loadingOverlay.classList.add('hidden');
         });
       };
       
       script.onerror = () => {
         log('Failed to load Unity loader script');
+        isSdkOnlyMode = true;
+        if (sdkOnlyOverlay) sdkOnlyOverlay.classList.add('visible');
+        if (loadingOverlay) loadingOverlay.classList.add('hidden');
       };
       
       document.body.appendChild(script);

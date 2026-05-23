@@ -223,9 +223,9 @@ public class CreateJumpJumpTemplateScene : EditorWindow
         return go;
     }
 
-    // ─── Helper: Default Font ───
+    // ─── Helper: Default Font (Unity 6: "LegacyRuntime.ttf" replaces "Arial.ttf") ───
     static Font GetDefaultFont()
     {
-        return Resources.GetBuiltinResource<Font>("Arial.ttf");
+        return Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
     }
 }
