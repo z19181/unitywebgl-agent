@@ -363,19 +363,85 @@ node scripts/loadtest/loadtest.js --rooms=50 --players=4 --duration=120
 
 ---
 
-## 6. v0.3.1 建议
+## 6. 生产化路线图 (v0.3.1 → v0.4.0)
 
-| 优先级 | 项目 | 说明 |
-|---|---|---|
-| 🔴 P0 | **Redis 房间状态外置** | `rooms` Map → Redis hash，进程重启不丢房间 |
-| 🔴 P0 | **多实例部署** | Redis 共享状态 → 多个 server 实例可处理不同房间 |
-| 🔴 P0 | **Nginx / HTTPS / WSS** | 反向代理终止 TLS，生产安全 |
-| 🟡 P1 | **Grafana dashboard** | 预配置面板（房间数/连接数/QPS/错误率/重连率） |
-| 🟡 P1 | **管理后台** | Web UI → 查看活跃房间/玩家/强制关闭/统计 |
-| 🟡 P1 | **鉴权 (token/JWT)** | 可选房间密码或服务端 token 校验 |
-| 🟢 P2 | **WebSocket 压测自动化** | CI 中运行 loadtest 并记录 baseline |
-| 🟢 P2 | **空闲房间 TTL** | 空房间 N 分钟后自动清理 |
-| 🟢 P2 | **限流 (rate limiting)** | 每 WS 连接 / 每 IP 消息速率限制 |
+```
+v0.3.0  生产部署与可观测性 ✅
+   │    结构化日志 / Prometheus / Docker / CI
+   │
+v0.3.1  Redis + 多实例准备
+   │    - server/store/redis.js: Redis 房间状态外置
+   │    - rooms Map → Redis hash (HSET/HGETALL)
+   │    - playerIndex 全局单调递增 (Redis INCR)
+   │    - 多实例共享状态验证
+   │
+v0.3.2  Nginx / HTTPS / WSS 部署
+   │    - docker/nginx.conf: 反向代理配置
+   │    - TLS 证书管理 (Let's Encrypt)
+   │    - WSS upgrade 代理
+   │    - docker-compose 加入 nginx 服务
+   │
+v0.3.3  Grafana Dashboard
+   │    - docker-compose 加入 Prometheus + Grafana
+   │    - prometheus.yml scrape 配置
+   │    - grafana/dashboards/partygame.json: 预配置面板
+   │      (Rooms/Connections/QPS/Errors/Reconnects)
+   │
+v0.3.4  房间管理后台
+   │    - GET /admin API: 房间列表/玩家/强制关闭
+   │    - admin/index.html: 管理 UI
+   │    - 可选 token 鉴权 (ADMIN_TOKEN)
+   │
+v0.4.0  生产灰度版
+   │    - 全链路回归 60+ tests
+   │    - 灰度发布 checklist
+   │    - 运维 runbook
+   ▼
+```
+
+### v0.3.1 — Redis + 多实例准备
+
+| 产出 | 说明 |
+|---|---|
+| `server/store/redis.js` | Redis 客户端封装 (ioredis) |
+| `server/store/memory.js` | 现有内存实现抽象为 store 接口 |
+| `rooms` Map 迁移 | Redis HSET room:{id} / HGETALL |
+| `nextPlayerIndex` 迁移 | Redis INCR room:{id}:nextPlayerIndex |
+| 向后兼容 | `REDIS_URL` 为空时 fallback memory store |
+| 多实例验证 | 2 个 server 实例共享 Redis → controller 互通 |
+
+### v0.3.2 — Nginx / HTTPS / WSS 部署
+
+| 产出 | 说明 |
+|---|---|
+| `docker/nginx.conf` | 反向代理 + TLS 终止 + WSS upgrade |
+| `docker/nginx.Dockerfile` | Nginx 镜像 |
+| TLS | Let's Encrypt certbot 集成 |
+| `docker-compose.yml` | 加入 nginx 服务 |
+
+### v0.3.3 — Grafana Dashboard
+
+| 产出 | 说明 |
+|---|---|
+| `docker/prometheus.yml` | Prometheus scrape config |
+| `docker/grafana-dashboard.json` | 预配置面板 |
+| `docker-compose.yml` | 加入 prometheus + grafana 服务 |
+
+### v0.3.4 — 房间管理后台
+
+| 产出 | 说明 |
+|---|---|
+| `server/admin.js` | GET /admin/rooms, /admin/rooms/:id/close |
+| `admin/index.html` | 管理 UI (房间表/强制关闭) |
+| `ADMIN_TOKEN` | Bearer token 鉴权 |
+
+### v0.4.0 — 生产灰度版
+
+| 产出 | 说明 |
+|---|---|
+| 全链路回归 | 60+ tests 在 Redis + Nginx 环境下通过 |
+| `DEPLOYMENT.md` | 灰度发布 checklist + runbook |
+| 运维命令参考 | 启动/停止/日志/回滚/扩容 |
 
 ---
 
