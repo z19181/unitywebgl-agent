@@ -29,7 +29,30 @@
       "emsdk_python": "/Users/applemima1111/.local/bin/python3.11",
       "emsdk_fix_doc": "UnityExamples/UNITY_WEBGL_REAL_BUILD_FINAL_REPORT.md"
     },
-    "last_verified": "2026-05-23T11:09:00-07:00"
+    "last_verified": "2026-05-23T11:13:00-07:00",
+    "game_build_queue": {
+      "jumpjump": {
+        "status": "PASS",
+        "commit": "5136e2e"
+      },
+      "snake": {
+        "status": "pending_codex",
+        "builder": "SnakeWebGLBuilder.BuildWebGL",
+        "issues": "needs Library cleanup + meta scaffolding"
+      },
+      "breakout": {
+        "status": "pending_codex",
+        "note": "source on game/breakout branch (cc0cae6)"
+      },
+      "2048": {
+        "status": "pending_creation",
+        "note": "create from _GameTemplateSkeleton"
+      }
+    },
+    "next_actions": {
+      "platform": "Install Docker → deploy Grafana → Phase 4 gate",
+      "games": "Codex builds Snake/2048/Breakout with EMSDK_PYTHON=python3.11"
+    }
   },
   "target_version": "v1.0.0",
   "current_phase": "phase_3_canary_10_percent",
@@ -42,11 +65,14 @@
       "severity": "high",
       "issue": "Grafana monitoring stack not deployed",
       "blocks": "phase_4_canary_50_percent",
-      "resolution": "Run docker-compose.monitoring.yml with Prometheus + Grafana"
+      "resolution": "Run docker-compose.monitoring.yml with Prometheus + Grafana. Docker must be installed first (not available on current macOS host).",
+      "docker_required": true,
+      "docker_status": "not_installed",
+      "updated": "2026-05-23T11:13:00-07:00"
     }
   ],
   "requires_human_approval": true,
-  "reason": "Phase 3 10% canary passed (14/14 checks, 53/53 auto, 27/27 manual). Grafana not deployed \u2014 blocking Phase 4. Deploy docker-compose.monitoring.yml to proceed.",
+  "reason": "Phase 3 10% canary passed (14/14 checks, 53/53 auto, 27/27 manual). Grafana not deployed — blocking Phase 4. Deploy docker-compose.monitoring.yml to proceed.",
   "test_results": {
     "total": 53,
     "passed": 53,
@@ -82,7 +108,7 @@
     }
   ],
   "manual_qa_gate": {
-    "description": "Phase 1 to Phase 2\u552f\u4e00\u63a8\u8fdb Gate\u3002Release Manager \u4e0d\u5141\u8bb8\u4ec5\u51ed\u81ea\u52a8\u5316\u6d4b\u8bd5\u8fdb\u5165 Phase 2\u3002",
+    "description": "Phase 1 to Phase 2唯一推进 Gate。Release Manager 不允许仅凭自动化测试进入 Phase 2。",
     "required_files": [
       "docs/MANUAL_DEVICE_QA_CHECKLIST.md",
       "docs/MANUAL_DEVICE_QA_RESULT_TEMPLATE.md",

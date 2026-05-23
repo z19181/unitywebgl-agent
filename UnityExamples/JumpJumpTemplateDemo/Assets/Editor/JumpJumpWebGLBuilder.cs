@@ -91,11 +91,13 @@ public class JumpJumpWebGLBuilder
             EditorBuildSettings.scenes,
             fullBuildDir,
             BuildTarget.WebGL,
-            BuildOptions.Development  // v0.4.2: Development mode avoids Emscripten JSON parse issues
+            BuildOptions.None
         );
 
         if (report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
         {
+            FlattenBuiltFiles(fullBuildDir);
+
             Debug.Log("\n╔══════════════════════════════════════════╗");
             Debug.Log("║  ✅ BUILD SUCCEEDED                      ║");
             Debug.Log("╚══════════════════════════════════════════╝");
@@ -119,5 +121,32 @@ public class JumpJumpWebGLBuilder
             Debug.LogError($"   Warnings: {report.summary.totalWarnings}");
             EditorApplication.Exit(1);
         }
+    }
+
+    static void FlattenBuiltFiles(string buildRoot)
+    {
+        string nestedBuildDir = Path.Combine(buildRoot, "Build");
+        if (!Directory.Exists(nestedBuildDir))
+        {
+            Debug.Log("→ No nested Build/ directory found; skipping flatten step");
+            return;
+        }
+
+        Debug.Log("→ Flattening Build artifacts to output root...");
+        foreach (var file in Directory.GetFiles(nestedBuildDir, "*", SearchOption.AllDirectories))
+        {
+            var relativePath = Path.GetRelativePath(nestedBuildDir, file);
+            var targetPath = Path.Combine(buildRoot, relativePath);
+            var targetDir = Path.GetDirectoryName(targetPath);
+            if (!string.IsNullOrEmpty(targetDir))
+            {
+                Directory.CreateDirectory(targetDir);
+            }
+
+            File.Copy(file, targetPath, true);
+        }
+
+        Directory.Delete(nestedBuildDir, true);
+        Debug.Log("→ Flatten complete");
     }
 }

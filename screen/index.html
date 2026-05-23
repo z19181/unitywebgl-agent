@@ -221,11 +221,11 @@
     <canvas id="unityCanvas"></canvas>
   </div>
 
-  <!-- v0.4.2: SDK-only mode (when Unity Build not found) -->
+  <!-- v0.4.2: SDK-only mode (when Unity canvas unavailable) -->
   <div id="sdkOnlyOverlay" class="visible">
     <div id="sdkOnlyIcon">🎮</div>
     <div id="sdkOnlyTitle">SDK-Only Mode</div>
-    <div id="sdkOnlySubtitle">Unity WebGL Build 未检测到。<br>房间创建、Controller 加入、消息转发功能正常。<br>运行 <code>scripts/build-jumpjump-webgl.sh</code> 以生成 Unity Build。</div>
+    <div id="sdkOnlySubtitle">检测中…</div>
     <div id="sdkOnlyStatus" style="font-size:13px;color:#51cf66;margin-top:16px;"></div>
   </div>
   
@@ -533,6 +533,8 @@
           log('Unity Build not found — entering SDK-only mode');
           isSdkOnlyMode = true;
           if (sdkOnlyOverlay) sdkOnlyOverlay.classList.add('visible');
+          if (sdkOnlyTitle) sdkOnlyTitle.textContent = 'SDK-Only Mode (Build Missing)';
+          if (sdkOnlySubtitle) sdkOnlySubtitle.innerHTML = 'Unity WebGL Build 未检测到。<br>请先运行 <code>scripts/build-jumpjump-webgl.sh</code> 生成 Build。<br><br>房间创建、Controller 加入、消息转发功能正常。';
           if (sdkOnlyStatus) sdkOnlyStatus.textContent = '✅ 房间已创建 — SDK 转发模式已启用';
           if (loadingOverlay) loadingOverlay.classList.add('hidden');
         });
@@ -576,9 +578,26 @@
           loadingOverlay.classList.add('hidden');
           
         }).catch((error) => {
-          log(`Unity creation failed: ${error.message}`);
+          const reason = (typeof error === 'string') ? error : (error.message || error.reason || 'Unknown error');
+          log(`Unity creation failed: ${reason}`);
           isSdkOnlyMode = true;
           if (sdkOnlyOverlay) sdkOnlyOverlay.classList.add('visible');
+          if (sdkOnlyTitle) sdkOnlyTitle.textContent = 'SDK-Only Mode (WebGL Init Failed)';
+          if (sdkOnlySubtitle) {
+            const webglSupported = (() => {
+              try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); }
+              catch(e) { return false; }
+            })();
+            let msg = `Unity 初始化失败: <code>${reason}</code><br>`;
+            if (!webglSupported) {
+              msg += '<br>⚠️ <b>此浏览器不支持 WebGL</b>。<br>请使用 Chrome / Edge / Safari 15+。<br>或检查硬件加速是否已启用。';
+            } else {
+              msg += '<br>Build 文件已找到但 Unity canvas 未能初始化。<br>请打开 DevTools Console 查看详细错误。<br>可尝试重新构建: <code>scripts/build-jumpjump-webgl.sh</code>';
+            }
+            msg += '<br><br>房间创建、Controller 加入、消息转发功能正常。';
+            sdkOnlySubtitle.innerHTML = msg;
+          }
+          if (sdkOnlyStatus) sdkOnlyStatus.textContent = '✅ 房间已创建 — SDK 转发模式已启用';
           if (loadingOverlay) loadingOverlay.classList.add('hidden');
         });
       };

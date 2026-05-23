@@ -29,5 +29,3 @@ mergeInto(LibraryManager.library, {
   },
 
 });
-
-console.log("[PartyGameBridge.jslib] Loaded — v0.2.5 standardized");

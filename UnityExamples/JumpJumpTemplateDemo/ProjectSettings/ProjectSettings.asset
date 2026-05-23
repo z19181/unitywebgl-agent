@@ -559,7 +559,7 @@ PlayerSettings:
   webGLShowDiagnostics: 0
   webGLDataCaching: 0
   webGLDebugSymbols: 0
-  webGLEmscriptenArgs: 
+  webGLEmscriptenArgs: -sMIN_FIREFOX_VERSION=149
   webGLModulesDirectory: 
   webGLTemplate: PROJECT:PartyGameTemplate
   webGLAnalyzeBuildSize: 0
