@@ -2,10 +2,31 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
   <title>Party Game - Screen</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="PartyGame">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#000000">
+  <!-- v0.4.2: Mobile safe-area + theme-color + PWA meta -->
+  <!-- QR code: inline fallback if CDN unavailable -->
+  <script>
+    // v0.4.2: QR code self-hosted fallback
+    window.__QR_READY = false;
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"
+    onload="window.__QR_READY=true"
+    onerror="console.warn('QR CDN unavailable, using plain text link')"></script>
   <style>
+    /* v0.4.2: Mobile safe-area CSS variables */
+    :root {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
     * { 
       margin: 0; 
       padding: 0; 
@@ -24,8 +45,8 @@
     /* ========= 房间信息 UI ========= */
     #roomInfo {
       position: fixed;
-      top: 10px;
-      left: 10px;
+      top: calc(10px + var(--safe-top));
+      left: calc(10px + var(--safe-left));
       background: rgba(0,0,0,0.8);
       padding: 15px;
       border-radius: 10px;
@@ -58,11 +79,15 @@
       background: #7395ff;
       color: white;
       border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
+      padding: 8px 16px;
+      border-radius: 8px;
       cursor: pointer;
       margin-top: 8px;
-      font-size: 12px;
+      font-size: 13px;
+      min-height: 44px;
+      min-width: 120px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     
     #copyBtn:hover {
@@ -72,8 +97,8 @@
     /* ========= 玩家列表 UI ========= */
     #playerList {
       position: fixed;
-      top: 10px;
-      right: 10px;
+      top: calc(10px + var(--safe-top));
+      right: calc(10px + var(--safe-right));
       background: rgba(0,0,0,0.8);
       padding: 15px;
       border-radius: 10px;
@@ -144,8 +169,8 @@
     /* ========= 状态栏 ========= */
     #statusBar {
       position: fixed;
-      bottom: 10px;
-      left: 10px;
+      bottom: calc(10px + var(--safe-bottom));
+      left: calc(10px + var(--safe-left));
       background: rgba(0,0,0,0.6);
       padding: 8px 15px;
       border-radius: 5px;
@@ -162,7 +187,7 @@
     <div>房间 ID:</div>
     <div id="roomId">等待创建...</div>
     <button id="copyBtn" onclick="copyRoomUrl()">复制控制器链接</button>
-    <button id="closeRoomBtn" onclick="closeRoom()" style="display:none;background:#e94560;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;margin-left:8px;font-weight:bold;">关闭房间</button>
+    <button id="closeRoomBtn" onclick="closeRoom()" style="display:none;background:#e94560;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;margin-left:8px;font-weight:bold;min-height:44px;min-width:80px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;">关闭房间</button>
     <div id="qrUrl" style="margin-top:8px;"></div>
   </div>
   
@@ -191,7 +216,8 @@
     // 配置
     // ========================================
     const CONFIG = {
-      serverUrl: `ws://${window.location.host}`,
+      // v0.4.2: Auto-detect WS protocol
+      serverUrl: `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}`,
       unityBuildUrl: 'Build',
       unityLoaderUrl: 'Build/Build.loader.js',
       enableDebugLog: true,
@@ -219,6 +245,36 @@
       if (!CONFIG.enableDebugLog) return;
       console.log(`[Screen] ${message}`);
       statusBarEl.textContent = message;
+    }
+
+    // ========================================
+    // v0.4.2: QR Code renderer with CDN fallback
+    // ========================================
+    function renderQRCode(url, maxPlayers) {
+      let qrPart = '';
+      if (window.__QR_READY && typeof qrcode === 'function') {
+        try {
+          const qr = qrcode(0, 'M');
+          qr.addData(url);
+          qr.make();
+          qrPart = `<div id="qrcode">${qr.createSvgTag(4, 4)}</div>`;
+        } catch (e) {
+          qrPart = `<div style="font-size:10px;color:#f00;">QR生成失败: ${e.message}</div>`;
+        }
+      } else {
+        // v0.4.2: QR CDN unavailable — show large plain text link as fallback
+        qrPart = `<div style="background:#fff;color:#000;padding:12px;border-radius:8px;text-align:center;">
+          <div style="font-size:11px;color:#666;margin-bottom:4px;">QR库未加载</div>
+          <div style="font-size:18px;font-weight:bold;letter-spacing:1px;word-break:break-all;">${url}</div>
+          <div style="font-size:10px;color:#999;margin-top:4px;">请复制上方链接</div>
+        </div>`;
+      }
+      return `
+        <div style="font-size:11px;color:#aaa;">扫码加入（最多${maxPlayers}人）：</div>
+        ${qrPart}
+        <div style="margin-top:8px;font-size:11px;color:#aaa;">或复制链接：</div>
+        <div style="word-break:break-all;font-size:10px;color:#ffd43b;margin-bottom:4px;">${url}</div>
+      `;
     }
     
     // ========================================
@@ -330,16 +386,13 @@
       
       // 显示 qrUrl / controller 加入链接 + QR Code
       const controllerUrl = `${window.location.origin}/controller?room=${currentRoomId}`;
-      qrUrlEl.innerHTML = `<div style="font-size:11px;color:#aaa;">扫码加入（最多${message.maxPlayers || 4}人）：</div><div id="qrcode"></div><div style="margin-top:8px;font-size:11px;color:#aaa;">或复制链接：</div><div style="word-break:break-all;font-size:10px;color:#ffd43b;">${controllerUrl}</div>`;
-      window.currentMaxPlayers = message.maxPlayers || 4;
-      try {
-        var qr = qrcode(0, 'M');
-        qr.addData(controllerUrl);
-        qr.make();
-        document.getElementById('qrcode').innerHTML = qr.createSvgTag(4, 4);
-      } catch(e) {
-        document.getElementById('qrcode').innerHTML = `<div style="font-size:10px;color:#f00;">QR生成失败: ${e.message}</div>`;
-      }
+      const maxPlayers = message.maxPlayers || 4;
+      window.currentMaxPlayers = maxPlayers;
+
+      // v0.4.2: QR code with CDN fallback
+      const qrHTML = renderQRCode(controllerUrl, maxPlayers);
+      qrUrlEl.innerHTML = qrHTML;
+
       document.getElementById('closeRoomBtn').style.display = 'inline-block';
       log(`Room created: ${currentRoomId}`);
 
@@ -541,6 +594,12 @@
     // ========================================
     document.addEventListener('DOMContentLoaded', () => {
       log('DOM loaded, starting...');
+
+      // v0.4.2: Handle orientation / resize (screen is on big displays but may be tablet)
+      window.addEventListener('orientationchange', () => {
+        setTimeout(() => log(`Orientation: ${window.orientation}, ${window.innerWidth}x${window.innerHeight}`), 300);
+      });
+
       connectWebSocket();
     });
     

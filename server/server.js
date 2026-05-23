@@ -17,6 +17,8 @@ const storeModule = require('./store');
 const { createAdminRouter } = require('./admin');
 
 const app = express();
+// v0.4.2: Trust X-Forwarded-Proto from reverse proxy (nginx/ALB) for correct scheme detection
+app.set('trust proxy', 1);
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
@@ -346,6 +348,7 @@ const PORT = process.env.PORT || 3000;
   server.listen(PORT, () => {
     log.info('startup', { port: PORT, version: VERSION, store: process.env.STORE_TYPE || 'memory' });
     // v0.4.1: console.log → logger for JSON compatibility (POLISH-001)
+    // v0.4.2: Add WSS/HTTPS deployment hint
     log.info('banner', {
       port: PORT,
       metrics: `/__metrics`,
@@ -353,6 +356,8 @@ const PORT = process.env.PORT || 3000;
       screen: `/screen`,
       controller: `/controller`,
       admin: `/admin`,
+      protocol: process.env.USE_TLS === 'true' ? 'wss' : 'ws',
+      hint: process.env.USE_TLS === 'true' ? 'TLS enabled' : 'Use nginx/caddy for HTTPS/WSS in production',
     });
   });
 })();

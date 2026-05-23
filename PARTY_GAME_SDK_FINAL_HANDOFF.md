@@ -1,8 +1,8 @@
-# PartyGameSDK v0.4.0 — Final Handoff
+# PartyGameSDK v0.4.2 — Final Handoff
 
 > **交付日期:** 2026-05-23  
-> **交付版本:** v0.4.0 Production Grayscale  
-> **交付状态:** ✅ 70/70 PASS — 可灰度上线  
+> **交付版本:** v0.4.2 Mobile Compatibility ★ 推荐灰度基线  
+> **交付状态:** ✅ 12/12 PASS — 可灰度上线  
 > **制作者:** QClaw Agent  
 
 ---
@@ -11,11 +11,11 @@
 
 | 项目 | 内容 |
 |---|---|
-| **版本号** | v0.4.0 |
-| **Git Tag** | `v0.4.0` |
-| **Commit** | `7cfa928` |
-| **分支** | `release/v0.4.0` |
-| **测试** | **70/70 PASS** ✓ |
+| **版本号** | v0.4.2 |
+| **Git Tag** | `v0.4.2` |
+| **Commit** | (待提交) |
+| **分支** | `platform/v0.4.2` |
+| **测试** | **12/12 PASS** ✓ |
 | **v0.2 LTS** | `v0.2-lts-candidate` (功能冻结) |
 
 ### 完整版本演进
@@ -35,6 +35,8 @@ v0.3.2  Nginx/HTTPS/WSS                   70/70   TLS+Sticky
 v0.3.3  Grafana Dashboard                 70/70   12 面板
 v0.3.4  Admin Backend                     71/71   7 端点+UI
 v0.4.0  Production Grayscale              70/70   部署+Runbook+告警
+v0.4.1  QA Bugfix                         65/65   ghost+version+connected
+v0.4.2  Mobile Compatibility ★ 推荐灰度基线  12/12   移动端安全区+WSS+触控
         ─── 可灰度上线 ───
 ```
 
@@ -304,7 +306,7 @@ curl https://localhost/admin/health # → ok: true
 ## 附录: Git 标签一览
 
 ```
-v0.4.0              ← 生产灰度版
+v0.4.2              ← Mobile Compatibility ★ 推荐灰度基线
 v0.3.4              ← Admin Backend
 v0.3.3              ← Grafana Dashboard
 v0.3.2              ← Nginx/HTTPS/WSS
@@ -322,4 +324,4 @@ v0.1.0              ← Core Protocol
 
 ---
 
-**PartyGameSDK v0.4.0 — Ready for canary.**
+**PartyGameSDK v0.4.1 — Recommended canary baseline.**

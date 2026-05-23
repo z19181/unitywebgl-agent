@@ -1,4 +1,4 @@
-# PartyGameSDK v0.4.0 — Deployment Checklist
+# PartyGameSDK v0.4.2 — Deployment Checklist
 
 > 灰度上线前必须逐项确认。每条勾选后再进入下一步。
 

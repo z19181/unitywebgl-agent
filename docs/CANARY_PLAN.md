@@ -1,8 +1,8 @@
-# PartyGameSDK v0.4.0 — Canary Release Plan
+# PartyGameSDK v0.4.2 — Canary Release Plan
 
 ## 目标
 
-将 PartyGameSDK v0.4.0 以灰度方式推送到生产环境，最小化风险。
+将 PartyGameSDK v0.4.2 以灰度方式推送到生产环境，最小化风险。
 
 ---
 

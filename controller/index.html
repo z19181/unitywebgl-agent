@@ -2,11 +2,23 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
   <title>Party Game - Controller</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PartyGame">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#667eea">
+  <!-- v0.4.2: Mobile safe-area + theme-color meta -->
   <style>
+    /* v0.4.2: Global safe-area sizing */
+    :root {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
     * { 
       margin:0; 
       padding:0; 
@@ -31,6 +43,11 @@
       left:0;
       right:0;
       bottom:0;
+      /* v0.4.2: Safe area padding for notch/home indicator */
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+      padding-left: var(--safe-left);
+      padding-right: var(--safe-right);
     }
     
     /* ========= 顶部状态栏 ========= */
@@ -179,7 +196,8 @@
     // 配置
     // ========================================
     const CONFIG = {
-      serverUrl: `ws://${window.location.host}`,
+      // v0.4.2: Auto-detect WS protocol from page protocol (HTTP→WS, HTTPS→WSS)
+      serverUrl: `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}`,
       chargeSpeed: 2,        // 能量条增长速度（% per frame）
       maxCharge: 100,         // 最大蓄力值
       enableDebugLog: true,   // 是否显示调试日志
@@ -705,6 +723,22 @@
     document.addEventListener('DOMContentLoaded', () => {
       log('DOM loaded, checking URL...');
       
+      // v0.4.2: Handle orientation changes and resize
+      window.addEventListener('orientationchange', () => {
+        setTimeout(() => log(`Orientation: ${window.orientation}, ${window.innerWidth}x${window.innerHeight}`), 300);
+      });
+      window.addEventListener('resize', () => {
+        // Recalculate safe areas after keyboard/open/close
+        const style = getComputedStyle(document.body);
+        log(`Resize: ${window.innerWidth}x${window.innerHeight}, safe-top=${style.getPropertyValue('--safe-top')}`);
+      });
+
+      // v0.4.2: iOS AudioContext unlock on first touch
+      document.addEventListener('touchstart', () => {
+        const ctx = window._partyAudioCtx;
+        if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+      }, { once: true, passive: true });
+
       // 检查 URL 中是否有 roomId
       const urlRoomId = getRoomIdFromUrl();
       if (!urlRoomId) {
