@@ -1,0 +1,119 @@
+{
+  "context": {
+    "projectPath": "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Packages",
+    "unityVersion": "6000.4.8f1"
+  },
+  "inputs": [
+    "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Packages/manifest.json",
+    "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Packages/packages-lock.json",
+    "/Applications/Unity/Hub/Editor/6000.4.8f1/Unity.app/Contents/Resources/PackageManager/BuiltInPackages/BuiltInPackagesCombined.sha1"
+  ],
+  "outputs": {
+    "com.unity.ugui@2.0.0": {
+      "name": "com.unity.ugui",
+      "displayName": "uGUI",
+      "resolvedPath": "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Library/PackageCache/com.unity.ugui@a9ea81766fbd",
+      "fingerprint": "a9ea81766fbd1541520b82068401604ff0e403ed",
+      "editorCompatibility": "2019.2.0a1",
+      "version": "2.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.modules.ui@1.0.0": {
+      "name": "com.unity.modules.ui",
+      "displayName": "UI",
+      "resolvedPath": "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Library/PackageCache/com.unity.modules.ui",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.modules.imgui@1.0.0": {
+      "name": "com.unity.modules.imgui",
+      "displayName": "IMGUI",
+      "resolvedPath": "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Library/PackageCache/com.unity.modules.imgui",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.modules.jsonserialize@1.0.0": {
+      "name": "com.unity.modules.jsonserialize",
+      "displayName": "JSONSerialize",
+      "resolvedPath": "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Library/PackageCache/com.unity.modules.jsonserialize",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.modules.physics@1.0.0": {
+      "name": "com.unity.modules.physics",
+      "displayName": "Physics",
+      "resolvedPath": "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Library/PackageCache/com.unity.modules.physics",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.modules.unitywebrequest@1.0.0": {
+      "name": "com.unity.modules.unitywebrequest",
+      "displayName": "Unity Web Request",
+      "resolvedPath": "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Library/PackageCache/com.unity.modules.unitywebrequest",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.modules.unitywebrequestwww@1.0.0": {
+      "name": "com.unity.modules.unitywebrequestwww",
+      "displayName": "Unity Web Request WWW",
+      "resolvedPath": "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Library/PackageCache/com.unity.modules.unitywebrequestwww",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.modules.physics2d@1.0.0": {
+      "name": "com.unity.modules.physics2d",
+      "displayName": "Physics 2D",
+      "resolvedPath": "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Library/PackageCache/com.unity.modules.physics2d",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.modules.unitywebrequestassetbundle@1.0.0": {
+      "name": "com.unity.modules.unitywebrequestassetbundle",
+      "displayName": "Unity Web Request Asset Bundle",
+      "resolvedPath": "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Library/PackageCache/com.unity.modules.unitywebrequestassetbundle",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.modules.unitywebrequestaudio@1.0.0": {
+      "name": "com.unity.modules.unitywebrequestaudio",
+      "displayName": "Unity Web Request Audio",
+      "resolvedPath": "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Library/PackageCache/com.unity.modules.unitywebrequestaudio",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.modules.audio@1.0.0": {
+      "name": "com.unity.modules.audio",
+      "displayName": "Audio",
+      "resolvedPath": "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Library/PackageCache/com.unity.modules.audio",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.modules.assetbundle@1.0.0": {
+      "name": "com.unity.modules.assetbundle",
+      "displayName": "Asset Bundle",
+      "resolvedPath": "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Library/PackageCache/com.unity.modules.assetbundle",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.modules.imageconversion@1.0.0": {
+      "name": "com.unity.modules.imageconversion",
+      "displayName": "Image Conversion",
+      "resolvedPath": "/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/UnityExamples/BreakoutTemplateDemo/Library/PackageCache/com.unity.modules.imageconversion",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    }
+  }
+}

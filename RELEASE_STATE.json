@@ -29,24 +29,34 @@
       "emsdk_python": "/Users/applemima1111/.local/bin/python3.11",
       "emsdk_fix_doc": "UnityExamples/UNITY_WEBGL_REAL_BUILD_FINAL_REPORT.md"
     },
-    "last_verified": "2026-05-23T11:13:00-07:00",
+    "last_verified": "2026-05-23T11:42:00-07:00",
     "game_build_queue": {
       "jumpjump": {
         "status": "PASS",
-        "commit": "5136e2e"
+        "commit": "5136e2e",
+        "build_dir": "screen/Build",
+        "check": "22/22"
       },
       "snake": {
-        "status": "pending_codex",
-        "builder": "SnakeWebGLBuilder.BuildWebGL",
-        "issues": "needs Library cleanup + meta scaffolding"
-      },
-      "breakout": {
-        "status": "pending_codex",
-        "note": "source on game/breakout branch (cc0cae6)"
+        "status": "PASS",
+        "build_dir": "screen/Build_Snake",
+        "check": "22/22",
+        "attempts": 6,
+        "fixes": "Arial.ttf + foreground build"
       },
       "2048": {
-        "status": "pending_creation",
-        "note": "create from _GameTemplateSkeleton"
+        "status": "PASS",
+        "build_dir": "screen/Build_2048",
+        "check": "22/22",
+        "attempts": 2,
+        "fixes": "Arial.ttf"
+      },
+      "breakout": {
+        "status": "PASS",
+        "build_dir": "screen/Build_Breakout",
+        "check": "22/22",
+        "attempts": 2,
+        "fixes": "Physics2D + namespace"
       }
     },
     "next_actions": {

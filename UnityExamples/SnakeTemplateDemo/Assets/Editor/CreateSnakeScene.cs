@@ -64,7 +64,7 @@ public class CreateSnakeScene : EditorWindow
         var scoreText = scoreGo.AddComponent<Text>();
         scoreText.text = "Score: 0";
         scoreText.fontSize = 36; scoreText.color = Color.yellow;
-        scoreText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        scoreText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         scoreText.alignment = TextAnchor.MiddleCenter;
         scoreGo.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 80);
         scoreGo.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 50);
@@ -76,7 +76,7 @@ public class CreateSnakeScene : EditorWindow
         var statusText = statusGo.AddComponent<Text>();
         statusText.text = "Waiting for players...";
         statusText.fontSize = 24; statusText.color = Color.white;
-        statusText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        statusText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         statusText.alignment = TextAnchor.MiddleCenter;
         statusGo.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 40);
         statusGo.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 40);
@@ -98,7 +98,7 @@ public class CreateSnakeScene : EditorWindow
         var goScoreText = goScoreGo.AddComponent<Text>();
         goScoreText.text = "Final Score: 0";
         goScoreText.fontSize = 48; goScoreText.color = Color.white;
-        goScoreText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        goScoreText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         goScoreText.alignment = TextAnchor.MiddleCenter;
         goScoreGo.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         goScoreGo.GetComponent<RectTransform>().sizeDelta = new Vector2(500, 100);
