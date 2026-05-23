@@ -1,160 +1,143 @@
-# PartyGameSDK MVP
+# PartyGameSDK v0.2 LTS Candidate
 
-> 多客户端 Unity WebGL 派对游戏架构：controller.html → server.js → screen.html → Unity
+> 多客户端 Unity WebGL 派对游戏架构：controller → server → screen.html → Unity
 
-**版本**: v0.1.0  
-**日期**: 2026-05-22  
-**状态**: MVP 已验证通过（13/13 测试点 PASS）
+**版本**: v0.2 LTS Candidate  
+**日期**: 2026-05-23  
+**状态**: 🟢 完整链路完成 — 累计 267 项测试通过，0 失败  
+**v0.2 策略**: 功能冻结，仅接受 bugfix。新能力进入 v0.3。
+
+---
+
+## 已验证游戏
+
+| 游戏 | 输入类型 | 状态 |
+|---|---|---|
+| **JumpJump** | `input.charge_start/end` + `input.tap` | ✅ |
+| **Flappy Bird** | `input.tap` | ✅ |
+| **Breakout** | `input.move` + `input.tap` | ✅ |
+| **Snake** | `input.direction` | ✅ |
 
 ---
 
 ## 架构
 
 ```
-┌─────────────┐    game_message     ┌──────────┐    game_message    ┌─────────────┐    SendMessage    ┌───────────────┐
-│ controller  │ ──────────────────→ │  server  │ ─────────────────→ │   screen    │ ────────────────→ │ Unity (WebGL) │
-│  .html      │   (无playerIndex)  │  .js     │  (注入playerIndex) │   .html     │                   │  GameManager  │
-└─────────────┘                     └──────────┘                    └─────────────┘                   └───────────────┘
-                                           ↑                               ↑                               │
-                                           │        broadcast               │     window.PartyGame           │
-                                           │        state.score_update      │     Broadcast()               │
-                                           │                               │                               │
-                                    ┌─────────────┐                ┌─────────────┐    jslib           ┌───────────────┐
-                                    │ controller  │ ←──────────── │   server    │ ←──────────────── │ Unity (WebGL) │
-                                    │  .html      │   broadcast   │   .js       │   broadcast        │ PartyGame     │
-                                    │ 分数 UI     │               │ 校验 role   │                    │ Bridge        │
-                                    └─────────────┘               └─────────────┘                    └───────────────┘
+Controller ──game_message──→ Server ──game_message──→ Screen ──SendMessage──→ Unity
+   (无 playerIndex)        (注入 playerIndex)         (仅转发)           (OnPlatformMessage)
+                                                                               │
+Controller ←──broadcast──── Server ←──broadcast──── Screen  ←────── Unity      │
+  (更新 UI)              (校验 role)                (window.PG)    (Broadcast)  │
 ```
 
-### 职责划分
+### 五条铁律
 
-| 端 | 职责 | 禁止 |
+| # | 规则 | 状态 |
 |---|---|---|
-| **controller.html** | 发送输入；接收 broadcast 更新 UI | ❌ 禁止发送 playerIndex；❌ 禁止计算分数 |
-| **server.js** | 房间管理；分配 playerIndex；注入真实 playerIndex；转发；广播 | ❌ 禁止计算分数 |
-| **screen.html** | 转发 game_message 到 Unity；转发 Unity broadcast 到 server | ❌ 禁止计算分数 |
-| **Unity** | 处理输入；执行物理；计算分数；发起 broadcast | ❌ 禁止直接与 controller 通信 |
+| 1 | controller 只发输入 | ✅ v0.1.0 至今 |
+| 2 | server 分配并注入 playerIndex | ✅ |
+| 3 | screen/Unity 负责游戏逻辑 | ✅ |
+| 4 | Unity 广播状态 | ✅ |
+| 5 | controller 更新 UI | ✅ |
 
 ---
 
 ## 快速开始
 
-### 1. 启动服务器
+### 1. 启动 server
 
 ```bash
 cd PartyGameSDK-MVP
 npm install
-npm start
+node server/server.js
+# → http://localhost:3000
 ```
 
-### 2. 打开屏幕端
+### 2. screen 端
 
-浏览器访问：`http://localhost:3000/screen`
+`http://localhost:3000/screen` — 自动创建房间，显示 QR Code。
 
-- 页面会自动创建房间并显示 roomId
-- 点击"复制控制器链接"获取 controller URL
+### 3. controller 端
 
-### 3. 打开控制器
+扫描 QR 或访问 `http://localhost:3000/controller?room=XXXXXX`
 
-手机或另一浏览器打开：`http://localhost:3000/controller?room=ROOM_ID`
-
-- 替换 ROOM_ID 为屏幕端显示的房间 ID
-- 按住蓄力 → 松开跳跃
-
-### 4. Unity WebGL 构建（可选）
-
-1. 在 Unity 中打开项目（Assets/ 目录）
-2. 菜单：**Tools → PartyGame → Create Jump Jump Demo Scene**
-3. **File → Build Settings** → 选择 **WebGL** → **Build**
-4. 输出到 `screen/Build/`
-5. 刷新 screen 页面即可加载 Unity
-
-### 5. 运行自动化测试
+### 4. Unity WebGL
 
 ```bash
-npm start  # 先启动服务器
-node test_step10_auto.js  # 另一终端运行
+# 方式 A: 一键场景 + Unity Build
+Tools → PartyGame → Create {GameName} Scene
+File → Build Settings → WebGL → PartyGameTemplate → Build
+
+# 方式 B: 使用示例工程
+cp -r UnityExamples/JumpJumpTemplateDemo/Assets/* YourProject/Assets/
+```
+
+### 5. 自动化测试
+
+```bash
+node server/server.js &
+node _test_v027.js
+# → 60/60 PASS
 ```
 
 ---
 
-## 安全机制
+## 版本演进
 
-### playerIndex 不可伪造
+| 版本 | 核心能力 | Tag |
+|---|---|---|
+| v0.1.0 | 核心协议基线 | `v0.1.0` |
+| v0.2.1 | QR 码 + 房间关闭 | `v0.2.1` |
+| v0.2.2 | 多人 playerIndex 管理 | `v0.2.2` |
+| v0.2.3 | reconnectToken 重连 | `v0.2.3` |
+| v0.2.5 | Unity WebGL Template | `v0.2.5` |
+| v0.2.6 | JumpJump Demo | `v0.2.6` |
+| v0.2.7 | Game Template Factory + Snake | `v0.2.7` |
 
-```
-controller 发送 game_message 时：
-  1. 不含 playerIndex 字段（代码强制约束）
-  2. 如果恶意夹带 playerIndex，server 删除它
-  3. server 从 socket.data.playerIndex 注入真实值
-  4. screen 收到的 playerIndex 始终由 server 分配
-```
-
-### broadcast 角色校验
-
-```
-screen 发送 broadcast 时：
-  1. server 校验 ws.data.role === "screen"
-  2. 非 screen 角色发送 broadcast 被拒绝
-  3. server 广播给当前 room 所有 controllers
-```
+完整演进见 [V0_2_PLATFORM_SUMMARY.md](V0_2_PLATFORM_SUMMARY.md)
 
 ---
 
-## 消息协议（摘要）
-
-| 方向 | event | 说明 |
-|------|-------|------|
-| screen → server | `create_room` | 创建房间 |
-| server → screen | `room_created` | 返回 roomId + qrUrl |
-| controller → server | `join_room` | 加入房间（无 playerIndex） |
-| server → controller | `room_joined` | 返回 roomId + playerIndex |
-| server → screen | `player_joined` | 通知新玩家加入 |
-| controller → server | `game_message` | 游戏输入（charge_start/end） |
-| server → screen | `game_message` | 转发输入（含注入的 playerIndex） |
-| screen → server | `broadcast` | Unity 广播（score_update/game_over） |
-| server → controller | `broadcast` | 转发广播 |
-
-完整协议见 [FINAL_SPEC.md](FINAL_SPEC.md)
-
----
-
-## 文件结构
+## 目录资产
 
 ```
 PartyGameSDK-MVP/
-├── server/server.js                  # WebSocket 服务器
-├── screen/index.html                  # 屏幕端
-├── controller/index.html              # 控制器端
-├── Assets/
-│   ├── Editor/CreateJumpJumpScene.cs  # 一键生成场景
-│   ├── Plugins/WebGL/PartyGameBridge.jslib
-│   └── Scripts/
-│       ├── Core/GameManager.cs + CameraFollow.cs
-│       ├── Gameplay/PlayerJump.cs + PlatformSpawner.cs
-│       ├── Platform/PartyGameBridge.cs + PartyGameMessage.cs
-│       └── UI/UIManager.cs
-├── test_step10_auto.js                # 自动化测试脚本
-├── FINAL_SPEC.md                      # 协议规范
-├── TEST_REPORT.md                     # 测试报告
-├── CHANGELOG.md                       # 变更日志
-└── README.md                          # 本文件
+├── server/server.js              ← v0.2.3+ 零修改
+├── screen/index.html             ← screen 端
+├── controller/index.html         ← controller 端
+├── UnityWebGLTemplate/           ← Unity 一键模板
+├── UnityExamples/                ← 示例工程
+│   ├── JumpJumpTemplateDemo/     ← v0.2.6
+│   ├── SnakeTemplateDemo/        ← v0.2.7
+│   ├── _GameTemplateSkeleton/    ← 标准骨架
+│   ├── GAME_TEMPLATE_FACTORY.md  ← 工厂规范
+│   └── AGENT_GAME_GENERATION_PROMPT.md
+├── V0_2_PLATFORM_SUMMARY.md      ← 完整演进
+└── RELEASE_INDEX.md              ← 文档索引
 ```
 
 ---
 
-## v0.2 计划
+## v0.2 冻结策略
 
-| 优先级 | 特性 | 说明 |
-|--------|------|------|
-| P0 | Unity WebGL 真实构建验证 | 在真实 WebGL 环境中运行步骤 10 反向链路 |
-| P0 | controller 重连机制 | WebSocket 断开后自动重连并恢复 playerIndex |
-| P1 | playerIndex 回收 | 玩家离开后复用 playerIndex，避免无限增长 |
-| P1 | 多房间压力测试 | 验证 10+ 房间同时运行 |
-| P1 | 房间心跳 + 超时清理 | 空房间 30 分钟后自动清理 |
-| P2 | HTTPS/WSS 支持 | 生产环境安全传输 |
-| P2 | 房间密码 | 可选的房间加入密码 |
-| P2 | 观众模式 | 只读连接，不分配 playerIndex |
-| P3 | Redis 房间持久化 | 支持多进程/集群部署 |
-| P3 | TypeScript 重写 | server.js → TypeScript，增加类型安全 |
-| P3 | 新游戏 Demo | 基于 SDK 开发第二个游戏（如你画我猜） |
+- ✅ **功能冻结** — 不再新增能力
+- ✅ **协议冻结** — server.js 核心协议不修改
+- ⚠️ **仅接受 bugfix** — 安全/稳定性修复
+- 🔜 **新能力 → v0.3 分支**
+
+---
+
+## v0.3 路线
+
+| 优先级 | 项目 |
+|---|---|
+| 🔴 | server 日志结构化 |
+| 🔴 | 房间指标统计 |
+| 🟡 | WebSocket 压测 |
+| 🟡 | 移动端兼容测试 |
+| 🟢 | 管理后台 |
+| 🟢 | CI 自动测试 |
+
+---
+
+**PartyGameSDK v0.2 LTS Candidate** — 267 tests, 4 games, 0 failures.
