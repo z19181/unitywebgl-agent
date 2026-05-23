@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Party Game - Quiz Template</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); font-family:sans-serif; color:#fff; height:100vh; }
+
+    /* 问题区域 */
+    #questionArea {
+      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+      width:80%; max-width:600px; text-align:center;
+    }
+    #questionNumber { font-size:14px; color:#aaa; margin-bottom:10px; }
+    #questionText { font-size:28px; font-weight:bold; margin-bottom:30px; line-height:1.4; }
+
+    /* 选项 */
+    #options { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .option-btn {
+      background:rgba(255,255,255,0.08); border:2px solid rgba(255,255,255,0.15);
+      padding:16px; border-radius:12px; font-size:18px; color:#fff;
+      cursor:pointer; transition:all 0.2s;
+    }
+    .option-btn:hover { background:rgba(255,255,255,0.15); border-color:#7395ff; }
+    .option-btn.correct { background:rgba(81,207,102,0.2); border-color:#51cf66; }
+    .option-btn.wrong { background:rgba(255,107,107,0.2); border-color:#ff6b6b; }
+    .option-btn.disabled { pointer-events:none; opacity:0.6; }
+
+    /* 分数板 */
+    #scoreboard {
+      position:fixed; top:15px; right:15px;
+      background:rgba(0,0,0,0.6); padding:15px; border-radius:10px;
+      min-width:160px; font-size:14px;
+    }
+    #scoreboard h3 { margin-bottom:8px; color:#ffd43b; }
+    .score-row { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+    .score-row .name { color:#aaa; }
+    .score-row .pts { color:#51cf66; font-weight:bold; }
+
+    /* 开始/结束 */
+    #startScreen, #endScreen {
+      position:fixed; top:0; left:0; right:0; bottom:0;
+      background:rgba(0,0,0,0.9); display:flex; flex-direction:column;
+      align-items:center; justify-content:center; z-index:100;
+    }
+    #startScreen.hidden, #endScreen.hidden { display:none; }
+    #startScreen h1, #endScreen h1 { font-size:36px; margin-bottom:20px; }
+    .big-btn {
+      background:#7395ff; color:white; border:none; padding:14px 40px;
+      border-radius:10px; font-size:18px; cursor:pointer; margin-top:15px;
+    }
+    .big-btn:hover { background:#5a7de0; }
+
+    /* 倒计时 */
+    #timer {
+      position:fixed; top:15px; left:50%; transform:translateX(-50%);
+      font-size:24px; font-weight:bold; color:#ffd43b;
+      background:rgba(0,0,0,0.6); padding:8px 20px; border-radius:20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 开始界面 -->
+  <div id="startScreen">
+    <h1>🧠 知识问答</h1>
+    <p style="color:#aaa;margin-bottom:10px;">PartyGame SDK 问答游戏模板</p>
+    <p style="color:#aaa;font-size:14px;">等待屏幕端连接...</p>
+    <div id="startWaiting" style="margin-top:20px;">
+      <div style="border:3px solid rgba(255,255,255,0.1);border-top:3px solid #7395ff;border-radius:50%;width:30px;height:30px;animation:spin 1s linear infinite;margin:0 auto;"></div>
+    </div>
+    <button class="big-btn hidden" id="startBtn" onclick="startGame()">开始游戏</button>
+  </div>
+
+  <!-- 结束界面 -->
+  <div id="endScreen" class="hidden">
+    <h1>🏆 游戏结束</h1>
+    <div id="finalScores"></div>
+    <button class="big-btn" onclick="resetGame()">再来一局</button>
+  </div>
+
+  <!-- 游戏界面 -->
+  <div id="gameArea" class="hidden">
+    <div id="timer">10</div>
+    <div id="questionArea">
+      <div id="questionNumber">第 1/5 题</div>
+      <div id="questionText">问题加载中...</div>
+      <div id="options"></div>
+    </div>
+    <div id="scoreboard">
+      <h3>📊 排行榜</h3>
+      <div id="scores"></div>
+    </div>
+  </div>
+
+  <style>@keyframes spin { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }</style>
+
+  <script>
+    // ========================================
+    // 知识问答 - PartyGame SDK 游戏模板
+    // ========================================
+    // 这是一个独立的纯 Web 问答游戏，使用 PartyGame SDK 的通信架构。
+    // 可以直接替换 Unity WebGL 作为 screen 端的游戏内容。
+    //
+    // 消息协议：
+    //   controller → server → screen: { event:"game_message", type:"quiz.answer", data:{ answer:"A" } }
+    //   screen → server → controller: { event:"broadcast", type:"quiz.result", data:{ correct:"A", scores:{...} } }
+    //
+    // 使用方法：
+    //   1. 启动 server: npm start
+    //   2. 用此文件替换 screen/index.html（或修改 server.js 路由指向此文件）
+    //   3. 打开 http://localhost:3000/screen
+
+    const QUIZ_QUESTIONS = [
+      { q: "地球上最大的海洋是？", options: ["太平洋", "大西洋", "印度洋", "北冰洋"], answer: "A" },
+      { q: "光年是什么的单位？", options: ["时间", "距离", "速度", "质量"], answer: "B" },
+      { q: "Python 的创造者是谁？", options: ["Linus Torvalds", "Guido van Rossum", "Dennis Ritchie", "James Gosling"], answer: "B" },
+      { q: "HTTP 状态码 404 表示？", options: ["服务器错误", "未找到", "权限不足", "重定向"], answer: "B" },
+      { q: "太阳系中最大的行星是？", options: ["土星", "木星", "天王星", "海王星"], answer: "B" },
+      { q: "TCP 和 UDP 的区别？", options: ["TCP更快", "UDP更可靠", "TCP可靠UDP快", "没有区别"], answer: "C" },
+      { q: "世界上使用人数最多的语言？", options: ["英语", "西班牙语", "中文", "印地语"], answer: "C" },
+      { q: "WebSocket 基于 HTTP 的哪个版本？", options: ["HTTP/1.0", "HTTP/1.1", "HTTP/2", "不基于HTTP"], answer: "B" },
+      { q: "JavaScript 的 typeof null 返回？", options: ["null", "undefined", "object", "boolean"], answer: "C" },
+      { q: "π 的前两位小数是？", options: ["3.12", "3.14", "3.16", "3.18"], answer: "B" },
+    ];
+
+    let ws = null;
+    let currentRoomId = null;
+    let players = new Map(); // playerIndex -> { name, score, answer }
+    let maxPlayers = 8;
+    let currentQuestion = 0;
+    let questionTimer = null;
+    let timeLeft = 10;
+    let selectedQuestions = [];
+    let scores = {};
+    let gameActive = false;
+
+    // DOM
+    const startScreen = document.getElementById('startScreen');
+    const endScreen = document.getElementById('endScreen');
+    const gameArea = document.getElementById('gameArea');
+    const questionNumber = document.getElementById('questionNumber');
+    const questionText = document.getElementById('questionText');
+    const optionsEl = document.getElementById('options');
+    const timerEl = document.getElementById('timer');
+    const scoresEl = document.getElementById('scores');
+    const startWaiting = document.getElementById('startWaiting');
+    const startBtn = document.getElementById('startBtn');
+
+    // ========================================
+    // WebSocket
+    // ========================================
+    function connect() {
+      ws = new WebSocket(`ws://${window.location.host}`);
+
+      ws.onopen = () => {
+        console.log('[Quiz] Connected');
+        ws.send(JSON.stringify({ event: 'create_room' }));
+      };
+
+      ws.onmessage = (e) => {
+        const msg = JSON.parse(e.data);
+        const type = msg.event || msg.type;
+        console.log('[Quiz]', type, msg);
+
+        switch (type) {
+          case 'room_created':
+            currentRoomId = msg.roomId;
+            maxPlayers = msg.maxPlayers || 8;
+            startWaiting.innerHTML = `
+              <div style="margin-top:10px;">
+                <div style="font-size:18px;color:#51cf66;margin-bottom:8px;">房间已创建</div>
+                <div style="font-size:32px;font-weight:bold;letter-spacing:3px;">${msg.roomId}</div>
+                <div style="font-size:12px;color:#aaa;margin-top:8px;">控制器链接：<br>
+                  <span style="color:#ffd43b;">${window.location.origin}/controller?room=${msg.roomId}</span>
+                </div>
+              </div>`;
+            startBtn.classList.remove('hidden');
+            break;
+
+          case 'player_joined':
+            players.set(msg.playerIndex, { name: msg.playerName, score: 0, answer: null });
+            updatePlayerCount();
+            updateScoreboard();
+            break;
+
+          case 'player_left':
+            players.delete(msg.playerIndex);
+            updatePlayerCount();
+            updateScoreboard();
+            break;
+
+          case 'game_message':
+            if (msg.type === 'quiz.answer' && gameActive) {
+              handleAnswer(msg.playerIndex, msg.data);
+            }
+            break;
+
+          case 'destroy_room':
+            break;
+        }
+      };
+
+      ws.onclose = () => {
+        console.log('[Quiz] Disconnected');
+        setTimeout(connect, 3000);
+      };
+    }
+
+    function updatePlayerCount() {
+      startWaiting.innerHTML += `<div style="margin-top:5px;color:#aaa;">${players.size}/${maxPlayers} 玩家已就绪</div>`;
+    }
+
+    // ========================================
+    // 游戏逻辑
+    // ========================================
+    function startGame() {
+      if (players.size === 0) {
+        alert('至少需要 1 名玩家！');
+        return;
+      }
+
+      startScreen.classList.add('hidden');
+      gameArea.classList.remove('hidden');
+      gameActive = true;
+      currentQuestion = 0;
+
+      // 随机选题
+      selectedQuestions = [...QUIZ_QUESTIONS].sort(() => Math.random() - 0.5).slice(0, 5);
+
+      // 重置分数
+      players.forEach((p, idx) => { p.score = 0; });
+
+      showQuestion();
+    }
+
+    function showQuestion() {
+      if (currentQuestion >= selectedQuestions.length) {
+        endGame();
+        return;
+      }
+
+      const q = selectedQuestions[currentQuestion];
+      questionNumber.textContent = `第 ${currentQuestion + 1}/${selectedQuestions.length} 题`;
+      questionText.textContent = q.q;
+
+      // 重置玩家答案
+      players.forEach(p => { p.answer = null; });
+
+      // 渲染选项
+      const labels = ['A', 'B', 'C', 'D'];
+      optionsEl.innerHTML = q.options.map((opt, i) => `
+        <button class="option-btn" id="opt-${labels[i]}" onclick="screenAnswer('${labels[i]}')">
+          ${labels[i]}. ${opt}
+        </button>
+      `).join('');
+
+      // 倒计时
+      timeLeft = 10;
+      timerEl.textContent = timeLeft;
+      clearInterval(questionTimer);
+      questionTimer = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(questionTimer);
+          revealAnswer();
+        }
+      }, 1000);
+    }
+
+    function screenAnswer(answer) {
+      // Screen 自己也可以答题（测试用）
+      console.log('[Quiz] Screen answered:', answer);
+    }
+
+    function handleAnswer(playerIndex, data) {
+      if (!players.has(playerIndex)) return;
+      players.get(playerIndex).answer = data.answer;
+      updateScoreboard();
+    }
+
+    function revealAnswer() {
+      const q = selectedQuestions[currentQuestion];
+      const correct = q.answer;
+
+      // 高亮正确/错误答案
+      document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.classList.add('disabled');
+        const label = btn.id.replace('opt-', '');
+        if (label === correct) btn.classList.add('correct');
+      });
+
+      // 计分：答对 +10，答错不扣分
+      players.forEach((p, idx) => {
+        if (p.answer === correct) {
+          p.score += 10;
+        }
+      });
+
+      // 构建分数对象
+      scores = {};
+      players.forEach((p, idx) => { scores[idx] = p.score; });
+
+      // 广播结果
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          event: 'broadcast',
+          type: 'quiz.result',
+          data: {
+            correct,
+            correctAnswer: q.options[correct.charCodeAt(0) - 65],
+            scores: JSON.stringify(scores),
+          }
+        }));
+      }
+
+      updateScoreboard();
+
+      // 2秒后下一题
+      setTimeout(() => {
+        currentQuestion++;
+        showQuestion();
+      }, 2000);
+    }
+
+    function endGame() {
+      gameActive = false;
+      clearInterval(questionTimer);
+      gameArea.classList.add('hidden');
+      endScreen.classList.remove('hidden');
+
+      // 排序
+      const sorted = [...players.entries()].sort((a, b) => b[1].score - a[1].score);
+      let html = '<div style="margin:20px 0;">';
+      sorted.forEach(([idx, p], rank) => {
+        const medal = rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : `#${rank + 1}`;
+        html += `<div style="padding:8px 0;font-size:16px;">${medal} ${p.name}: <span style="color:#ffd43b;font-weight:bold;">${p.score}</span> 分</div>`;
+      });
+      html += '</div>';
+      document.getElementById('finalScores').innerHTML = html;
+
+      // 广播游戏结束
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          event: 'broadcast',
+          type: 'state.game_over',
+          data: {
+            finalScores: JSON.stringify(scores),
+            winnerIndex: sorted[0]?.[0],
+          }
+        }));
+      }
+    }
+
+    function resetGame() {
+      endScreen.classList.add('hidden');
+      startScreen.classList.remove('hidden');
+      players.forEach(p => { p.score = 0; });
+      updateScoreboard();
+    }
+
+    function updateScoreboard() {
+      const sorted = [...players.entries()].sort((a, b) => b[1].score - a[1].score);
+      scoresEl.innerHTML = sorted.map(([idx, p]) => `
+        <div class="score-row">
+          <span class="name">P${idx} ${p.answer ? '(✓)' : ''}</span>
+          <span class="pts">${p.score}</span>
+        </div>
+      `).join('');
+    }
+
+    // ========================================
+    // 启动
+    // ========================================
+    connect();
+  </script>
+</body>
+</html>

@@ -1,11 +1,12 @@
 {
-  "name": "party-game-sdk-mvp",
-  "version": "1.0.0",
-  "description": "Party Game SDK MVP - Multi-client Unity WebGL architecture",
+  "name": "party-game-sdk",
+  "version": "2.0.0",
+  "description": "Party Game SDK v0.2 - Multi-client Unity WebGL architecture with reconnection, QR codes, room management, and game templates",
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
-    "dev": "nodemon server/server.js"
+    "dev": "nodemon server/server.js",
+    "quiz": "USE_BROWSER=http://localhost:3000/templates/quiz npm start"
   },
   "dependencies": {
     "express": "^4.18.2",
