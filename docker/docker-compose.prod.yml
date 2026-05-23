@@ -1,0 +1,97 @@
+# v0.4.0 Production Docker Compose
+#
+# Services: nginx + redis + 2x partygame + prometheus + grafana
+#
+# Start:
+#   1. cp .env.production.example .env.production  (fill in values)
+#   2. openssl req -x509 -newkey rsa:2048 -keyout docker/nginx/ssl/key.pem \
+#        -out docker/nginx/ssl/cert.pem -subj "/CN=your-domain" -nodes -days 365
+#   3. docker-compose -f docker/docker-compose.prod.yml up -d
+#
+# Access:
+#   PartyGame:  https://your-domain/screen
+#   Admin:      https://your-domain/admin
+#   Grafana:    http://localhost:3000
+#   Prometheus: http://localhost:9090
+
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+    volumes:
+      - redis_data:/data
+
+  partygame-1:
+    build: { context: .., dockerfile: docker/Dockerfile }
+    environment:
+      - PORT=3000
+      - NODE_ENV=${NODE_ENV:-production}
+      - STORE_TYPE=${STORE_TYPE:-redis}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - LOG_FORMAT=${LOG_FORMAT:-json}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_PREFIX=${LOG_PREFIX:-partygame}
+      - SERVER_HOST=${SERVER_HOST:-localhost}
+    depends_on: { redis: { condition: service_healthy } }
+    restart: unless-stopped
+
+  partygame-2:
+    build: { context: .., dockerfile: docker/Dockerfile }
+    environment:
+      - PORT=3000
+      - NODE_ENV=${NODE_ENV:-production}
+      - STORE_TYPE=${STORE_TYPE:-redis}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - LOG_FORMAT=${LOG_FORMAT:-json}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_PREFIX=${LOG_PREFIX:-partygame}
+      - SERVER_HOST=${SERVER_HOST:-localhost}
+    depends_on: { redis: { condition: service_healthy } }
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.25-alpine
+    ports: ['80:80', '443:443']
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on: [partygame-1, partygame-2]
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports: ['9090:9090']
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports: ['3000:3000']
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GF_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_PASSWORD:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml:ro
+      - ./grafana/dashboards/partygame-sdk-overview.json:/etc/grafana/provisioning/dashboards/partygame-sdk-overview.json:ro
+    depends_on: [prometheus]
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  prometheus_data:
+  grafana_data:
