@@ -303,6 +303,133 @@ curl https://localhost/admin/health # → ok: true
 
 ---
 
+## 10. Validated Pipelines
+
+### 10.1 PartyGameSDK Release Pipeline
+
+**目的:** 所有版本发布必须通过此 Pipeline，确保灰度安全。
+
+| 组件 | 说明 |
+|---|---|
+| **Baseline** | `v0.4.2` — 推荐灰度基线（所有新版本从此出发） |
+| **Phase Gate** | `RELEASE_STATE.json` 定义 5 个发布阶段（Phase 1→5），每阶段有 gate 条件 |
+| **Manual QA Gate** | Phase 1→Phase 2 唯一推进入口。必须 4 平台真机测试 + 7 项运维检查全部 PASS |
+| **Canary Plan** | `docs/CANARY_PLAN.md` — 1% → 10% → 50% → 100% 四阶段灰度 |
+| **Release Manager** | `agents/release-manager/` — 自动化发布状态管理 Agent |
+| **State File** | `RELEASE_STATE.json` — 当前阶段、通过历史、阻塞项、允许的自动操作 |
+
+**推进规则:**
+- Phase 过渡必须满足 `RELEASE_STATE.json` 中 `phase_transition_rules` 条件
+- 人工审批仅在 `requires_human_approval: true` 时需要
+- 禁止手动修改 `current_phase` — 必须通过 gate script 输出变量授权
+
+**当前状态:** Phase 3 (10% canary)，Grafana 未部署阻塞 Phase 4。
+
+---
+
+### 10.2 Unity WebGL Build Pipeline
+
+**目的:** 任何 Unity 游戏模板的真实 WebGL Build 必须通过此 Pipeline 验证。
+
+| 组件 | 说明 |
+|---|---|
+| **Task Input** | `CODEX_TASKS.md` — QClaw 创建的任务指令（项目路径、Build 方法、验收标准） |
+| **Executor** | Codex — 本地执行 Unity 6 batchmode build |
+| **Build Script** | `scripts/build-jumpjump-webgl.sh` — 可重复执行的自动化 Build 脚本 |
+| **Validator** | `scripts/check-unity-webgl-build.js` — 22 项自动化检查 |
+| **Output** | `screen/Build/` — 6 个 Build 产物（loader.js / framework.js / wasm / data / index.html / partygame-template.js） |
+| **Result File** | `CODEX_RESULT.md` — Codex 写入执行结果，QClaw 读取并判定 |
+| **Final Report** | `UnityExamples/UNITY_WEBGL_REAL_BUILD_FINAL_REPORT.md` — 全链路验证报告 |
+
+**协作流程:**
+
+```
+QClaw                           Codex
+─────                           ─────
+写入 CODEX_TASKS.md     →       读取任务
+指定验收标准             →       探测 Unity 6 路径
+读取 CODEX_RESULT.md     ←       执行 batchmode build
+判定 PASS / FAIL        ←       写入结果 + 日志
+更新报告                 ←       不修改核心协议 / RELEASE_STATE.json
+```
+
+**已验证模板:**
+- ✅ JumpJumpTemplateDemo — Unity 6 (6000.4.8f1) → WebGL Build → Safari canvas 渲染 → QClaw real-link verified
+
+**Build Gate Status (2026-05-23):**
+
+| Gate | 状态 | 验证方式 |
+|---|---|---|
+| Unity batchmode success | ✅ PASS | Attempt 6, `EMSDK_PYTHON=python3.11` |
+| Artifact completeness | ✅ PASS | 22/22 check script |
+| screen/Build files (6) | ✅ PASS | 见下方产物清单 |
+| QClaw real-link test | ✅ PASS | 6/7 WebSocket 链路 |
+| Iron Law audit | ✅ PASS | 5/5 intact |
+| Browser canvas render | ✅ PASS | Safari 人工验证 (Codex) |
+
+**Build 产物清单:**
+
+| 文件 | 大小 | 说明 |
+|---|---|---|
+| `Build.data` | 3.8 MB | 游戏资产数据 |
+| `Build.framework.js` | 372 KB | Unity WebGL framework |
+| `Build.loader.js` | 19 KB | WebGL loader / bootstrap |
+| `Build.wasm` | 16 MB | IL2CPP 编译输出 |
+| `index.html` | 5.2 KB | PartyGameTemplate 生成 |
+| `partygame-template.js` | 6.1 KB | SDK bridge 初始化 |
+
+**Commit:** `5136e2e` | **Gate: PASS** | **详见:** `UnityExamples/UNITY_WEBGL_REAL_BUILD_FINAL_REPORT.md`
+
+**验证通过标准:**
+1. Unity batchmode build 成功
+2. `check-unity-webgl-build.js` 22/22 PASS
+3. 浏览器 Unity canvas 渲染正常（至少一个主流浏览器）
+4. 核心协议 + 五条铁律 + server.js 无修改
+
+---
+
+### 10.3 当前状态
+
+| 项目 | 状态 |
+|---|---|
+| PartyGameSDK Release | 由 `RELEASE_STATE.json` 管理 — Phase 3 (10% canary) |
+| Unity WebGL Agent | **Build capability verified** ✅ |
+| 核心协议 | 未修改 ✅ |
+| 五条铁律 | 未破坏 ✅ |
+| server.js | 未修改 ✅ |
+
+---
+
+### 10.4 后续使用方式
+
+**新游戏模板生成后，必须走两条 Pipeline:**
+
+1. **Unity WebGL Build Pipeline** — 生成真实 WebGL 产物并验证
+   ```
+   QClaw 写 CODEX_TASKS.md（指向新模板路径）
+   → Codex 执行 batchmode build
+   → QClaw 运行 check-unity-webgl-build.js
+   → 人工 Safari 确认 canvas 渲染
+   → QClaw 收口为 PASS
+   ```
+
+2. **Release Manager Pipeline** — 任何版本发布必须遵守
+   ```
+   从 v0.4.2 baseline 新建分支
+   → 实现功能 + 测试
+   → Phase 1 内部 QA（53 自动 + 27 人工）
+   → Manual QA Gate（4 平台真机）
+   → Canary 1% → 10% → 50% → 100%
+   → 每阶段更新 RELEASE_STATE.json
+   ```
+
+**两条 Pipeline 互不阻塞:**
+- Unity Build Pipeline 不触发 Phase 推进
+- Release Pipeline 不依赖 Unity Build（SDK-only mode 已可用）
+- 两者共享铁律约束和 Codex 协作机制
+
+---
+
 ## 附录: Git 标签一览
 
 ```
