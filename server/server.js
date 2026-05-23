@@ -26,8 +26,11 @@ app.get('/__metrics', (req, res) => {
   res.send(metrics.prometheusText());
 });
 
+// ========== Version (v0.4.1: read from package.json, fallback to env) ==========
+const VERSION = process.env.APP_VERSION || require('../package.json').version || 'dev';
+
 app.get('/__health', (req, res) => {
-  res.json({ status: 'ok', version: '0.3.1', uptime: process.uptime(), ...metrics.jsonSummary() });
+  res.json({ status: 'ok', version: VERSION, uptime: process.uptime(), ...metrics.jsonSummary() });
 });
 
 // ========== Static file serving ==========
@@ -74,7 +77,9 @@ wss.on('connection', (ws) => {
   ws.on('close', async () => {
     metrics.increment('wsDisconnections', 1);
     activeSockets.delete(ws.id);
-    await handleDisconnect(ws);
+    // v0.4.1: Catch disconnect errors to prevent unhandled rejections (BUG-002)
+    try { await handleDisconnect(ws); }
+    catch (e) { log.error('handleDisconnect failed', { wsId: ws.id, error: e.message }); }
   });
 });
 
@@ -243,6 +248,9 @@ async function handleCloseRoom(ws) {
 }
 
 // ========== Disconnect ==========
+// v0.4.1: Reconnect TTL — player removed from room after expiry (BUG-001)
+const RECONNECT_TTL = parseInt(process.env.RECONNECT_TTL || '10', 10);
+
 async function handleDisconnect(ws) {
   const { role, roomId, playerIndex } = ws.data;
   if (!roomId) return;
@@ -261,11 +269,27 @@ async function handleDisconnect(ws) {
 
     // v0.3.1: Don't remove player from store — keep for reconnect window.
     // Broadcast player_left + players.changed immediately for game logic.
+    const oldSocketId = ws.id;
     await store.deletePlayerSocket(ws.id);
     const players = await store.getPlayers(roomId);
     await sendToScreen(roomId, { event: MSG_TYPE.PLAYER_LEFT, playerIndex, playerCount: players.length, players });
     broadcastToControllers(roomId, { event: MSG_TYPE.PLAYERS_CHANGED, players });
     log.info('player_disconnected', { wsId: ws.id, roomId, playerIndex });
+
+    // v0.4.1: Ghost player cleanup (BUG-001). After RECONNECT_TTL, if
+    // the player hasn't reconnected (socketId unchanged), remove them from room.
+    setTimeout(async () => {
+      try {
+        const cur = await store.getPlayers(roomId);
+        const p = cur.find(p => p.playerIndex === playerIndex);
+        if (p && p.socketId === oldSocketId) {
+          await store.removePlayer(roomId, playerIndex);
+          const remaining = await store.getPlayers(roomId);
+          broadcastToControllers(roomId, { event: MSG_TYPE.PLAYERS_CHANGED, players: remaining });
+          log.info('ghost_cleaned', { roomId, playerIndex, reason: 'reconnect_ttl_expired' });
+        }
+      } catch (e) { log.error('ghost_cleanup_failed', { roomId, playerIndex, error: e.message }); }
+    }, RECONNECT_TTL * 1000);
   }
 }
 
@@ -320,15 +344,15 @@ const PORT = process.env.PORT || 3000;
   app.use('/admin', express.static(__dirname + '/../admin'));
 
   server.listen(PORT, () => {
-    log.info('startup', { port: PORT, version: '0.3.1', store: process.env.STORE_TYPE || 'memory' });
-    console.log(['',
-      '🎮 PartyGameSDK v0.3.1',
-      `📡 http://localhost:${PORT}`,
-      `📊 Metrics: http://localhost:${PORT}/__metrics`,
-      `💚 Health:  http://localhost:${PORT}/__health`,
-      `📺 Screen:   http://localhost:${PORT}/screen`,
-      `🎮 Ctrl:     http://localhost:${PORT}/controller`,
-      '',
-    ].join('\n'));
+    log.info('startup', { port: PORT, version: VERSION, store: process.env.STORE_TYPE || 'memory' });
+    // v0.4.1: console.log → logger for JSON compatibility (POLISH-001)
+    log.info('banner', {
+      port: PORT,
+      metrics: `/__metrics`,
+      health: `/__health`,
+      screen: `/screen`,
+      controller: `/controller`,
+      admin: `/admin`,
+    });
   });
 })();

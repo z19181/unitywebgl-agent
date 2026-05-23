@@ -31,8 +31,9 @@ function createAdminRouter({ store, metrics, activeSockets, broadcastToControlle
   }
 
   // ── Health ──
+  const VERSION = process.env.APP_VERSION || 'dev';
   router.get('/health', (req, res) => {
-    res.json({ ok: true, data: { status: 'ok', version: '0.3.4', uptime: process.uptime() }, error: null });
+    res.json({ ok: true, data: { status: 'ok', version: VERSION, uptime: process.uptime() }, error: null });
   });
 
   // ── Rooms list ──
@@ -44,10 +45,12 @@ function createAdminRouter({ store, metrics, activeSockets, broadcastToControlle
         const room = await store.getRoom(id);
         if (room) {
           const players = await store.getPlayers(id);
+          const connected = players.filter(p => p.socketId && activeSockets.has(p.socketId)).length;
           rooms.push({
             roomId: room.roomId,
             maxPlayers: room.maxPlayers,
             playerCount: players.length,
+            connectedPlayerCount: connected,
             playerIndex: room.nextPlayerIndex,
             hasScreen: !!getScreenSocket(room.roomId),
             createdAt: room.createdAt || 0,
