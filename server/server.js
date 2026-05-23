@@ -77,6 +77,7 @@ wss.on('connection', (ws) => {
 
 // ========== Message routing ==========
 function handleMessage(ws, message) {
+  const t0 = Date.now();  // v0.3.3
   const eventType = message.event || message.type;
   log.info(eventType, { wsId: ws.id, roomId: ws.data.roomId, playerIndex: ws.data.playerIndex, type: message.type });
 
@@ -90,6 +91,9 @@ function handleMessage(ws, message) {
     case MSG_TYPE.RECONNECT:    handleReconnect(ws, message); break;
     default: log.warn('unknown_msg', { wsId: ws.id, eventType });
   }
+
+  // v0.3.3: track event processing duration
+  metrics.trackEventDuration(eventType, Date.now() - t0);
 }
 
 // ========== Helpers ==========
@@ -173,6 +177,7 @@ async function handleJoinRoom(ws, message) {
   const playerName = message.playerName || `Player ${playerIndex}`;
 
   ws.data = { role: 'controller', roomId, playerIndex };
+  metrics.increment('controllersActive', 1);  // v0.3.3
   await store.setPlayerSocket(roomId, playerIndex, ws.id);
   await store.addPlayer(roomId, playerIndex, { playerName, socketId: ws.id });
 
@@ -248,6 +253,9 @@ async function handleDisconnect(ws) {
     metrics.increment('roomsDestroyed', 1);
     log.info('room_destroyed', { wsId: ws.id, roomId, reason: 'host_disconnected' });
   } else if (role === 'controller' && playerIndex !== undefined) {
+    // v0.3.3: decrement controller count
+    metrics.increment('controllersActive', -1);
+
     // v0.3.1: Don't remove player from store — keep for reconnect window.
     // Broadcast player_left + players.changed immediately for game logic.
     await store.deletePlayerSocket(ws.id);
