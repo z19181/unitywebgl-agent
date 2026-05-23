@@ -248,4 +248,38 @@ public class Create{GameName}Scene : EditorWindow
 
 ---
 
-**v0.2.7 Game Template Factory** — Copy → Fill → Build → Play!
+## 9. Optional Unity AI Asset Pipeline (v0.4.2)
+
+> Unity AI / Muse / Sentis / ML-Agents 是**可选辅助能力**，不是 PartyGameSDK 核心。详见 `UnityExamples/UNITY_AI_OPTIONAL_WORKFLOW.md`。
+
+### 9.1 AI 资产路径规范
+
+```
+Assets/Art/Generated/
+├── Sprites/     ← Muse Sprite 生成
+├── Textures/    ← Muse Texture 生成
+├── UI/          ← UI 图标
+└── Animations/  ← 简单动画
+```
+
+**审核流程:** Muse 生成 → `Generated/` → 人工审核 → 缩放压缩 → `Assets/Art/{GameName}/`
+
+### 9.2 体积控制
+
+| 资产类型 | 单文件上限 | 每游戏上限 |
+|---|---|---|
+| Sprite | 256 KB | 2 MB |
+| Texture | 512 KB | 4 MB |
+| 背景图 | 1 MB | 2 MB |
+
+WebGL 首包预算 ≤ 20 MB。
+
+### 9.3 不进入默认模板
+
+- Sentis（本地 AI 模型推理）→ 按需引入
+- ML-Agents（强化学习）→ 仅长期探索
+- NavMesh → 仅在 NPC 寻路游戏中使用
+
+### 9.4 AI 不阻塞 Release
+
+任何 AI 能力的引入或移除不改变 PartyGameSDK Release State。

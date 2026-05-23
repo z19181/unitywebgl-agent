@@ -175,4 +175,31 @@ node _test_v026.js  # 或对应的测试脚本
 
 ---
 
-**v0.2.7 Agent Game Generation Prompt** — Say "new game: XXX" → Agent does the rest.
+## Optional Unity AI Asset Pipeline (v0.4.2)
+
+> Unity AI / Muse / Sentis / ML-Agents 是**可选辅助能力**，不是 PartyGameSDK 核心。详见 `UnityExamples/UNITY_AI_OPTIONAL_WORKFLOW.md`。
+
+### AI 资产生成规则
+
+当游戏需要新素材时，Agent 可选择使用 Muse：
+
+| 需求 | Muse 能力 | 输出路径 |
+|---|---|---|
+| 角色/道具精灵 | Muse Sprite | `Assets/Art/Generated/Sprites/` |
+| 背景/地面纹理 | Muse Texture | `Assets/Art/Generated/Textures/` |
+| UI 图标 | Muse Sprite | `Assets/Art/Generated/UI/` |
+| C# 脚本加速 | Muse Chat | 作为参考，人工修改 |
+
+### AI 使用原则
+
+1. AI 资产必须在 `Assets/Art/Generated/` 下，**人工审核后**才移入模板
+2. AI 资产不计入 PartyGameSDK 核心文件（不提交到 Platform/ 目录）
+3. 优先用手写代码和简单图形，AI 仅用于复杂素材需求
+4. 控制每游戏 AI 资产总量 ≤ 8 MB
+5. **不修改 server | 协议 | 五条铁律**以引入 AI
+
+### 不引入的 AI 能力
+
+- Sentis → 不入默认模板（仅高级玩法）
+- ML-Agents → 不入默认模板（仅长期探索）
+- NavMesh → 仅 NPC 寻路游戏按需启用
