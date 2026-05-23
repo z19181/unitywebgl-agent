@@ -342,7 +342,14 @@
       }
       document.getElementById('closeRoomBtn').style.display = 'inline-block';
       log(`Room created: ${currentRoomId}`);
-      
+
+      // v0.3.2: Update URL for Nginx sticky session
+      // Without reload → WebSocket stays alive
+      // With roomId in URL → future connections hash to same upstream
+      if (!new URLSearchParams(location.search).has('roomId')) {
+        history.replaceState(null, '', '?roomId=' + currentRoomId);
+      }
+
       // 加载 Unity（房间创建成功后）
       loadUnity();
     }
