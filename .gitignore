@@ -20,3 +20,7 @@ Thumbs.db
 # Temp files
 *.tmp
 .cache/
+UnityExamples/*/Library/
+UnityExamples/*/Temp/
+UnityExamples/*/UserSettings/
+UnityExamples/*/obj/
