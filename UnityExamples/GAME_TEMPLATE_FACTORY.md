@@ -283,3 +283,52 @@ WebGL 首包预算 ≤ 20 MB。
 ### 9.4 AI 不阻塞 Release
 
 任何 AI 能力的引入或移除不改变 PartyGameSDK Release State。
+
+---
+
+## 10. Verified Multi-Game WebGL Build Queue
+
+**Status:** ✅ PASS — 4/4 games built and verified  
+**Date:** 2026-05-23  
+**Report:** `UnityExamples/MULTI_GAME_WEBGL_BUILD_REPORT.md`
+
+### 10.1 Build Matrix
+
+| Game | Build | Check | Output Dir | Builder Script |
+|---|---|---|---|---|
+| JumpJump | ✅ PASS | 22/22 | `screen/Build/` | `JumpJumpWebGLBuilder.BuildWebGL` |
+| Snake | ✅ PASS | 22/22 | `screen/Build_Snake/` | `SnakeWebGLBuilder.BuildWebGL` |
+| 2048 | ✅ PASS | 22/22 | `screen/Build_2048/` | `Game2048WebGLBuilder.BuildWebGL` |
+| Breakout | ✅ PASS | 22/22 | `screen/Build_Breakout/` | `BreakoutWebGLBuilder.BuildWebGL` |
+
+### 10.2 Gate Requirements
+
+New game templates **must** pass this gate:
+
+```
+1. Agent creates: Assets/Scripts/Game/{Game}GameManager.cs
+                 Assets/Editor/Create{Game}Scene.cs
+                 Assets/Editor/{Game}WebGLBuilder.cs
+2. Codex runs: EMSDK_PYTHON=python3.11 Unity -batchmode -executeMethod {Game}WebGLBuilder.BuildWebGL
+3. QClaw checks: node scripts/check-unity-webgl-build.js screen/Build_{Game}
+4. QClaw writes: WEBGL_BUILD_VALIDATION_REPORT.md
+5. Gate: 22/22 PASS
+```
+
+### 10.3 Common Pitfalls (Do Not Repeat)
+
+| Issue | Cause | Fix |
+|---|---|---|
+| `Arial.ttf` not valid | Unity 6 removed built-in font | Use `LegacyRuntime.ttf` |
+| JSONDecodeError in Emscripten | Python 3.9 + Node.js v22 | `EMSDK_PYTHON=python3.11` |
+| Background build fails | Env var not propagated | Foreground execution (no `&`) |
+| bee_backend ExitCode 4 | Conflicting ProjectSettings GUIDs | Only copy `ProjectVersion.txt` |
+| Physics2D CS1069 | Missing built-in module | Add `com.unity.modules.physics2d` to manifest |
+
+### 10.4 Build Queue Does Not Block Release
+
+Unity WebGL Build Queue is a game-template verification tool. It does not:
+- Modify `RELEASE_STATE.json` `current_phase`
+- Modify `server.js` or core protocol
+- Create git tags
+- Trigger Release Pipeline phase transitions

@@ -430,6 +430,33 @@ QClaw                           Codex
 
 ---
 
+### 10.5 Verified Multi-Game WebGL Build Queue
+
+**Status:** ✅ PASS — 4/4 games verified  
+**Date:** 2026-05-23  
+**Report:** `UnityExamples/MULTI_GAME_WEBGL_BUILD_REPORT.md`
+
+| Game | Build | Check | Output Dir | Builder Script |
+|---|---|---|---|---|
+| JumpJump | ✅ PASS | 22/22 | `screen/Build/` | `JumpJumpWebGLBuilder.BuildWebGL` |
+| Snake | ✅ PASS | 22/22 | `screen/Build_Snake/` | `SnakeWebGLBuilder.BuildWebGL` |
+| 2048 | ✅ PASS | 22/22 | `screen/Build_2048/` | `Game2048WebGLBuilder.BuildWebGL` |
+| Breakout | ✅ PASS | 22/22 | `screen/Build_Breakout/` | `BreakoutWebGLBuilder.BuildWebGL` |
+
+**Capabilities verified:**
+- Game Template Factory — bulk build across 4 game types (jump, snake, puzzle, breakout)
+- Codex Build Pipeline — reusable; only `-executeMethod` and `-projectPath` vary
+- Foreground build required for `EMSDK_PYTHON` propagation
+
+**All games pass:**
+- 22/22 `check-unity-webgl-build.js`
+- PartyGameBridge.jslib present (via PartyGameTemplate)
+- Five Iron Laws intact
+- `server.js` 0 bytes modified
+- `RELEASE_STATE.json` phase unchanged
+
+---
+
 ## 附录: Git 标签一览
 
 ```
