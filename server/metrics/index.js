@@ -51,7 +51,7 @@ function trackEventDuration(event, ms) {
 
 let _getActiveRoomCount = () => 0;
 function setRoomCountFn(fn) { _getActiveRoomCount = fn; }
-function getActiveRooms() { return _getActiveRoomCount(); }
+function getActiveRooms() { const result = _getActiveRoomCount(); return (result && typeof result.then === 'function') ? 0 : (result || 0); }
 
 function prometheusText() {
   const now = Date.now();
