@@ -1,71 +1,105 @@
-# WebGL CurrentScene Build Static Validation Report
+# WEBGL_CURRENT_SCENE_VALIDATION_REPORT
 
-**Date:** 2026-05-24T07:39:00-07:00  
-**Status:** ✅ PASS (26/26)
+**Date:** 2026-05-24T07:46:00-07:00  
+**Scene:** CurrentScene (Plane + WebGLGroundPlane.mat)  
+**Branch:** `platform/v0.4.2`
 
 ---
 
-## 1. Build Identity
+## 1. Conclusion
 
-| Field | Value |
+**Status: PARTIAL PASS**
+
+- Static Load Validation: PASS
+- DOM Integrity Validation: PASS
+- Browser Runtime Visual Check: MANUAL
+- WebGL Runtime E2E: PENDING
+
+---
+
+## 2. Static Load Validation (8/8 PASS)
+
+| Asset | HTTP | Size |
+|---|---|---|
+| `index.html` | 200 | 5 KB |
+| `WebGLBuild_CurrentScene.loader.js` | 200 | 19 KB |
+| `WebGLBuild_CurrentScene.framework.js` | 200 | 443 KB |
+| `WebGLBuild_CurrentScene.wasm` | 200 | 28 MB |
+| `WebGLBuild_CurrentScene.data` | 200 | 85 MB |
+| `TemplateData/style.css` | 200 | 2 KB |
+| `TemplateData/favicon.ico` | 200 | 2 KB |
+| `partygame-template.js` | 200 | 6 KB |
+
+All 8 core assets served successfully from `http://localhost:8081`.
+
+---
+
+## 3. DOM Integrity
+
+| Check | Result |
 |---|---|
-| **Project** | `UnityExamples/JumpJumpTemplateDemo/` |
-| **Build Output** | `WebGLBuild_CurrentScene/` |
-| **Scene** | CurrentScene (Plane + WebGLGroundPlane.mat) |
-| **Validation Tool** | `check-unity-webgl-build.js` |
+| `#unity-canvas` refs in HTML | 3 |
+| `WebGLBuild_CurrentScene` refs in HTML | 5 |
+| `partygame-template.js` ref in HTML | 1 |
+| `<!DOCTYPE html>` | valid |
+
+**PASS** ✅
 
 ---
 
-## 2. Network Static Load Check
+## 4. Browser Runtime Visual Check
 
-| Asset | URL | HTTP |
+### Status: MANUAL_PENDING
+
+Manual verification required.
+
+**Open:** `http://localhost:8081/index.html`
+
+**Expected:**
+- Unity loading bar visible
+- Progress reaches 100%
+- WebGLGroundPlane material visible on Plane
+- No black screen
+- Console shows: `[PartyGame] Unity instance ready`
+
+**Why manual:**
+- Headless browser unavailable (no playwright)
+- Sandbox browser blocked for localhost
+- Host browser SSR policy denied
+
+---
+
+## 5. Build Tool Results
+
+| Tool | Version | Result |
 |---|---|---|
-| index.html | `http://localhost:8081/index.html` | 200 ✅ |
-| loader.js | `http://localhost:8081/Build/WebGLBuild_CurrentScene.loader.js` | 200 ✅ |
-| wasm | `http://localhost:8081/Build/WebGLBuild_CurrentScene.wasm` | 200 ✅ |
-| data | `http://localhost:8081/Build/WebGLBuild_CurrentScene.data` | 200 ✅ |
-
-All 4 core assets served successfully.
+| `check-unity-webgl-build.js` | 26 checks | 26/26 PASS ✅ |
 
 ---
 
-## 3. Build Check Results
+## 6. Material Compliance
 
-| Tool | Result |
+| Object | Material | WebGLSafe? |
+|---|---|---|
+| Plane | `WebGLGroundPlane.mat` | ✅ Compliant |
+
+Per `UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md` §1-2.
+
+---
+
+## 7. Cumulative Gate Status
+
+| Gate | Status |
 |---|---|
-| `check-unity-webgl-build.js` | **26/26 PASS** ✅ |
+| `check-unity-webgl-build.js` | 26/26 PASS ✅ |
+| Browser Static Load | 8/8 PASS ✅ |
+| DOM Integrity | PASS ✅ |
+| Browser Runtime Visual | MANUAL ⚠️ |
+| WebGL Runtime E2E | PENDING |
 
 ---
 
-## 4. Asset References Verified
-
-| Reference | Found In | Status |
-|---|---|---|
-| `Build/WebGLBuild_CurrentScene.loader.js` | `index.html` | ✅ Correct |
-| `TemplateData/style.css` | `index.html` | ✅ Correct |
-| `partygame-template.js` | `index.html` | ✅ Correct |
-
----
-
-## 5. Scene Material
-
-| Object | Material | Status |
-|---|---|---|
-| Plane | `WebGLGroundPlane.mat` | ✅ Deployed |
-
-Material complies with `UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md`.
-
----
-
-## 6. Browser Screenshot
-
-- Headless browser screenshot attempted
-- Result: unstable — **not counted as completed** ⚠️
-- Replaced by static load validation (26/26 automated checks)
-
----
-
-## 7. Invariant Constraints
+## 8. Invariant Constraints
 
 | Constraint | Status |
 |---|---|
@@ -74,11 +108,3 @@ Material complies with `UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md`.
 | `RELEASE_STATE.json` modified | ❌ No |
 | Five Iron Laws violated | ❌ No |
 | Git tags created | ❌ No |
-
----
-
-## 8. Final Status
-
-**CurrentScene WebGL Build Static Validation: PASS** ✅
-
-26/26 automated checks passed. All 4 assets served correctly from localhost:8081. Material policy compliant.
