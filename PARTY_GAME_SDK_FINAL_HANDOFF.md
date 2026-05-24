@@ -460,6 +460,7 @@ QClaw                           Codex
 ## 附录: Git 标签一览
 
 ```
+v1.0.1-governance   ← Runtime Verified Template + Material Policy ★ 当前
 v0.4.2              ← Mobile Compatibility ★ 推荐灰度基线
 v0.3.4              ← Admin Backend
 v0.3.3              ← Grafana Dashboard
@@ -479,3 +480,38 @@ v0.1.0              ← Core Protocol
 ---
 
 **PartyGameSDK v0.4.1 — Recommended canary baseline.**
+
+---
+
+## §11. Runtime Verified Template (v1.0.1-governance)
+
+| Attribute | Value |
+|---|---|
+| **Golden Template** | `UnityExamples/_RuntimeVerifiedTemplate/` |
+| **Source** | `UnityExamples/JumpJumpTemplateDemo/` |
+| **Frozen at** | CurrentScene ALL GATES CLEAR (commit `264c45c`) |
+| **Material Policy** | `UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md` |
+| **Pipeline Doc** | `UnityExamples/WEBGL_RUNTIME_PIPELINE.md` |
+| **Automation Plan** | `docs/WEBGL_RUNTIME_AUTOMATION_PLAN.md` |
+
+### Verified Gates
+
+| Gate | Status |
+|---|---|
+| `check-unity-webgl-build.js` | 26/26 ✅ |
+| Browser Static Load | 8/8 ✅ |
+| DOM Integrity | PASS ✅ |
+| Runtime Visual | MANUAL_VERIFIED ✅ |
+| Runtime E2E | PASS ✅ |
+
+### New Game SOP
+
+```
+_RuntimeVerifiedTemplate/
+  → Assets/Scripts/Game/{GameName}GameManager.cs
+  → Unity batchmode Build
+  → /runtime-gate
+  → ALL GATES CLEAR → release
+```
+
+---

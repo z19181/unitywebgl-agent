@@ -349,3 +349,22 @@ All new game templates MUST comply with the Material Policy:
 | Directory | `Materials/WebGLSafe/`, `Textures/WebGLSafe/`, `Shaders/WebGLSafe/` |
 
 Violation of Material Policy is a **BLOCKING** gate for new game template release.
+
+### 10.6 Runtime Verified Golden Template
+
+**Reference:** `UnityExamples/_RuntimeVerifiedTemplate/`, `UnityExamples/WEBGL_RUNTIME_PIPELINE.md`
+
+A frozen, verified baseline that all new game templates derive from.
+
+| Attribute | Value |
+|---|---|
+| Source | `UnityExamples/JumpJumpTemplateDemo/` |
+| Frozen at | CurrentScene ALL GATES CLEAR (commit `264c45c`) |
+| Contents | Assets/ (WebGL-safe), ProjectSettings/, Packages/, verified build output |
+| Excluded | Library/, Temp/, Logs/, AmplifyShaderEditor/, build cache |
+| Pipeline | 5 gates: build → static → DOM → visual → E2E |
+
+New game SOP:
+```
+_RuntimeVerifiedTemplate/ → game scripts → batchmode Build → pipeline gates → release
+```

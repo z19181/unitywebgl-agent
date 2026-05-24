@@ -215,5 +215,34 @@
 
 ---
 
+### `/runtime-gate` — WebGL Runtime Pipeline Verification
+
+**Authority:** Unity WebGL Verification Agent
+
+**Invoked:** After `Unity batchmode Build` completes and `check-unity-webgl-build.js` passes.
+
+**Gates:**
+1. Browser Static Load (8 assets → 200)
+2. DOM Integrity (canvas, loader, partygame refs)
+3. Runtime Visual (canvas renders, no black screen, no shader errors)
+4. Runtime E2E (5-channel loop: controller → PartyGameBridge → Unity → broadcast → controller)
+
+**Reference:** `UnityExamples/WEBGL_RUNTIME_PIPELINE.md`
+
+**Golden Template:** `UnityExamples/_RuntimeVerifiedTemplate/`
+
+**Blocking:** Any gate failure halts release. Cannot proceed to game template creation until ALL GATES CLEAR.
+
+```
+/runtime-gate UnityExamples/JumpJumpTemplateDemo/WebGLBuild_CurrentScene
+→ Gate 1: Static Load ... PASS
+→ Gate 2: DOM Integrity ... PASS
+→ Gate 3: Runtime Visual ... MANUAL_VERIFIED
+→ Gate 4: Runtime E2E ... PASS
+🏁 ALL GATES CLEAR
+```
+
+---
+
 **Adapted from:** Claude-Code-Game-Studios workflow command system  
 **Design principle:** 9 focused commands > 73 generic ones for this domain
