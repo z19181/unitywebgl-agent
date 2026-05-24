@@ -242,6 +242,33 @@
 🏁 ALL GATES CLEAR
 ```
 
+### `/runtime-automation` — WebGL Runtime Automation Certification
+
+**Authority:** Runtime Automation Agent (v1.1.0)
+
+**Invoked:** After `/runtime-gate` passes, to run the automated certification.
+
+**Execution:**
+1. `npx playwright test --config=tests/runtime/playwright.config.ts`
+2. Collects console errors, screenshots, WS traces
+3. Asserts: canvas not black, runtime hooks available, 5-channel loop
+4. Generates `artifacts/test-results.json`
+
+**Blocking:** Any test failure = certification FAILED.
+
+```
+/runtime-automation
+→ runtime-visual.spec.ts ... PASS
+→ runtime-e2e.spec.ts ... PASS
+→ controller-input.spec.ts ... PASS
+✅ Runtime Certification: PASS
+```
+
+**Reference:**
+- `tests/runtime/` — Playwright test suite
+- `docs/RUNTIME_FAILURE_MATRIX.md` — Triage guide
+- `.github/workflows/runtime-e2e.yml` — CI
+
 ---
 
 **Adapted from:** Claude-Code-Game-Studios workflow command system  

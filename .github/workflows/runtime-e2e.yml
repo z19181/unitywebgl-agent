@@ -1,0 +1,123 @@
+# PartyGameSDK — WebGL Runtime E2E CI Pipeline
+# v1.1.0
+
+name: WebGL Runtime E2E
+
+on:
+  push:
+    paths:
+      - 'UnityExamples/**'
+      - 'tests/runtime/**'
+      - '!**/*.md'
+  workflow_dispatch:
+
+jobs:
+  # ── Job 1: Unity WebGL Build ──────────────────────────
+  unity-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      build-path: ${{ steps.build.outputs.build-path }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Unity WebGL batchmode Build
+        uses: game-ci/unity-builder@v4
+        with:
+          targetPlatform: WebGL
+          projectPath: UnityExamples/_RuntimeVerifiedTemplate
+          buildMethod: WebGLBuild.BuildWebGL
+          unityVersion: 6000.4.8f1
+        id: build
+
+      - name: check-unity-webgl-build.js
+        run: node scripts/check-unity-webgl-build.js UnityExamples/_RuntimeVerifiedTemplate/WebGLBuild
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webgl-build
+          path: UnityExamples/_RuntimeVerifiedTemplate/WebGLBuild
+          retention-days: 7
+
+  # ── Job 2: Runtime E2E (Playwright) ────────────────────
+  runtime-e2e:
+    needs: unity-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      nginx:
+        image: nginx:alpine
+        ports:
+          - 8081:80
+        volumes:
+          - ${{ github.workspace }}/webgl-build:/usr/share/nginx/html:ro
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: webgl-build
+          path: webgl-build
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: |
+          npm install @playwright/test
+          npx playwright install --with-deps chromium
+
+      - name: Wait for nginx
+        run: |
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:8081/index.html > /dev/null; then
+              echo "Nginx ready"
+              exit 0
+            fi
+            echo "Waiting for nginx... ($i/30)"
+            sleep 2
+          done
+          echo "Nginx failed to start"
+          exit 1
+
+      - name: Static Load Check (Gate 2)
+        run: |
+          curl -sf http://localhost:8081/index.html || exit 1
+          curl -sf http://localhost:8081/Build/WebGLBuild.loader.js || exit 1
+          curl -sf http://localhost:8081/Build/WebGLBuild.framework.js || exit 1
+          curl -sf http://localhost:8081/Build/WebGLBuild.wasm || exit 1
+          curl -sf http://localhost:8081/Build/WebGLBuild.data || exit 1
+          echo "Gate 2: PASS"
+
+      - name: Run Playwright Runtime Tests (Gates 3-5)
+        run: |
+          npx playwright test \
+            --config=tests/runtime/playwright.config.ts \
+            --reporter=html \
+            --reporter=json \
+            --reporter=list
+        env:
+          RUNTIME_BASE_URL: http://localhost:8081
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-artifacts-${{ github.run_id }}
+          path: |
+            tests/runtime/artifacts/
+            playwright-report/
+            test-results/
+          retention-days: 30
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-screenshots-${{ github.run_id }}
+          path: tests/runtime/artifacts/screenshots/
+          retention-days: 30

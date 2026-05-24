@@ -144,6 +144,52 @@ Any 404 or 5xx on build assets during Gate 2 = **FAIL**.
 
 ---
 
-**Pipeline Version:** v1.0.1-governance  
+**Pipeline Version:** v1.1.0  
 **Effective Date:** 2026-05-24  
 **Golden Template:** `UnityExamples/_RuntimeVerifiedTemplate/`
+
+---
+
+## F. Runtime Automation (v1.1.0)
+
+### Playwright Runtime Tests
+
+**Directory:** `tests/runtime/`
+
+| File | Purpose |
+|---|---|
+| `playwright.config.ts` | Chromium config, 120s timeout, SwiftShader |
+| `runtime-visual.spec.ts` | Gate 4: canvas render, hooks, console, DOM |
+| `runtime-e2e.spec.ts` | Gate 5: 5-channel loop, state broadcast, playerIndex |
+| `controller-input.spec.ts` | Input types: charge_start/end, tap, move |
+| `helpers/websocket-helper.ts` | WS message capture + assertion |
+| `helpers/screenshot-helper.ts` | Canvas screenshot + black detection |
+| `helpers/runtime-assertions.ts` | assertRuntimeReady, assertCanvasNotBlack, etc. |
+
+### Unity Runtime JS Hooks
+
+| Hook | Purpose | Scope |
+|---|---|---|
+| `window.__PARTYGAME_RUNTIME_READY__` | `true` when Unity instance initialized | Debug / automation |
+| `window.__PARTYGAME_LAST_STATE__` | Last `state_update` payload | Debug / automation |
+| `window.__PARTYGAME_LAST_INPUT__` | Last `game_message` received by Unity | Debug / automation |
+
+These hooks do NOT modify the PartyGameSDK protocol, server.js, or Five Iron Laws.
+They are read-only debug hooks set via `Application.ExternalEval()` only when `UNITY_WEBGL` is defined.
+
+### CI Pipeline
+
+**Workflow:** `.github/workflows/runtime-e2e.yml`
+
+```
+Unity batchmode Build → check-unity-webgl-build.js →
+nginx serve → Playwright runtime tests → artifact upload
+```
+
+### Reference Docs
+
+- `docs/RUNTIME_FAILURE_MATRIX.md` — 8 failure categories with detection + recovery
+- `docs/RUNTIME_ARTIFACT_POLICY.md` — screenshot, log, trace retention rules
+- `docs/WEBGL_RUNTIME_AUTOMATION_PLAN.md` — original planning document
+
+---

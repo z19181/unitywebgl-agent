@@ -511,7 +511,18 @@ _RuntimeVerifiedTemplate/
   → Assets/Scripts/Game/{GameName}GameManager.cs
   → Unity batchmode Build
   → /runtime-gate
+  → /runtime-automation (v1.1.0)
   → ALL GATES CLEAR → release
 ```
+
+### Runtime Automation (v1.1.0)
+
+| Component | Location |
+|---|---|
+| Playwright tests | `tests/runtime/` (7 files) |
+| CI workflow | `.github/workflows/runtime-e2e.yml` |
+| Failure matrix | `docs/RUNTIME_FAILURE_MATRIX.md` |
+| Artifact policy | `docs/RUNTIME_ARTIFACT_POLICY.md` |
+| JS hooks | `__PARTYGAME_RUNTIME_READY__`, `__PARTYGAME_LAST_STATE__`, `__PARTYGAME_LAST_INPUT__` |
 
 ---
