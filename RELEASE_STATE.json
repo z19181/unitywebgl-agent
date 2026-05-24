@@ -68,12 +68,13 @@
       "docker_cli_only": "installed — brew install docker (29.5.2)",
       "colima": "installed — brew install colima (0.8.1), VM boots but docker daemon stalled",
       "next": "check proxy settings or retry Docker Desktop cask"
-    }
+    },
+    "next_action": "PHASE_5_100_PERCENT_FULL_ROLLOUT"
   },
   "target_version": "v1.0.0",
   "current_phase": "phase_4_canary_50_percent",
   "next_phase": "phase_2_canary_1_percent",
-  "status": "ready_for_canary_50_percent",
+  "status": "canary_50_percent_verified",
   "last_passed_phase": "phase_3_canary_10_percent",
   "blocking_issues": [
     {
@@ -249,7 +250,43 @@
         "redis_store": "async — store.getRoomCount().then Promise checked ✅",
         "other_active_metrics": "internal state counters — no Promise risk ✅"
       }
+    },
+    "verified_at": "2026-05-23T18:16:54",
+    "health_check": {
+      "all_15_checks": "PASS",
+      "blocking_conditions": 0,
+      "recommendation": "PROCEED_TO_PHASE_5_100_PERCENT",
+      "human_confirmation_required": false
+    },
+    "results": {
+      "1_health": {
+        "status": "ok",
+        "version": "1.0.0"
+      },
+      "2_metrics": {
+        "all_12_numeric": true
+      },
+      "3_grafana": {
+        "health": "ok",
+        "datasource": "ok",
+        "panels": 19
+      },
+      "4_admin": {
+        "health": 200,
+        "rooms": 200
+      },
+      "5_5xx_error_rate": "0%",
+      "6_ws_disconnect_rate": "0%",
+      "7_room_creation": "pass",
+      "8_controller_join": "pass",
+      "9_game_message_transparent": "pass",
+      "10_broadcast": "pass",
+      "11_room_closed": "pass",
+      "12_reconnect": "pass",
+      "13_redis": "pass (PONG)",
+      "14_nginx": "pass",
+      "15_rollback": "ready"
     }
   },
-  "last_verified": "2026-05-23T18:15:01"
+  "last_verified": "2026-05-23T18:16:54"
 }
