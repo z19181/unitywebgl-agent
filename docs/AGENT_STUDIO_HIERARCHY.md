@@ -182,3 +182,16 @@ Every agent MUST:
 **Adapted from:** Claude-Code-Game-Studios 3-tier agent hierarchy  
 **Why 2-tier:** PartyGameSDK is a focused SDK, not a full game studio  
 **What we dropped:** Director tier, engine-specialist agents (Godot/Unreal), art/audio/narrative agents
+
+---
+
+## v1.1.1: Agent Intelligence Layer (4 new agents)
+
+| Agent | Tier | Responsibility |
+|---|---|---|
+| RAG Memory Agent | Support | Pre-modification context retrieval from docs/, reports/, governance |
+| Runtime Triage Agent | Specialist | Classify runtime failures → RTE-001~008 + recovery plan |
+| Token Cost Agent | Support | Track token usage, cost, latency, cache hits → Prometheus |
+| Model Router Agent | Orchestrator | Route tasks to Cheap/Strong model based on complexity |
+
+**Total agents:** 9 (5 original + 4 intelligence layer)

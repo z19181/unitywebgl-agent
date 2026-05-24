@@ -525,4 +525,17 @@ _RuntimeVerifiedTemplate/
 | Artifact policy | `docs/RUNTIME_ARTIFACT_POLICY.md` |
 | JS hooks | `__PARTYGAME_RUNTIME_READY__`, `__PARTYGAME_LAST_STATE__`, `__PARTYGAME_LAST_INPUT__` |
 
+### Agent Intelligence Layer (v1.1.1)
+
+| Agent | Location | Purpose |
+|---|---|---|
+| RAG Memory Agent | `agents/rag-memory/` | Pre-modification context retrieval |
+| Runtime Triage Agent | `agents/runtime-triage/` | Failure classification + recovery |
+| Token Cost Agent | `agents/token-cost/` | Token/cost/latency metrics |
+| Model Router Agent | `agents/model-router/` | Cheap/Strong model routing |
+
+**Supporting docs:**
+- `docs/RAG_RETRIEVAL_POLICY.md` — Mandatory pre-modification retrieval
+- `docs/AGENT_DASHBOARD_PLAN.md` — Future dashboard panels
+
 ---

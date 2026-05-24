@@ -273,3 +273,38 @@
 
 **Adapted from:** Claude-Code-Game-Studios workflow command system  
 **Design principle:** 9 focused commands > 73 generic ones for this domain
+
+---
+
+### `/rag-query` — RAG Memory Retrieval
+
+**Authority:** RAG Memory Agent (v1.1.1)
+
+**Invoked:** Before any code modification. Retrieves historical context.
+
+**Usage:**
+```
+/rag-query black screen WebGL
+→ Category: material-failure
+→ Retrieved: RUNTIME_FAILURE_MATRIX.md §4, UNITY_WEBGL_MATERIAL_POLICY.md §1-2
+→ Action: Replace with URP Simple Lit
+```
+
+**Reference:** `docs/RAG_RETRIEVAL_POLICY.md`, `agents/rag-memory/`
+
+---
+
+### `/triage` — Runtime Failure Classification
+
+**Authority:** Runtime Triage Agent (v1.1.1)
+
+**Invoked:** When a runtime test fails. Auto-classifies and suggests recovery.
+
+**Usage:**
+```
+/triage --type black-screen
+→ RTE-004 | CRITICAL | HDRP material or missing camera
+→ Recovery: Replace with WebGL-safe shaders
+```
+
+**Reference:** `agents/runtime-triage/`, `docs/RUNTIME_FAILURE_MATRIX.md`

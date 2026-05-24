@@ -198,3 +198,26 @@ The governance layer should be merged into the v1.0.1 baseline. It adds structur
 **Adapted from:** [Claude-Code-Game-Studios](https://github.com/Donchitos/Claude-Code-Game-Studios)  
 **Governance Layer Author:** QClaw Release Manager  
 **v1.0.0 Baseline:** Unchanged
+
+---
+
+## v1.1.1 Extension: Agent Intelligence Layer
+
+### New Capabilities
+
+| Component | Purpose |
+|---|---|
+| RAG Memory Agent | Semantic retrieval over docs/, reports/, governance |
+| Runtime Triage Agent | Automated failure classification (RTE-001~008) |
+| Token Cost Agent | Prometheus metrics for agent token/cost/latency |
+| Model Router Agent | Task complexity → model tier routing |
+| RAG Retrieval Policy | Mandatory pre-modification context retrieval |
+| Agent Dashboard Plan | Future Grafana-embedded React dashboard |
+
+### Governance Impact
+
+- **Retrieval-before-modification** enforced by RAG Retrieval Policy
+- **Historical failure awareness** via RAG Memory Agent corpus
+- **Cost observability** added via Token Cost Agent metrics
+- **Model quality routing** via Model Router rules
+- **Zero protocol/server impact** — all agents are read-only intelligence layer
