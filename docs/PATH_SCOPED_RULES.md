@@ -80,6 +80,15 @@ Every new game MUST pass `check-unity-webgl-build.js` → 22/22 before release. 
 ### UNI-005: Font Compatibility
 `Arial.ttf` is removed in Unity 6. Use `LegacyRuntime.ttf` in all scene creator scripts.
 
+### UNI-006: Material Policy (BLOCKING)
+All materials must comply with `UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md`.
+- Allowed: URP Lit, URP Simple Lit, Unlit/Texture, Sprite/Default
+- Prohibited: HDRP, unverified ShaderGraph, GrabPass, Compute Shader
+- Textures ≤ 1024×1024 default (4K prohibited)
+- AI-generated assets → `Art/Generated/` → review → `WebGLSafe/`
+- Validation gate: 6 checks (Editor, Build, Canvas, Network, Console, Mobile)
+Violation is BLOCKING for new game template release.
+
 ---
 
 ## `Assets/Scripts/Game/**`

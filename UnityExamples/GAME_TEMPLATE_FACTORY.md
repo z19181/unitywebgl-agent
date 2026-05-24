@@ -332,3 +332,20 @@ Unity WebGL Build Queue is a game-template verification tool. It does not:
 - Modify `server.js` or core protocol
 - Create git tags
 - Trigger Release Pipeline phase transitions
+
+### 10.5 Unity WebGL Material Policy
+
+**Reference:** `UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md`
+
+All new game templates MUST comply with the Material Policy:
+
+| Rule | Summary |
+|---|---|
+| Allowed materials | Standard, URP Lit, Unlit, Sprite/Default |
+| Prohibited | HDRP, unverified ShaderGraph, GrabPass, Compute Shader |
+| Texture max | 1024×1024 (default); 4K prohibited |
+| AI-generated assets | `Assets/Art/Generated/` → review → `WebGLSafe/` |
+| Validation gate | 6 checks (Editor, Build, Canvas, Network, Console, Mobile) |
+| Directory | `Materials/WebGLSafe/`, `Textures/WebGLSafe/`, `Shaders/WebGLSafe/` |
+
+Violation of Material Policy is a **BLOCKING** gate for new game template release.

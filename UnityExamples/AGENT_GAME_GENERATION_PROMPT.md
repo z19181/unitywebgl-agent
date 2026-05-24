@@ -203,3 +203,18 @@ node _test_v026.js  # 或对应的测试脚本
 - Sentis → 不入默认模板（仅高级玩法）
 - ML-Agents → 不入默认模板（仅长期探索）
 - NavMesh → 仅 NPC 寻路游戏按需启用
+
+---
+
+### Material Policy（v1.0.1-governance）
+
+**参考：** `UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md`
+
+Agent 生成材质时必须遵守：
+
+1. **默认 Shader：** URP Simple Lit / Unlit/Texture / Sprite/Default
+2. **禁止：** HDRP、未验证 ShaderGraph、GrabPass、Compute Shader
+3. **纹理上限：** 默认 1024×1024，禁止 4K
+4. **AI 生成资产路径：** `Assets/Art/Generated/{date}-{batch}/` → 人工审核 → `WebGLSafe/`
+5. **AI 生成 Shader 必须注明：** `// AI-GENERATED — REQUIRES WEBGL VERIFICATION`
+6. **WebGL Material Validation Gate：** 6 项检查全部通过后才能进入模板
