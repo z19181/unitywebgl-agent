@@ -245,8 +245,8 @@
     const CONFIG = {
       // v0.4.2: Auto-detect WS protocol
       serverUrl: `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}`,
-      unityBuildUrl: 'Build',
-      unityLoaderUrl: 'Build/Build.loader.js',
+      unityBuildUrl: 'Build/Build',
+      unityLoaderUrl: 'Build/Build/WebGLBuild.loader.js',
       enableDebugLog: true,
     };
     
@@ -551,9 +551,9 @@
         
         // Unity 配置
         const config = {
-          dataUrl: `${CONFIG.unityBuildUrl}/Build.data`,
-          frameworkUrl: `${CONFIG.unityBuildUrl}/Build.framework.js`,
-          codeUrl: `${CONFIG.unityBuildUrl}/Build.wasm`,
+          dataUrl: `${CONFIG.unityBuildUrl}/WebGLBuild.data`,
+          frameworkUrl: `${CONFIG.unityBuildUrl}/WebGLBuild.framework.js`,
+          codeUrl: `${CONFIG.unityBuildUrl}/WebGLBuild.wasm`,
           streamingAssetsUrl: 'StreamingAssets',
           companyName: 'PartyGame',
           productName: 'Jump Demo',
