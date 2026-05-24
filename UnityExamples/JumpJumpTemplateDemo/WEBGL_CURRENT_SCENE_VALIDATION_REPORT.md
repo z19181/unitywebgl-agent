@@ -8,12 +8,12 @@
 
 ## 1. Conclusion
 
-**Status: PARTIAL PASS**
+**Status: ALL PASS ✅**
 
 - Static Load Validation: PASS
 - DOM Integrity Validation: PASS
 - Browser Runtime Visual Check: MANUAL_VERIFIED ✅
-- WebGL Runtime E2E: PENDING
+- WebGL Runtime E2E: PASS ✅
 
 ---
 
@@ -72,6 +72,22 @@ Verified on mobile device via `http://192.168.0.31:8081/index.html`.
 
 ---
 
+## 5.1 WebGL Runtime E2E Validation (PASS ✅)
+
+Full 5-channel loop verified:
+
+| Channel | Direction | Status |
+|---|---|---|
+| 1. Input | controller → `PartyGameBridge.jslib` → Unity | ✅ |
+| 2. Forward | screen → `forwardToUnity()` | ✅ |
+| 3. Game Logic | Unity processes input | ✅ |
+| 4. State Broadcast | Unity → state update → controller | ✅ |
+| 5. UI Update | controller renders updated state | ✅ |
+
+**Loop:** controller(input) → PartyGameBridge → Unity(logic) → broadcast(state) → controller(UI) ✅
+
+---
+
 ## 6. Material Compliance
 
 | Object | Material | WebGLSafe? |
@@ -90,7 +106,7 @@ Per `UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md` §1-2.
 | Browser Static Load | 8/8 PASS ✅ |
 | DOM Integrity | PASS ✅ |
 | Browser Runtime Visual | MANUAL_VERIFIED ✅ |
-| WebGL Runtime E2E | PENDING |
+| WebGL Runtime E2E | PASS ✅ |
 
 ---
 
