@@ -352,4 +352,4 @@ ScriptsOnlyBuild:
   scenePathNames:
   - Assets/Scenes/BreakoutTemplateDemo.unity
   nativeClasses: 
-  playerPath: /Users/applemima1111/.qclaw/workspace/screen/Build_Breakout
+  playerPath: /Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/screen/Build_Breakout

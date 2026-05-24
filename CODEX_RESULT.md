@@ -1,61 +1,91 @@
-# Codex Result: Multi-Game WebGL Build Queue
+# CODEX_RESULT
 
-**Status: PASS**  
-**Date: 2026-05-23 11:40 PDT**  
-**Executor: QClaw (foreground build)**
+## Queue Summary
 
-## Environment
+按 `CODEX_TASKS.md` 的 `game_build_queue` 顺序已完成三款 Unity WebGL 构建：
 
-| Variable | Value |
-|---|---|
-| EMSDK_PYTHON | /Users/applemima1111/.local/bin/python3.11 |
-| Unity | 6000.4.8f1 (Apple M2 arm64) |
-| Build Mode | Foreground batchmode (required for EMSDK_PYTHON propagation) |
+1. `SnakeTemplateDemo` - ✅ PASS
+2. `_2048TemplateDemo` - ✅ PASS
+3. `BreakoutTemplateDemo` - ✅ PASS
 
-## Critical Fix
+所有游戏的输出目录都已独立为：
 
-**Backgrounded builds (`&`) fail** — EMSDK_PYTHON does not propagate to child Emscripten processes.  
-**Foreground builds (`&&`) succeed** — env var propagates correctly.
+- `screen/Build_Snake`
+- `screen/Build_2048`
+- `screen/Build_Breakout`
 
-## Per-Game Results
+## Per-Game Status
 
-| Game | Build | Check | Output Dir | Attempts |
-|---|---|---|---|---|
-| 🐍 Snake | ✅ PASS | 22/22 | screen/Build_Snake | 6 (Arial.ttf + bee_backend) |
-| 🎲 2048 | ✅ PASS | 22/22 | screen/Build_2048 | 2 (Arial.ttf) |
-| 🧱 Breakout | ✅ PASS | 22/22 | screen/Build_Breakout | 2 (Physics2D + namespace) |
+### SnakeTemplateDemo
 
-## Fixes Applied
+- 状态: PASS
+- 产物目录: `screen/Build_Snake`
+- 自动检查: `node scripts/check-unity-webgl-build.js screen/Build_Snake` -> `22/22`
+- 报告: `UnityExamples/SnakeTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md`
 
-| Game | Issue | Fix |
-|---|---|---|
-| Snake | Arial.ttf in CreateSnakeScene.cs | sed → LegacyRuntime.ttf |
-| Snake | bee_backend ExitCode 4 (cold cache) | Reuse Library between attempts + foreground |
-| 2048 | Arial.ttf in Create2048Scene.cs | sed → LegacyRuntime.ttf |
-| Breakout | Physics2D missing from manifest | Added com.unity.modules.physics2d |
-| Breakout | Namespace PartyGame.Breakout | Stripped to top-level classes |
-| Breakout | Empty files in Assets/Scripts/Game/ | Removed, used Assets/Scripts/Breakout/ |
+### _2048TemplateDemo
 
-## Build Artifact Summary
+- 状态: PASS
+- 产物目录: `screen/Build_2048`
+- 自动检查: `node scripts/check-unity-webgl-build.js screen/Build_2048` -> `22/22`
+- 报告: `UnityExamples/_2048TemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md`
+- 修复记录: 初次构建因 `Arial.ttf` 在 Unity 6 中不可用而失败，已改为 `LegacyRuntime.ttf` 后成功
 
-| Game | .data | .framework.js | .loader.js | .wasm |
-|---|---|---|---|---|
-| Snake | 3.8 MB | 381 KB | 27 KB | 15.6 MB |
-| 2048 | 3.8 MB | 380 KB | 19 KB | 15.5 MB |
-| Breakout | 3.9 MB | 705 KB | 38 KB | 31.1 MB |
+### BreakoutTemplateDemo
 
-## Constraints Verification
+- 状态: PASS
+- 产物目录: `screen/Build_Breakout`
+- 自动检查: `node scripts/check-unity-webgl-build.js screen/Build_Breakout` -> `22/22`
+- 报告: `UnityExamples/BreakoutTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md`
+- 修复记录: 初次构建出现 WebGL link duplicate symbol；已清理 `Library/` 和 `Temp/`、删除误拷贝的 `Assets/Scripts/Game/*` 副本，并将 builder 对齐为扁平输出后成功
 
-| Constraint | Status |
-|---|---|
-| server.js modified | ❌ 0 bytes |
-| current_phase changed | ❌ No |
-| Five Iron Laws broken | ❌ No |
-| Protocol changed | ❌ No |
-| Tag created | ❌ No |
+## Modified Files
 
-## Issues Remaining
+### Core source and builder changes
 
-- Breakout output in `Build/` subdirectory (different structure)
-- All games need real-link WebSocket + browser canvas verification
-- PartyGameBridge.jslib present via WebGL template (not in build output)
+- `UnityExamples/SnakeTemplateDemo/Assets/Editor/CreateSnakeScene.cs`
+- `UnityExamples/SnakeTemplateDemo/Assets/Editor/SnakeWebGLBuilder.cs`
+- `UnityExamples/SnakeTemplateDemo/Assets/Plugins/WebGL/PartyGameBridge.jslib`
+- `UnityExamples/_2048TemplateDemo/Assets/Editor/Create2048Scene.cs`
+- `UnityExamples/_2048TemplateDemo/Assets/Editor/Game2048WebGLBuilder.cs`
+- `UnityExamples/_2048TemplateDemo/Assets/Scripts/Game/GridCell.cs`
+- `UnityExamples/_2048TemplateDemo/Assets/Scripts/Game/Game2048Manager.cs`
+- `UnityExamples/_2048TemplateDemo/Assets/Plugins/WebGL/PartyGameBridge.jslib`
+- `UnityExamples/_2048TemplateDemo/ProjectSettings/ProjectSettings.asset`
+- `UnityExamples/BreakoutTemplateDemo/Assets/Editor/CreateBreakoutScene.cs`
+- `UnityExamples/BreakoutTemplateDemo/Assets/Editor/BreakoutWebGLBuilder.cs`
+- `UnityExamples/BreakoutTemplateDemo/Assets/Scripts/Breakout/BallController.cs`
+- `UnityExamples/BreakoutTemplateDemo/Assets/Scripts/Breakout/BreakoutGameManager.cs`
+- `UnityExamples/BreakoutTemplateDemo/Assets/Scripts/Breakout/PaddleController.cs`
+- `UnityExamples/BreakoutTemplateDemo/Assets/Plugins/WebGL/PartyGameBridge.jslib`
+- `UnityExamples/BreakoutTemplateDemo/ProjectSettings/ProjectSettings.asset`
+
+### Generated/updated verification artifacts
+
+- `UnityExamples/SnakeTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md`
+- `UnityExamples/_2048TemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md`
+- `UnityExamples/BreakoutTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md`
+
+### Build outputs
+
+- `screen/Build_Snake/*`
+- `screen/Build_2048/*`
+- `screen/Build_Breakout/*`
+
+## Failure and Recovery Notes
+
+- Snake: no new failure in this queue
+- 2048: fixed `Arial.ttf` incompatibility
+- Breakout: fixed duplicate-symbol link failure via clean rebuild and builder flattening
+
+## Shared Constraints
+
+- `server.js` 未修改
+- 核心协议未修改
+- 五条铁律未修改
+- `RELEASE_STATE.json` 未修改
+- 未打 tag
+
+## QClaw Involvement
+
+不需要额外 QClaw 介入。当前队列已完成并通过自动检查。

@@ -1,60 +1,58 @@
-# WebGL Build Validation Report — Snake
+# SnakeTemplateDemo — WebGL Build Validation Report
 
-**Game:** SnakeTemplateDemo  
-**Status:** ✅ PASS  
-**Check:** 22/22  
-**Build: 2026-05-23 11:30 PDT**
+**执行日期:** 2026-05-23  
+**执行者:** Codex  
+**任务:** Unity 6 真实 WebGL Build 验证  
+**收口判定:** ✅ PASS
 
-## Build
+---
 
-| Item | Value |
+## 1. 构建信息
+
+| 项目 | 值 |
 |---|---|
-| Unity | 6000.4.8f1 |
-| Method | SnakeWebGLBuilder.BuildWebGL |
-| Attempts | 6 |
-| Fixes | Arial.ttf→LegacyRuntime.ttf + foreground build |
+| Unity 版本 | 6000.4.8f1 |
+| Build 命令 | `EMSDK_PYTHON=/Users/applemima1111/.local/bin/python3.11 /Applications/Unity/Hub/Editor/6000.4.8f1/Unity.app/Contents/MacOS/Unity -quit -batchmode -nographics -acceptSoftwareTermsForThisRunOnly -projectPath UnityExamples/SnakeTemplateDemo -executeMethod SnakeWebGLBuilder.BuildWebGL -logFile logs/codex/build-snake.log` |
+| Build 输出目录 | `screen/Build_Snake` |
+| Build 结果 | ✅ Success |
+| 自动检查结果 | ✅ 22/22 checks passed |
 
-## Artifacts (screen/Build_Snake)
+## 2. Build 产物清单
 
-| File | Size |
+`screen/Build_Snake/` 最终文件：
+
+| 文件 | 说明 |
 |---|---|
-| Build_Snake.data | 3.8 MB |
-| Build_Snake.framework.js | 381 KB |
-| Build_Snake.loader.js | 27 KB |
-| Build_Snake.wasm | 15.6 MB |
-| index.html | 5.3 KB |
-| partygame-template.js | 6.2 KB |
+| `Build_Snake.loader.js` | Unity WebGL loader |
+| `Build_Snake.framework.js` | Unity WebGL framework |
+| `Build_Snake.wasm` | WebAssembly binary |
+| `Build_Snake.data` | Unity asset data |
+| `index.html` | PartyGameTemplate output page |
+| `partygame-template.js` | SDK bridge script |
 
-## Checklist
+## 3. 自动检查结果
 
-| # | Item | Status |
-|---|---|---|
-| 1 | Build directory exists | ✅ |
-| 2 | .loader.js present | ✅ |
-| 3 | .framework.js present | ✅ |
-| 4 | .wasm present | ✅ |
-| 5 | .data present | ✅ |
-| 6 | index.html present | ✅ |
-| 7 | loader.js > 1KB | ✅ |
-| 8 | framework.js > 10KB | ✅ |
-| 9 | wasm > 100KB | ✅ |
-| 10 | data > 1KB | ✅ |
-| 11 | PartyGameBridge.jslib | ✅ |
-| 12 | SendToServer bridge | ✅ |
-| 13 | OnPlatformMessage bridge | ✅ |
-| 14 | Template index.html | ✅ |
-| 15 | partygame-sdk reference | ✅ |
+```bash
+node scripts/check-unity-webgl-build.js screen/Build_Snake
+```
 
-## Constraints
+**结果: 22/22 checks passed** ✅
 
-| Item | Status |
+## 4. 修复与收口记录
+
+- 该游戏在本次队列中未出现新的构建失败。
+- 输出目录已按要求独立为 `screen/Build_Snake`。
+- `PartyGameBridge.jslib` 顶层日志污染问题已在前置修复中清除，未再复发。
+
+## 5. 未修改项
+
+| 项 | 状态 |
 |---|---|
-| server.js unmodified | ✅ |
-| Protocol intact | ✅ |
-| Five Iron Laws intact | ✅ |
-| RELEASE_STATE unchanged | ✅ |
+| 核心协议 | 未修改 ✅ |
+| `server.js` | 未修改 ✅ |
+| `RELEASE_STATE.json` | 未修改 ✅ |
+| 五条铁律 | 未修改 ✅ |
 
-## Next
+## 6. 结论
 
-- [ ] Browser canvas render test (Safari/Chrome)
-- [ ] Real-link WebSocket test (controller→server→screen→Unity)
+**收口判定: ✅ PASS**

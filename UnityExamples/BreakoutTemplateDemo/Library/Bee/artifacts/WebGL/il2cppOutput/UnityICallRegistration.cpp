@@ -1872,18 +1872,6 @@ void RegisterAllStrippedInternalCalls()
 
 	//End Registrations for type : UnityEngine.PlayerConnectionInternal
 
-	//Start Registrations for type : UnityEngine.Profiling.Profiler
-
-		//System.Void UnityEngine.Profiling.Profiler::BeginSampleImpl_Injected(UnityEngine.Bindings.ManagedSpanWrapper&,System.IntPtr)
-		void Register_UnityEngine_Profiling_Profiler_BeginSampleImpl_Injected();
-		Register_UnityEngine_Profiling_Profiler_BeginSampleImpl_Injected();
-
-		//System.Void UnityEngine.Profiling.Profiler::EndSample()
-		void Register_UnityEngine_Profiling_Profiler_EndSample();
-		Register_UnityEngine_Profiling_Profiler_EndSample();
-
-	//End Registrations for type : UnityEngine.Profiling.Profiler
-
 	//Start Registrations for type : UnityEngine.QualitySettings
 
 		//System.Int32 UnityEngine.QualitySettings::get_count()
@@ -2576,99 +2564,11 @@ void RegisterAllStrippedInternalCalls()
 
 	//End Registrations for type : UnityEngine.TextCore.Text.TextGenerationInfo
 
-	//Start Registrations for type : UnityEngine.TextCore.Text.TextLib
-
-		//System.Int32 UnityEngine.TextCore.Text.TextLib::GetCharacterCount(System.IntPtr)
-		void Register_UnityEngine_TextCore_Text_TextLib_GetCharacterCount();
-		Register_UnityEngine_TextCore_Text_TextLib_GetCharacterCount();
-
-	//End Registrations for type : UnityEngine.TextCore.Text.TextLib
-
 	//Start Registrations for type : UnityEngine.TextCore.Text.TextSelectionService
-
-		//System.Int32 UnityEngine.TextCore.Text.TextSelectionService::GetCursorLogicalIndexFromPosition_Injected(System.IntPtr,UnityEngine.Vector2&)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_GetCursorLogicalIndexFromPosition_Injected();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_GetCursorLogicalIndexFromPosition_Injected();
-
-		//System.Int32 UnityEngine.TextCore.Text.TextSelectionService::GetEndOfPreviousWord(System.IntPtr,System.Int32)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_GetEndOfPreviousWord();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_GetEndOfPreviousWord();
-
-		//System.Int32 UnityEngine.TextCore.Text.TextSelectionService::GetFirstCharacterIndexOnLine(System.IntPtr,System.Int32)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_GetFirstCharacterIndexOnLine();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_GetFirstCharacterIndexOnLine();
-
-		//System.Int32 UnityEngine.TextCore.Text.TextSelectionService::GetLastCharacterIndexOnLine(System.IntPtr,System.Int32)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_GetLastCharacterIndexOnLine();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_GetLastCharacterIndexOnLine();
-
-		//System.Int32 UnityEngine.TextCore.Text.TextSelectionService::GetLineNumber(System.IntPtr,System.Int32)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_GetLineNumber();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_GetLineNumber();
-
-		//System.Int32 UnityEngine.TextCore.Text.TextSelectionService::GetStartOfNextWord(System.IntPtr,System.Int32)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_GetStartOfNextWord();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_GetStartOfNextWord();
-
-		//System.Int32 UnityEngine.TextCore.Text.TextSelectionService::LineDownCharacterPosition(System.IntPtr,System.Int32)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_LineDownCharacterPosition();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_LineDownCharacterPosition();
-
-		//System.Int32 UnityEngine.TextCore.Text.TextSelectionService::LineUpCharacterPosition(System.IntPtr,System.Int32)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_LineUpCharacterPosition();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_LineUpCharacterPosition();
-
-		//System.Int32 UnityEngine.TextCore.Text.TextSelectionService::NextCodePointIndex(System.IntPtr,System.Int32)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_NextCodePointIndex();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_NextCodePointIndex();
-
-		//System.Int32 UnityEngine.TextCore.Text.TextSelectionService::PreviousCodePointIndex(System.IntPtr,System.Int32)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_PreviousCodePointIndex();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_PreviousCodePointIndex();
-
-		//System.Single UnityEngine.TextCore.Text.TextSelectionService::GetCharacterHeightFromIndex(System.IntPtr,System.Int32)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_GetCharacterHeightFromIndex();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_GetCharacterHeightFromIndex();
-
-		//System.Single UnityEngine.TextCore.Text.TextSelectionService::GetLineHeight(System.IntPtr,System.Int32)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_GetLineHeight();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_GetLineHeight();
 
 		//System.Void UnityEngine.TextCore.Text.TextSelectionService::GetCursorPositionFromLogicalIndex_Injected(System.IntPtr,System.Int32,UnityEngine.Vector2&)
 		void Register_UnityEngine_TextCore_Text_TextSelectionService_GetCursorPositionFromLogicalIndex_Injected();
 		Register_UnityEngine_TextCore_Text_TextSelectionService_GetCursorPositionFromLogicalIndex_Injected();
-
-		//System.Void UnityEngine.TextCore.Text.TextSelectionService::GetHighlightRectangles_Injected(System.IntPtr,System.Int32,System.Int32,UnityEngine.Bindings.BlittableArrayWrapper&)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_GetHighlightRectangles_Injected();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_GetHighlightRectangles_Injected();
-
-		//System.Void UnityEngine.TextCore.Text.TextSelectionService::SelectCurrentParagraph(System.IntPtr,System.Int32&,System.Int32&)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_SelectCurrentParagraph();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_SelectCurrentParagraph();
-
-		//System.Void UnityEngine.TextCore.Text.TextSelectionService::SelectCurrentWord(System.IntPtr,System.Int32,System.Int32&,System.Int32&)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_SelectCurrentWord();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_SelectCurrentWord();
-
-		//System.Void UnityEngine.TextCore.Text.TextSelectionService::SelectToEndOfParagraph(System.IntPtr,System.Int32&)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_SelectToEndOfParagraph();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_SelectToEndOfParagraph();
-
-		//System.Void UnityEngine.TextCore.Text.TextSelectionService::SelectToNextParagraph(System.IntPtr,System.Int32&)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_SelectToNextParagraph();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_SelectToNextParagraph();
-
-		//System.Void UnityEngine.TextCore.Text.TextSelectionService::SelectToPreviousParagraph(System.IntPtr,System.Int32&)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_SelectToPreviousParagraph();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_SelectToPreviousParagraph();
-
-		//System.Void UnityEngine.TextCore.Text.TextSelectionService::SelectToStartOfParagraph(System.IntPtr,System.Int32&)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_SelectToStartOfParagraph();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_SelectToStartOfParagraph();
-
-		//System.Void UnityEngine.TextCore.Text.TextSelectionService::Substring_Injected(System.IntPtr,System.Int32,System.Int32,UnityEngine.Bindings.ManagedSpanWrapper&)
-		void Register_UnityEngine_TextCore_Text_TextSelectionService_Substring_Injected();
-		Register_UnityEngine_TextCore_Text_TextSelectionService_Substring_Injected();
 
 	//End Registrations for type : UnityEngine.TextCore.Text.TextSelectionService
 

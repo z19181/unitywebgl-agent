@@ -15824,16 +15824,6 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void RuntimeHelpers_PrepareConstrainedRegions
 #pragma clang diagnostic ignored "-Winvalid-offsetof"
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
-IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR void Unsafe_InitBlockUnaligned_m6F2353EB9ABC9320E61629FAEE23948C80BFF03A (uint8_t* ___0_startAddress, uint8_t ___1_value, uint32_t ___2_byteCount, const RuntimeMethod* method) 
-{
-	{
-		uint8_t* L_0 = ___0_startAddress;
-		uint8_t L_1 = ___1_value;
-		uint32_t L_2 = ___2_byteCount;
-		il2cpp_codegen_memset(L_0, L_1, L_2);
-		return;
-	}
-}
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
@@ -22246,7 +22236,7 @@ IL2CPP_EXTERN_C IL2CPP_METHOD_ATTR RuntimeObject* ResourceSet_GetEnumeratorHelpe
 IL_001a:
 	{
 		RuntimeObject* L_4;
-		L_4 = VirtualFuncInvoker0< RuntimeObject* >::Invoke(20, G_B2_0);
+		L_4 = VirtualFuncInvoker0< RuntimeObject* >::Invoke(19, G_B2_0);
 		return L_4;
 	}
 }
@@ -22495,7 +22485,7 @@ IL_0028:
 	{
 		String_t* L_6 = ___0_name;
 		RuntimeObject* L_7;
-		L_7 = VirtualFuncInvoker1< RuntimeObject*, RuntimeObject* >::Invoke(18, G_B4_0, L_6);
+		L_7 = VirtualFuncInvoker1< RuntimeObject*, RuntimeObject* >::Invoke(17, G_B4_0, L_6);
 		return L_7;
 	}
 }
@@ -22549,7 +22539,7 @@ IL_001b:
 		V_1 = L_7;
 		Hashtable_tEFC3B6496E6747787D8BB761B51F2AE3A8CFFE2D* L_8 = V_0;
 		RuntimeObject* L_9;
-		L_9 = VirtualFuncInvoker0< RuntimeObject* >::Invoke(20, L_8);
+		L_9 = VirtualFuncInvoker0< RuntimeObject* >::Invoke(19, L_8);
 		V_2 = L_9;
 		goto IL_004b;
 	}
@@ -22587,7 +22577,7 @@ IL_005a:
 		Hashtable_tEFC3B6496E6747787D8BB761B51F2AE3A8CFFE2D* L_18 = V_1;
 		String_t* L_19 = ___0_name;
 		RuntimeObject* L_20;
-		L_20 = VirtualFuncInvoker1< RuntimeObject*, RuntimeObject* >::Invoke(18, L_18, L_19);
+		L_20 = VirtualFuncInvoker1< RuntimeObject*, RuntimeObject* >::Invoke(17, L_18, L_19);
 		return L_20;
 	}
 }
