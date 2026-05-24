@@ -221,3 +221,11 @@ The governance layer should be merged into the v1.0.1 baseline. It adds structur
 - **Cost observability** added via Token Cost Agent metrics
 - **Model quality routing** via Model Router rules
 - **Zero protocol/server impact** — all agents are read-only intelligence layer
+
+### v1.1.2: Agent Dashboard
+
+- **Next.js 14** runtime console with 7 interactive pages
+- **Dark theme** with glass-morphism panels and PartyGame green accent
+- **Mock data adapters** → production Prometheus/GitHub integration in v1.1.3
+- **Grafana-embeddable** via iframe widget
+- All dashboards read from existing docs (RUNTIME_FAILURE_MATRIX, RELEASE_STATE, WEBGL_RUNTIME_PIPELINE)

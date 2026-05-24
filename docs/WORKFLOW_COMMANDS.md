@@ -308,3 +308,21 @@
 ```
 
 **Reference:** `agents/runtime-triage/`, `docs/RUNTIME_FAILURE_MATRIX.md`
+
+---
+
+### `/dashboard` — Agent Intelligence Console
+
+**Authority:** Agent Dashboard (v1.1.2)
+
+**Routes:**
+- `/` — Overview: agent landscape, KPIs, recent activity
+- `/agents` — 13 agents with status, type, tasks, failures
+- `/runtime` — RTE codes, severity, recovery plans, trends
+- `/cost` — Token usage, model breakdown, cost history
+- `/rag` — Retrieval queries, categories, top docs
+- `/builds` — Game builds, checks, duration, release gates
+- `/release` — Canary phase, rollout %, gate checklist, rollback
+- `/artifacts` — Screenshots, logs, traces, snapshots
+
+**Access:** `http://localhost:3000` after `cd agent-dashboard && npm run dev`

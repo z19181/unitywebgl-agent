@@ -538,4 +538,13 @@ _RuntimeVerifiedTemplate/
 - `docs/RAG_RETRIEVAL_POLICY.md` — Mandatory pre-modification retrieval
 - `docs/AGENT_DASHBOARD_PLAN.md` — Future dashboard panels
 
+### Agent Dashboard (v1.1.2)
+
+| Component | Location | Purpose |
+|---|---|---|
+| Dashboard App | `agent-dashboard/` | Next.js 14 runtime console |
+| Pages | 7 routes | Agents, Runtime, Cost, RAG, Builds, Release, Artifacts |
+| API Adapters | `lib/api/` | Mock data → Prometheus/GitHub (v1.1.3) |
+| Design | Dark theme, glass panels, runtime aesthetic | Agent console UI |
+
 ---

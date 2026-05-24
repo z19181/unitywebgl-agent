@@ -195,3 +195,17 @@ Every agent MUST:
 | Model Router Agent | Orchestrator | Route tasks to Cheap/Strong model based on complexity |
 
 **Total agents:** 9 (5 original + 4 intelligence layer)
+
+---
+
+## v1.1.2: Agent Dashboard (Next.js Runtime Console)
+
+| Component | Purpose |
+|---|---|
+| Dashboard App | `agent-dashboard/` — Next.js 14 TypeScript |
+| 7 Routes | /agents, /runtime, /cost, /rag, /builds, /release, /artifacts |
+| Design System | Dark theme, glass panels, monospace data, PartyGame green |
+| Data Layer | Mock adapters → Prometheus/GitHub API integration (v1.1.3) |
+| Integration | Embeddable in Grafana via iframe widget |
+
+**Tech stack:** Next.js 14 · React 18 · TypeScript · Tailwind CSS · Recharts · shadcn/ui
