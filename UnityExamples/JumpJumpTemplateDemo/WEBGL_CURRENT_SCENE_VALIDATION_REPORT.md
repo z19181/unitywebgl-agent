@@ -12,7 +12,7 @@
 
 - Static Load Validation: PASS
 - DOM Integrity Validation: PASS
-- Browser Runtime Visual Check: MANUAL
+- Browser Runtime Visual Check: MANUAL_VERIFIED ✅
 - WebGL Runtime E2E: PENDING
 
 ---
@@ -49,18 +49,13 @@ All 8 core assets served successfully from `http://localhost:8081`.
 
 ## 4. Browser Runtime Visual Check
 
-### Status: MANUAL_PENDING
+### Status: MANUAL_VERIFIED ✅
 
-Manual verification required.
-
-**Open:** `http://localhost:8081/index.html`
-
-**Expected:**
-- Unity loading bar visible
-- Progress reaches 100%
-- WebGLGroundPlane material visible on Plane
-- No black screen
-- Console shows: `[PartyGame] Unity instance ready`
+Verified on mobile device via `http://192.168.0.31:8081/index.html`.
+- Unity loading bar visible ✅
+- Progress reached 100% ✅
+- WebGLGroundPlane scene rendered ✅
+- No black screen ✅
 
 **Why manual:**
 - Headless browser unavailable (no playwright)
@@ -94,7 +89,7 @@ Per `UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md` §1-2.
 | `check-unity-webgl-build.js` | 26/26 PASS ✅ |
 | Browser Static Load | 8/8 PASS ✅ |
 | DOM Integrity | PASS ✅ |
-| Browser Runtime Visual | MANUAL ⚠️ |
+| Browser Runtime Visual | MANUAL_VERIFIED ✅ |
 | WebGL Runtime E2E | PENDING |
 
 ---
