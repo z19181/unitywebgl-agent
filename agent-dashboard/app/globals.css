@@ -101,3 +101,9 @@ body {
 .animate-fade-in {
   animation: fadeIn 0.5s ease-out;
 }
+
+/* Nav hover effect */
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e9ecef;
+}
