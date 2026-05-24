@@ -233,6 +233,23 @@
       "prometheus_targets_up": 3,
       "grafana_panels": 19,
       "metrics_count": 12
+    },
+    "metrics_bugfix_verified": true,
+    "metrics_regression_check": {
+      "date": "2026-05-23T18:15:01",
+      "no_object_promise": true,
+      "rooms_active_numeric": true,
+      "ws_connections_active_numeric": true,
+      "controllers_active_numeric": true,
+      "prometheus_targets_up": 3,
+      "grafana_dashboard_ok": true,
+      "code_coverage": {
+        "getActiveRooms_fix": "server/metrics/index.js:54",
+        "memory_store": "synchronous — store.rooms.size ✅",
+        "redis_store": "async — store.getRoomCount().then Promise checked ✅",
+        "other_active_metrics": "internal state counters — no Promise risk ✅"
+      }
     }
-  }
+  },
+  "last_verified": "2026-05-23T18:15:01"
 }
