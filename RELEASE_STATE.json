@@ -29,7 +29,7 @@
       "emsdk_python": "/Users/applemima1111/.local/bin/python3.11",
       "emsdk_fix_doc": "UnityExamples/UNITY_WEBGL_REAL_BUILD_FINAL_REPORT.md"
     },
-    "last_verified": "2026-05-23T11:42:00-07:00",
+    "last_verified": "2026-05-23T17:23:00-07:00",
     "game_build_queue": {
       "jumpjump": {
         "status": "PASS",
@@ -62,6 +62,12 @@
     "next_actions": {
       "platform": "Install Docker → deploy Grafana → Phase 4 gate",
       "games": "Codex builds Snake/2048/Breakout with EMSDK_PYTHON=python3.11"
+    },
+    "docker_install_attempts": {
+      "docker_desktop_cask": "failed — CDN connection reset (curl 35)",
+      "docker_cli_only": "installed — brew install docker (29.5.2)",
+      "colima": "installed — brew install colima (0.8.1), VM boots but docker daemon stalled",
+      "next": "check proxy settings or retry Docker Desktop cask"
     }
   },
   "target_version": "v1.0.0",
@@ -75,10 +81,14 @@
       "severity": "high",
       "issue": "Grafana monitoring stack not deployed",
       "blocks": "phase_4_canary_50_percent",
-      "resolution": "Run docker-compose.monitoring.yml with Prometheus + Grafana. Docker must be installed first (not available on current macOS host).",
+      "resolution": "Run docker compose with Prometheus + Grafana. Docker runtime installed (colima 0.8.1 + docker CLI 29.5.2), VM boots but Docker daemon not yet healthy.",
       "docker_required": true,
-      "docker_status": "not_installed",
-      "updated": "2026-05-23T11:13:00-07:00"
+      "docker_status": "partially_installed",
+      "updated": "2026-05-23T17:23:00-07:00",
+      "docker_cli_version": "29.5.2",
+      "colima_version": "0.8.1",
+      "vm_driver": "vz (Apple Virtualization)",
+      "remaining": "docker daemon startup inside colima VM (may need proxy workaround or Docker Desktop instead)"
     }
   ],
   "requires_human_approval": true,
