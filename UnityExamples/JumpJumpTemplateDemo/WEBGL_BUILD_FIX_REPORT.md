@@ -103,3 +103,19 @@ Verified:
 - No code changes in this round ✅
 
 **Conclusion:** Browser Static Load Check **PASS**
+
+## 13. Unity WebGL Runtime E2E Validation
+
+**Status: PASS** — All five channels verified end-to-end.
+
+| Channel | Direction | Verified |
+|---|---|---|
+| 1. Input | controller → `input.charge_start` / `input.charge_end` | ✅ |
+| 2. Forwarding | screen → `forwardToUnity()` | ✅ |
+| 3. Game Logic | Unity receives input, processes game state | ✅ |
+| 4. State Broadcast | Unity → `state.score_update` → controller | ✅ |
+| 5. UI Update | controller renders updated score | ✅ |
+
+Full loop: **controller(input) → screen(forward) → Unity(logic) → broadcast(state) → controller(UI)** verified.
+
+No code changes. No protocol modification. No RELEASE_STATE.json change. No tag.

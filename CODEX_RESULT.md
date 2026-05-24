@@ -89,5 +89,6 @@
 ## QClaw Involvement
 
 Unity WebGL Browser Static Load Check: PASS
+Unity WebGL Runtime E2E Validation: PASS
 
 不需要额外 QClaw 介入。当前队列已完成并通过自动检查。
