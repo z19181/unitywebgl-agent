@@ -52,12 +52,13 @@ function calculateScore(queryTokens, docKeywords, freshness) {
   };
 }
 
-function queryIndex(query, k = K) {
+function queryIndex(query, options = {}) {
+  const { k = K, silent = false } = options;
   const index = loadIndex();
   const queryTokens = tokenize(query);
 
   if (queryTokens.length === 0) {
-    console.warn('[Query Index] ⚠️ Query has no valid tokens after filtering.');
+    if (!silent) console.warn('[Query Index] ⚠️ Query has no valid tokens after filtering.');
     return [];
   }
 
@@ -166,4 +167,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { queryIndex, calculateScore, tokenize, extractSnippet };
+module.exports = { queryIndex, calculateScore, tokenize, extractSnippet, loadIndex };

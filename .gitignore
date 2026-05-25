@@ -47,3 +47,8 @@ MemoryCaptures/
 .next/
 out/
 next-env.d.ts
+
+# RAG Memory generated files
+agents/rag-memory/eval_results.json
+agents/rag-memory/eval_results.md
+agents/rag-memory/index.json

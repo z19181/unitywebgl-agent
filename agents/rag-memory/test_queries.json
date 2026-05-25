@@ -1,0 +1,259 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-05-25T14:20:00.000Z",
+  "description": "RAG retrieval evaluation query set (20 queries, 9 categories)",
+  "queries": [
+    {
+      "id": "Q001",
+      "query": "hard constraints server.js",
+      "expected_files": [
+        "docs/V1_1_4_STATE_SNAPSHOT.md",
+        "agents/rag-memory/RAG_RETRIEVAL_POLICY.md"
+      ],
+      "category": "hard_constraints",
+      "must_not_suggest": [
+        "modify server.js",
+        "parse game_message.type",
+        "controller inject playerIndex"
+      ]
+    },
+    {
+      "id": "Q002",
+      "query": "Unity WebGL material policy",
+      "expected_files": [
+        "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
+        "docs/V1_1_4_STATE_SNAPSHOT.md"
+      ],
+      "category": "material_policy",
+      "must_not_suggest": [
+        "HDRP materials",
+        "ShaderGraph",
+        "ComputeShader"
+      ]
+    },
+    {
+      "id": "Q003",
+      "query": "stash validation report",
+      "expected_files": [
+        "docs/STASH_VALIDATION_REPORT.md"
+      ],
+      "category": "git_governance",
+      "must_not_suggest": [
+        "drop stash without validation",
+        "apply stash to main branch directly"
+      ]
+    },
+    {
+      "id": "Q004",
+      "query": "release gate process",
+      "expected_files": [
+        "prompts/release_gate.prompt.md",
+        "docs/V1_1_4_STATE_SNAPSHOT.md"
+      ],
+      "category": "release_gate",
+      "must_not_suggest": [
+        "skip release gate",
+        "create tag without approval"
+      ]
+    },
+    {
+      "id": "Q005",
+      "query": "Agent Dashboard Next.js shadcn/ui",
+      "expected_files": [
+        "agent-dashboard/README.md",
+        "docs/V1_1_4_STATE_SNAPSHOT.md"
+      ],
+      "category": "dashboard",
+      "must_not_suggest": [
+        "use create-react-app",
+        "use Material-UI instead of shadcn/ui"
+      ]
+    },
+    {
+      "id": "Q006",
+      "query": "RAG memory retrieval policy",
+      "expected_files": [
+        "agents/rag-memory/RAG_RETRIEVAL_POLICY.md"
+      ],
+      "category": "rag_memory",
+      "must_not_suggest": [
+        "use embedding without API key",
+        "call OpenAI API without checking hard constraints"
+      ]
+    },
+    {
+      "id": "Q007",
+      "query": "token cost analysis Agent Intelligence",
+      "expected_files": [
+        "docs/V1_1_4_STATE_SNAPSHOT.md"
+      ],
+      "category": "token_cost",
+      "must_not_suggest": [
+        "ignore token cost",
+        "use unlimited tokens"
+      ]
+    },
+    {
+      "id": "Q008",
+      "query": "canary deployment pipeline v0.4.0",
+      "expected_files": [
+        "docs/V1_1_4_STATE_SNAPSHOT.md",
+        "docs/V1_1_4_RUNTIME_SANITY_REPORT.md"
+      ],
+      "category": "canary_pipeline",
+      "must_not_suggest": [
+        "deploy to production without canary",
+        "skip canary Phase 1 QA"
+      ]
+    },
+    {
+      "id": "Q009",
+      "query": "Unity WebGL build verification 26 checks",
+      "expected_files": [
+        "scripts/check-unity-webgl-build.js",
+        "docs/STASH_VALIDATION_REPORT.md"
+      ],
+      "category": "unity_webgl",
+      "must_not_suggest": [
+        "skip build verification",
+        "deploy without checking .wasm size"
+      ]
+    },
+    {
+      "id": "Q010",
+      "query": "Five Iron Laws PartyGameSDK",
+      "expected_files": [
+        "docs/V1_1_4_STATE_SNAPSHOT.md",
+        "docs/BASELINE.md"
+      ],
+      "category": "hard_constraints",
+      "must_not_suggest": [
+        "violate Law 2: server injects playerIndex",
+        "violate Law 4: Unity broadcasts states"
+      ]
+    },
+    {
+      "id": "Q011",
+      "query": "agent runtime architecture v1.1.2",
+      "expected_files": [
+        "docs/V1_1_4_STATE_SNAPSHOT.md"
+      ],
+      "category": "agent_runtime",
+      "must_not_suggest": [
+        "use single agent for all tasks",
+        "ignore agent intelligence layer"
+      ]
+    },
+    {
+      "id": "Q012",
+      "query": "Git workflow rebase force push SSH key",
+      "expected_files": [
+        "docs/STASH_VALIDATION_REPORT.md",
+        "memory/2026-05-25.md"
+      ],
+      "category": "git_governance",
+      "must_not_suggest": [
+        "use git push --force without lease",
+        "commit without running tests"
+      ]
+    },
+    {
+      "id": "Q013",
+      "query": "Unity WebGL runtime pipeline WEBGL_RUNTIME_PIPELINE",
+      "expected_files": [
+        "UnityExamples/WEBGL_RUNTIME_PIPELINE.md"
+      ],
+      "category": "unity_webgl",
+      "must_not_suggest": [
+        "modify Unity WebGL runtime without verification",
+        "use non-URP materials"
+      ]
+    },
+    {
+      "id": "Q014",
+      "query": "Material Policy URP Lit SimpleLit Unlit",
+      "expected_files": [
+        "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md"
+      ],
+      "category": "material_policy",
+      "must_not_suggest": [
+        "use HDRP for WebGL",
+        "use custom render features"
+      ]
+    },
+    {
+      "id": "Q015",
+      "query": "QClaw review prompt template",
+      "expected_files": [
+        "prompts/qclaw_review.prompt.md"
+      ],
+      "category": "rag_memory",
+      "must_not_suggest": [
+        "approve code without checking hard constraints",
+        "ignore Five Iron Laws in review"
+      ]
+    },
+    {
+      "id": "Q016",
+      "query": "Codex task decomposition prompt",
+      "expected_files": [
+        "prompts/codex_task.prompt.md"
+      ],
+      "category": "rag_memory",
+      "must_not_suggest": [
+        "create tasks without checking dependencies",
+        "ignore token cost in task planning"
+      ]
+    },
+    {
+      "id": "Q017",
+      "query": "Prometheus metrics Grafana dashboard Agent Dashboard",
+      "expected_files": [
+        "docker/prometheus/prometheus.yml"
+      ],
+      "category": "dashboard",
+      "must_not_suggest": [
+        "use Prometheus without Grafana",
+        "ignore metrics in Agent Dashboard"
+      ]
+    },
+    {
+      "id": "Q018",
+      "query": "PostgreSQL pgvector RAG Memory v1.2.0 Phase B",
+      "expected_files": [
+        "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md"
+      ],
+      "category": "rag_memory",
+      "must_not_suggest": [
+        "use pgvector without PostgreSQL",
+        "call embedding API without API key"
+      ]
+    },
+    {
+      "id": "Q019",
+      "query": "Unity WebGL baseline v0.1.0 PartyGameSDK",
+      "expected_files": [
+        "docs/BASELINE.md",
+        "PartyGameSDK-MVP/BASELINE.md"
+      ],
+      "category": "unity_webgl",
+      "must_not_suggest": [
+        "redo Unity WebGL baseline",
+        "modify v0.1.0 baseline"
+      ]
+    },
+    {
+      "id": "Q020",
+      "query": "server.js injection playerIndex PartyGameSDK protocol",
+      "expected_files": [
+        "docs/V1_1_4_STATE_SNAPSHOT.md",
+        "docs/PROTOCOL_GENERALIZATION_REPORT.md"
+      ],
+      "category": "hard_constraints",
+      "must_not_suggest": [
+        "modify server.js",
+        "parse game_message.type in server.js"
+      ]
+    }
+  ]
+}
