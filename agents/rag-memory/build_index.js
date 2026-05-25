@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { extractKeywords } = require('./tokenizer.js');
 
 // ========================================
 // v1.2.0 Phase A — RAG Memory Minimal Loop
@@ -101,17 +102,6 @@ function readFileContent(filePath) {
   }
 }
 
-function extractKeywords(content) {
-  // 简单 keyword 提取：小写、去标点、去停用词、去重
-  const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'up', 'about', 'into', 'over', 'after']);
-  return [...new Set(
-    content
-      .toLowerCase()
-      .replace(/[^\w\s]/g, ' ')
-      .split(/\s+/)
-      .filter(word => word.length > 2 && !stopWords.has(word))
-  )];
-}
 
 function buildIndex() {
   console.log('[Build Index] Starting...');

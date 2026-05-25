@@ -1,0 +1,71 @@
+{
+  "hard_constraints": [
+    "hard constraints",
+    "five iron laws",
+    "server.js",
+    "protocol",
+    "release_state",
+    "git tag",
+    "playerIndex"
+  ],
+  "unity_webgl": [
+    "unity webgl",
+    "build",
+    "wasm",
+    "loader.js",
+    "browser static load",
+    "runtime e2e"
+  ],
+  "material_policy": [
+    "shader",
+    "material",
+    "webgl-safe",
+    "unlit",
+    "simple lit",
+    "texture"
+  ],
+  "release_gate": [
+    "release gate",
+    "canary",
+    "phase",
+    "qa gate",
+    "manual approval"
+  ],
+  "dashboard": [
+    "agent dashboard",
+    "next.js",
+    "prometheus",
+    "grafana",
+    "mock mode"
+  ],
+  "agent_runtime": [
+    "agent runtime",
+    "qclaw",
+    "codex",
+    "release-manager",
+    "model-router"
+  ],
+  "rag_memory": [
+    "rag",
+    "retrieval",
+    "index",
+    "query",
+    "memory",
+    "context"
+  ],
+  "token_cost": [
+    "token",
+    "cost",
+    "budget",
+    "model router",
+    "cache"
+  ],
+  "git_governance": [
+    "git",
+    "stash",
+    "branch",
+    "commit",
+    "push",
+    "force-with-lease"
+  ]
+}
