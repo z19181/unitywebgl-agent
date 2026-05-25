@@ -39,34 +39,39 @@ if (!dirExists) {
   process.exit(1);
 }
 
-// Find .loader.js, .framework.js, .data, .wasm files
+// Find .loader.js, .framework.js, .data, .wasm files (supporting Unity standard Build/ layout)
 let files = {};
+function findSingleRecursive(suffix) {
+  return findRecursive(BUILD_DIR, suffix).find(Boolean);
+}
 check('Contains .loader.js', () => {
-  const found = fs.readdirSync(BUILD_DIR).filter(f => f.endsWith('.loader.js'));
-  if (found.length === 0) return 'NOT FOUND';
-  files.loader = found[0];
-  return `${found[0]}`;
+  const found = findSingleRecursive('.loader.js');
+  if (!found) return 'NOT FOUND';
+  files.loader = found;
+  return `${found}`;
 });
 check('Contains .framework.js', () => {
-  const found = fs.readdirSync(BUILD_DIR).filter(f => f.endsWith('.framework.js'));
-  if (found.length === 0) return 'NOT FOUND';
-  files.framework = found[0];
-  return `${found[0]}`;
+  const found = findSingleRecursive('.framework.js');
+  if (!found) return 'NOT FOUND';
+  files.framework = found;
+  return `${found}`;
 });
 check('Contains .wasm', () => {
-  const found = fs.readdirSync(BUILD_DIR).filter(f => f.endsWith('.wasm'));
-  if (found.length === 0) return 'NOT FOUND';
-  files.wasm = found[0];
-  return `${found[0]}`;
+  const found = findSingleRecursive('.wasm');
+  if (!found) return 'NOT FOUND';
+  files.wasm = found;
+  return `${found}`;
 });
 check('Contains .data', () => {
-  const found = fs.readdirSync(BUILD_DIR).filter(f => f.endsWith('.data'));
-  if (found.length === 0) return 'NOT FOUND';
-  files.data = found[0];
-  return `${found[0]}`;
+  const found = findSingleRecursive('.data');
+  if (!found) return 'NOT FOUND';
+  files.data = found;
+  return `${found}`;
 });
-check('Contains index.html', () => 
-  fs.readdirSync(BUILD_DIR).includes('index.html') || 'NOT FOUND');
+check('Contains index.html', () =>
+  fs.existsSync(path.join(BUILD_DIR, 'index.html')) || 'NOT FOUND');
+check('Contains Build directory', () =>
+  fs.existsSync(path.join(BUILD_DIR, 'Build')) || 'NOT FOUND');
 
 // ── Recursive search for Build/ subdir ──
 console.log('\n─── 2. Recursive File Search ───');
@@ -101,7 +106,10 @@ check('All .data files', () => allData.length > 0 ? allData.join('\n        ') :
 // ── Size Checks ──
 console.log('\n─── 3. Size Verification ───');
 function getSize(filepath) {
-  try { return fs.statSync(path.join(BUILD_DIR, filepath)).size; }
+  try {
+    const absolute = path.isAbsolute(filepath) ? filepath : path.join(BUILD_DIR, filepath);
+    return fs.statSync(absolute).size;
+  }
   catch (e) { return 0; }
 }
 
@@ -123,7 +131,18 @@ if (allData[0]) {
 }
 
 // ── PartyGameBridge.jslib ──
-console.log('\n─── 4. JSLib Plugin ───');
+console.log('\n─── 4. TemplateData ───');
+const templateDataDir = path.join(BUILD_DIR, 'TemplateData');
+check('TemplateData exists', () => fs.existsSync(templateDataDir));
+if (fs.existsSync(templateDataDir)) {
+  const templateEntries = fs.readdirSync(templateDataDir);
+  check('Contains style.css', () => templateEntries.includes('style.css') || 'NOT FOUND');
+  const progressFiles = templateEntries.filter(f => f.includes('progress-bar'));
+  check('Contains progress bar assets if provided', () => progressFiles.length > 0 ? progressFiles.join('\n        ') : 'NONE');
+}
+
+// ── PartyGameBridge.jslib ──
+console.log('\n─── 5. JSLib Plugin ───');
 const jslibPath = path.join(__dirname, '..', 'UnityExamples', 'JumpJumpTemplateDemo', 'Assets', 'Plugins', 'WebGL', 'PartyGameBridge.jslib');
 check('PartyGameBridge.jslib exists', () => fs.existsSync(jslibPath));
 if (fs.existsSync(jslibPath)) {
@@ -133,7 +152,7 @@ if (fs.existsSync(jslibPath)) {
 }
 
 // ── screen/index.html linkage ──
-console.log('\n─── 5. screen/index.html Linkage ───');
+console.log('\n─── 6. screen/index.html Linkage ───');
 const screenHtml = path.join(__dirname, '..', 'screen', 'index.html');
 if (fs.existsSync(screenHtml)) {
   const html = fs.readFileSync(screenHtml, 'utf8');
@@ -147,7 +166,7 @@ if (fs.existsSync(screenHtml)) {
 }
 
 // ── Template Check ──
-console.log('\n─── 6. WebGL Template ───');
+console.log('\n─── 7. WebGL Template ───');
 const templateHTML = path.join(__dirname, '..', 'UnityExamples', 'JumpJumpTemplateDemo', 'Assets', 'WebGLTemplates', 'PartyGameTemplate', 'index.html');
 if (fs.existsSync(templateHTML)) {
   const thtml = fs.readFileSync(templateHTML, 'utf8');

@@ -24,3 +24,21 @@ UnityExamples/*/Library/
 UnityExamples/*/Temp/
 UnityExamples/*/UserSettings/
 UnityExamples/*/obj/
+
+# Unity Generated
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+MemoryCaptures/
+# VS / Rider
+*.csproj
+*.sln
+*.user
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb

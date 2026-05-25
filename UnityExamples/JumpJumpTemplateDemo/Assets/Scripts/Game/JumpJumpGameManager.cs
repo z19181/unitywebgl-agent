@@ -34,6 +34,7 @@ public class JumpJumpGameManager : MonoBehaviour
 
     [Header("相机")]
     public CameraFollow cameraFollow;
+    public SplitScreenCameraRig splitScreenRig;
 
     [Header("场景")]
     public Transform spawnPointRoot;
@@ -65,6 +66,8 @@ public class JumpJumpGameManager : MonoBehaviour
     void Start()
     {
         Debug.Log("[JumpJumpGameManager] Initialized — v0.2.6");
+
+        EnsureSplitScreenRig();
 
         // Listen to PartyGameBridge
         if (PartyGameBridge.Instance != null)
@@ -181,6 +184,9 @@ public class JumpJumpGameManager : MonoBehaviour
         if (cameraFollow != null && cameraFollow.target == null)
             cameraFollow.SetTarget(go.transform);
 
+        if (splitScreenRig != null)
+            splitScreenRig.BindPlayer(playerIndex, go.transform);
+
         Debug.Log($"[JumpJump] P{playerIndex} spawned at {spawnPos}");
     }
 
@@ -291,5 +297,26 @@ public class JumpJumpGameManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void EnsureSplitScreenRig()
+    {
+        if (splitScreenRig != null)
+        {
+            splitScreenRig.primaryCamera = cameraFollow != null ? cameraFollow.GetComponent<Camera>() : splitScreenRig.primaryCamera;
+            splitScreenRig.Setup();
+            return;
+        }
+
+        Camera primaryCamera = cameraFollow != null ? cameraFollow.GetComponent<Camera>() : Camera.main;
+        if (primaryCamera == null)
+        {
+            Debug.LogWarning("[JumpJump] No camera found for split screen rig.");
+            return;
+        }
+
+        splitScreenRig = SplitScreenCameraRig.Create(primaryCamera);
+        splitScreenRig.cameraOffset = cameraFollow != null ? cameraFollow.offset : new Vector3(0f, 5f, -10f);
+        splitScreenRig.smoothSpeed = cameraFollow != null ? cameraFollow.smoothSpeed : 5f;
     }
 }

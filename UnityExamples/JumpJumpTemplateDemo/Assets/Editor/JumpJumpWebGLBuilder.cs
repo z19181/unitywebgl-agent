@@ -9,6 +9,8 @@ using System.IO;
 
 public class JumpJumpWebGLBuilder
 {
+    private const string OutputDirName = "WebGLBuild";
+
     // ═══════════════════════════════════════════════
     //  Interactive (Editor Menu)
     // ═══════════════════════════════════════════════
@@ -74,8 +76,8 @@ public class JumpJumpWebGLBuilder
 
         // ── 5. Build ──
         // Application.dataPath = .../UnityExamples/JumpJumpTemplateDemo/Assets
-        // Go up 3 levels to ProjectRoot, then into screen/Build/
-        string buildDir = Path.Combine(Application.dataPath, "../../../screen/Build");
+        // Go up 1 level to ProjectRoot, then into WebGLBuild/
+        string buildDir = Path.Combine(Application.dataPath, $"../{OutputDirName}");
         string fullBuildDir = Path.GetFullPath(buildDir);
         Debug.Log($"→ Output: {fullBuildDir}");
 
@@ -96,7 +98,7 @@ public class JumpJumpWebGLBuilder
 
         if (report.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
         {
-            FlattenBuiltFiles(fullBuildDir);
+            EnsureTemplateData(fullBuildDir);
 
             Debug.Log("\n╔══════════════════════════════════════════╗");
             Debug.Log("║  ✅ BUILD SUCCEEDED                      ║");
@@ -123,30 +125,56 @@ public class JumpJumpWebGLBuilder
         }
     }
 
-    static void FlattenBuiltFiles(string buildRoot)
+    private static void EnsureTemplateData(string buildRoot)
     {
-        string nestedBuildDir = Path.Combine(buildRoot, "Build");
-        if (!Directory.Exists(nestedBuildDir))
+        string sourceTemplateData = GetUnityTemplateDataPath();
+
+        string targetTemplateData = Path.Combine(buildRoot, "TemplateData");
+        if (Directory.Exists(targetTemplateData))
         {
-            Debug.Log("→ No nested Build/ directory found; skipping flatten step");
-            return;
+            Directory.Delete(targetTemplateData, true);
         }
 
-        Debug.Log("→ Flattening Build artifacts to output root...");
-        foreach (var file in Directory.GetFiles(nestedBuildDir, "*", SearchOption.AllDirectories))
+        CopyDirectory(sourceTemplateData, targetTemplateData);
+        Debug.Log($"→ TemplateData copied: {targetTemplateData}");
+    }
+
+    private static string GetUnityTemplateDataPath()
+    {
+        string contentsPath = EditorApplication.applicationContentsPath;
+        string installRootPath = Path.GetFullPath(Path.Combine(EditorApplication.applicationPath, ".."));
+
+        string[] candidates =
         {
-            var relativePath = Path.GetRelativePath(nestedBuildDir, file);
-            var targetPath = Path.Combine(buildRoot, relativePath);
-            var targetDir = Path.GetDirectoryName(targetPath);
-            if (!string.IsNullOrEmpty(targetDir))
+            Path.Combine(contentsPath, "PlaybackEngines/WebGLSupport/BuildTools/WebGLTemplates/Base/Default/TemplateData"),
+            Path.Combine(installRootPath, "PlaybackEngines/WebGLSupport/BuildTools/WebGLTemplates/Base/Default/TemplateData"),
+            Path.Combine(Path.GetFullPath(Path.Combine(installRootPath, "..", "Unity.app", "Contents")), "PlaybackEngines/WebGLSupport/BuildTools/WebGLTemplates/Base/Default/TemplateData")
+        };
+
+        foreach (string candidate in candidates)
+        {
+            if (Directory.Exists(candidate))
             {
-                Directory.CreateDirectory(targetDir);
+                return Path.GetFullPath(candidate);
             }
-
-            File.Copy(file, targetPath, true);
         }
 
-        Directory.Delete(nestedBuildDir, true);
-        Debug.Log("→ Flatten complete");
+        throw new DirectoryNotFoundException(
+            $"Unity TemplateData source not found. applicationContentsPath='{contentsPath}', applicationPath='{EditorApplication.applicationPath}', installRootPath='{installRootPath}'");
+    }
+
+    private static void CopyDirectory(string sourceDir, string targetDir)
+    {
+        Directory.CreateDirectory(targetDir);
+
+        foreach (var file in Directory.GetFiles(sourceDir))
+        {
+            File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)), true);
+        }
+
+        foreach (var directory in Directory.GetDirectories(sourceDir))
+        {
+            CopyDirectory(directory, Path.Combine(targetDir, Path.GetFileName(directory)));
+        }
     }
 }
