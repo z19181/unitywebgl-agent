@@ -131,12 +131,12 @@ async function ingest({ force = false } = {}) {
 
   console.log('[Ingest] Chunk quality stats:');
   console.log(`  Total chunks: ${chunkStats.total_chunks}`);
-  console.log(`  Header-only chunks: ${chunkStats.header_only_chunks}`);
-  console.log(`  Avg chunk chars: ${chunkStats.avg_chunk_chars}`);
-  console.log(`  Median chunk chars: ${chunkStats.median_chunk_chars}`);
-  console.log(`  Chunks < 80 chars: ${chunkStats.chunks_under_80}`);
-  console.log(`  Chunks > 2200 chars: ${chunkStats.chunks_over_2200}`);
-  console.log(`  Hard constraint chunks: ${chunkStats.hard_constraint_chunks}`);
+  console.log(`  Header-only chunks: ${chunkStats.header_only}`);
+  console.log(`  Header-dominated: ${chunkStats.header_dominated}`);
+  console.log(`  Avg chunk chars: ${chunkStats.avg_chars}`);
+  console.log(`  Median chunk chars: ${chunkStats.median_chars}`);
+  console.log(`  Min / Max chars: ${chunkStats.min_chars} / ${chunkStats.max_chars}`);
+  console.log(`  Tiny chunks (<120): ${chunkStats.tiny_chunks} (${chunkStats.tiny_pct}%)`);
   console.log(`  Governance chunks: ${chunkStats.governance_chunks}`);
 
   if (!qualityCheck.passed) {

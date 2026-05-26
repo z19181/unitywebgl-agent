@@ -8,7 +8,10 @@ const { Pool } = pg;
 let pool = null;
 
 function getPool() {
-  if (!pool) {
+  if (!pool || pool.ended) {
+    if (pool && pool.ended) {
+      pool = null; // clear dead pool
+    }
     const config = {
       host: process.env.PGHOST || 'localhost',
       port: parseInt(process.env.PGPORT || '5432', 10),
@@ -22,10 +25,10 @@ function getPool() {
 }
 
 async function closePool() {
-  if (pool) {
+  if (pool && !pool.ended) {
     await pool.end();
-    pool = null;
   }
+  pool = null;
 }
 
 // ========================================

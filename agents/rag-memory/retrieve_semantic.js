@@ -40,16 +40,29 @@ async function retrieve(query, { topK = 5, minSimilarity = 0.0 } = {}) {
  * - Keyword boost: documents whose chunks contain query keywords get a score multiplier
  * - Length norm: penalize very short chunks (<100 chars) that inflate similarity
  */
-async function retrieveWithSnippets(query, { topK = 5, minSimilarity = 0.0, maxSnippetsPerDoc = 2 } = {}) {
-  const queryEmbedding = await embedText(query);
-  const results = await store.semanticSearch(queryEmbedding, { topK: topK * 5, minSimilarity });
+async function retrieveWithSnippets(queryOrEmbedding, { topK = 5, minSimilarity = 0.0, maxSnippetsPerDoc = 2 } = {}) {
+  // 智能判断输入类型
+  let queryEmbedding;
+  let queryWords = [];
+  const isEmbeddingVector = Array.isArray(queryOrEmbedding) && typeof queryOrEmbedding[0] === 'number';
   
-  // Extract keywords from query (filter out stop words)
-  const STOP_WORDS = new Set(['the','a','an','is','are','was','were','to','of','in','for','on','with','and','or','not','be','as','at','by','it','this','that','i','you','we','they','how','what','which','who','when','where','why','can','do','does','did','will','would','should','could','may','might','have','has','had','my','your','our','their','its','about','from','up','out']);
-  const queryWords = query.toLowerCase()
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .split(/\s+/)
-    .filter(w => w.length > 2 && !STOP_WORDS.has(w));
+  if (isEmbeddingVector) {
+    // 已经是 embedding 向量，直接使用
+    queryEmbedding = queryOrEmbedding;
+    // 没有原始查询字符串，无法提取关键词，keyword boost 跳过
+  } else {
+    // 是字符串，需要 embed
+    const queryStr = queryOrEmbedding;
+    queryEmbedding = await embedText(queryStr);
+    
+    // Extract keywords from query string (filter out stop words)
+    const STOP_WORDS = new Set(['the','a','an','is','are','was','were','to','of','in','for','on','with','and','or','not','be','as','at','by','it','this','that','i','you','we','they','how','what','which','who','when','where','why','can','do','does','did','will','would','should','could','may','might','have','has','had','my','your','our','their','its','about','from','up','out']);
+    queryWords = queryStr.toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter(w => w.length > 2 && !STOP_WORDS.has(w));
+  }
+  const results = await store.semanticSearch(queryEmbedding, { topK: topK * 5, minSimilarity });
   
   // Per-chunk: compute keyword match count
   function keywordScore(content, words) {

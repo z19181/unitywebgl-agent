@@ -1,0 +1,2150 @@
+{
+  "generatedAt": "2026-05-26T06:37:54.658Z",
+  "modes": [
+    {
+      "mode": "keyword",
+      "summary": {
+        "meanRecallAt5": 0.45,
+        "meanPrecisionAt5": 0.13,
+        "meanMRR": 0.29708333333333337,
+        "meanNDCGAt5": 0.2835255412450058,
+        "totalViolations": 0,
+        "totalBlocked": 0
+      },
+      "results": [
+        {
+          "id": "Q001",
+          "query": "hard constraints server.js",
+          "category": "hard_constraints",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md",
+            "agents/rag-memory/RAG_RETRIEVAL_POLICY.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 1,
+          "ndcgAt5": 0.6131471927654584,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.7575645357743588
+            },
+            {
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/BUILD_GUIDE.md",
+              "score": 0.6584403640441664
+            }
+          ]
+        },
+        {
+          "id": "Q002",
+          "query": "Unity WebGL material policy",
+          "category": "material_policy",
+          "expected_files": [
+            "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.25,
+          "ndcgAt5": 0.2640681225725909,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/RUNTIME_AUTOMATION_PHASE_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "Q003",
+          "query": "stash validation report",
+          "category": "git_governance",
+          "expected_files": [
+            "docs/STASH_VALIDATION_REPORT.md"
+          ],
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 1,
+          "ndcgAt5": 1,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "UnityExamples/BreakoutTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "UnityExamples/SnakeTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "Q004",
+          "query": "release gate process",
+          "category": "release_gate",
+          "expected_files": [
+            "prompts/release_gate.prompt.md",
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0.125,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/AGENT_DASHBOARD_PLAN.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "Q005",
+          "query": "Agent Dashboard Next.js shadcn/ui",
+          "category": "dashboard",
+          "expected_files": [
+            "agent-dashboard/README.md",
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.2,
+          "ndcgAt5": 0.23719771276929622,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/AGENT_DASHBOARD_PLAN.md",
+              "score": 1
+            },
+            {
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "Q006",
+          "query": "RAG memory retrieval policy",
+          "category": "rag_memory",
+          "expected_files": [
+            "agents/rag-memory/RAG_RETRIEVAL_POLICY.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/RAG_RETRIEVAL_POLICY.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "Q007",
+          "query": "token cost analysis Agent Intelligence",
+          "category": "token_cost",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 0.2,
+          "ndcgAt5": 0.38685280723454163,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/AGENT_DASHBOARD_PLAN.md",
+              "score": 1
+            },
+            {
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "Q008",
+          "query": "canary deployment pipeline v0.4.0",
+          "category": "canary_pipeline",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md",
+            "docs/V1_1_4_RUNTIME_SANITY_REPORT.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.3333333333333333,
+          "ndcgAt5": 0.3065735963827292,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
+              "score": 0.9322580961989404
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.8333333333333333
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.7047692398328991
+            },
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.6447985783275503
+            },
+            {
+              "path": "PARTY_GAME_SDK_FINAL_HANDOFF.md",
+              "score": 0.5964117585931267
+            }
+          ]
+        },
+        {
+          "id": "Q009",
+          "query": "Unity WebGL build verification 26 checks",
+          "category": "unity_webgl",
+          "expected_files": [
+            "scripts/check-unity-webgl-build.js",
+            "docs/STASH_VALIDATION_REPORT.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.5,
+          "ndcgAt5": 0.38685280723454163,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/GOVERNANCE_LAYER_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_0_0_TAG_APPROVAL.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "Q010",
+          "query": "Five Iron Laws PartyGameSDK",
+          "category": "hard_constraints",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md",
+            "docs/BASELINE.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.3333333333333333,
+          "ndcgAt5": 0.3065735963827292,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/RAG_RETRIEVAL_POLICY.md",
+              "score": 1
+            },
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 1
+            },
+            {
+              "path": "agents/model-router/SOUL.md",
+              "score": 1
+            },
+            {
+              "path": "agents/rag-memory/SOUL.md",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "Q011",
+          "query": "agent runtime architecture v1.1.2",
+          "category": "agent_runtime",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 0.25,
+          "ndcgAt5": 0.43067655807339306,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/AGENT_DASHBOARD_PLAN.md",
+              "score": 1
+            },
+            {
+              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "Q012",
+          "query": "Git workflow rebase force push SSH key",
+          "category": "git_governance",
+          "expected_files": [
+            "docs/STASH_VALIDATION_REPORT.md",
+            "memory/2026-05-25.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.25,
+          "ndcgAt5": 0.2640681225725909,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.9860215053763441
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.9697692398328992
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.6377595247397236
+            },
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.461465244994217
+            },
+            {
+              "path": "docs/RUNTIME_ARTIFACT_POLICY.md",
+              "score": 0.38692533677081176
+            }
+          ]
+        },
+        {
+          "id": "Q013",
+          "query": "Unity WebGL runtime pipeline WEBGL_RUNTIME_PIPELINE",
+          "category": "unity_webgl",
+          "expected_files": [
+            "UnityExamples/WEBGL_RUNTIME_PIPELINE.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+              "score": 1
+            },
+            {
+              "path": "docs/GOVERNANCE_LAYER_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/RUNTIME_ARTIFACT_POLICY.md",
+              "score": 1
+            },
+            {
+              "path": "docs/RUNTIME_AUTOMATION_PHASE_REPORT.md",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "Q014",
+          "query": "Material Policy URP Lit SimpleLit Unlit",
+          "category": "material_policy",
+          "expected_files": [
+            "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md"
+          ],
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 0.25,
+          "ndcgAt5": 0.43067655807339306,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
+              "score": 1
+            },
+            {
+              "path": "UnityExamples/RUNTIME_VERIFIED_TEMPLATE_REPORT.md",
+              "score": 0.7691355713694166
+            }
+          ]
+        },
+        {
+          "id": "Q015",
+          "query": "QClaw review prompt template",
+          "category": "rag_memory",
+          "expected_files": [
+            "prompts/qclaw_review.prompt.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.8333333333333333
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.7064103183905173
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.7047692398328991
+            },
+            {
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "score": 0.6363078723684912
+            },
+            {
+              "path": "UnityExamples/AGENT_GAME_GENERATION_PROMPT.md",
+              "score": 0.6016422980425956
+            }
+          ]
+        },
+        {
+          "id": "Q016",
+          "query": "Codex task decomposition prompt",
+          "category": "rag_memory",
+          "expected_files": [
+            "prompts/codex_task.prompt.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.8333333333333333
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.7064103183905173
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.5297692398328991
+            },
+            {
+              "path": "UnityExamples/AGENT_GAME_GENERATION_PROMPT.md",
+              "score": 0.4266422980425956
+            },
+            {
+              "path": "docs/CODEX_QCLAW_HANDOFF.md",
+              "score": 0.4199682315537313
+            }
+          ]
+        },
+        {
+          "id": "Q017",
+          "query": "Prometheus metrics Grafana dashboard Agent Dashboard",
+          "category": "dashboard",
+          "expected_files": [
+            "docker/prometheus/prometheus.yml"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/AGENT_DASHBOARD_PLAN.md",
+              "score": 1
+            },
+            {
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+              "score": 1
+            },
+            {
+              "path": "docs/DEPLOYMENT_CHECKLIST.md",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "Q018",
+          "query": "PostgreSQL pgvector RAG Memory v1.2.0 Phase B",
+          "category": "rag_memory",
+          "expected_files": [
+            "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md"
+          ],
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 0.25,
+          "ndcgAt5": 0.43067655807339306,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/AGENT_DASHBOARD_PLAN.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/GOVERNANCE_LAYER_REPORT.md",
+              "score": 0.9590606364667196
+            }
+          ]
+        },
+        {
+          "id": "Q019",
+          "query": "Unity WebGL baseline v0.1.0 PartyGameSDK",
+          "category": "unity_webgl",
+          "expected_files": [
+            "docs/BASELINE.md",
+            "PartyGameSDK-MVP/BASELINE.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 1
+            }
+          ]
+        },
+        {
+          "id": "Q020",
+          "query": "server.js injection playerIndex PartyGameSDK protocol",
+          "category": "hard_constraints",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md",
+            "docs/PROTOCOL_GENERALIZATION_REPORT.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 1,
+          "ndcgAt5": 0.6131471927654584,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.9408978691076921
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.8536325406127394
+            },
+            {
+              "path": "UnityExamples/WEBGL_RUNTIME_PIPELINE.md",
+              "score": 0.8403028485125172
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "semantic",
+      "summary": {
+        "meanRecallAt5": 0.25,
+        "meanPrecisionAt5": 0.07999999999999999,
+        "meanMRR": 0.24380952380952378,
+        "meanNDCGAt5": 0.18756701768945772,
+        "totalViolations": 0,
+        "totalBlocked": 0
+      },
+      "results": [
+        {
+          "id": "Q001",
+          "query": "hard constraints server.js",
+          "category": "hard_constraints",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md",
+            "agents/rag-memory/RAG_RETRIEVAL_POLICY.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.2,
+          "ndcgAt5": 0.23719771276929622,
+          "violations": [],
+          "top5": [
+            {
+              "path": "agents/model-router/SOUL.md",
+              "score": 0.5311138739359117
+            },
+            {
+              "path": "docs/PRODUCTION_RELEASE_REPORT.md",
+              "score": 0.46877024663859634
+            },
+            {
+              "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
+              "score": 0.41158459858142327
+            },
+            {
+              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
+              "score": 0.4083456336145521
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.4023199337683603
+            }
+          ]
+        },
+        {
+          "id": "Q002",
+          "query": "Unity WebGL material policy",
+          "category": "material_policy",
+          "expected_files": [
+            "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.2,
+          "ndcgAt5": 0.23719771276929622,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/EMBEDDING_SECURITY_CONSTRAINTS.md",
+              "score": 0.5444564550606743
+            },
+            {
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 0.46235243594719244
+            },
+            {
+              "path": "UnityExamples/AGENT_GAME_GENERATION_PROMPT.md",
+              "score": 0.46143574312898794
+            },
+            {
+              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
+              "score": 0.440703420141352
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.4406968169506462
+            }
+          ]
+        },
+        {
+          "id": "Q003",
+          "query": "stash validation report",
+          "category": "git_governance",
+          "expected_files": [
+            "docs/STASH_VALIDATION_REPORT.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
+              "score": 0.5097943410307757
+            },
+            {
+              "path": "docs/PATH_SCOPED_RULES.md",
+              "score": 0.5017036173816499
+            },
+            {
+              "path": "UnityExamples/MULTI_GAME_WEBGL_BUILD_REPORT.md",
+              "score": 0.48328697631742656
+            },
+            {
+              "path": "docs/templates/HOTFIX_REPORT_TEMPLATE.md",
+              "score": 0.4736316968541142
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.46885093562416014
+            }
+          ]
+        },
+        {
+          "id": "Q004",
+          "query": "release gate process",
+          "category": "release_gate",
+          "expected_files": [
+            "prompts/release_gate.prompt.md",
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 1,
+          "ndcgAt5": 0.6131471927654584,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.514850517708452
+            },
+            {
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 0.4660999105856366
+            },
+            {
+              "path": "docs/EMBEDDING_SECURITY_CONSTRAINTS.md",
+              "score": 0.46495856646199596
+            },
+            {
+              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
+              "score": 0.44423587089866334
+            },
+            {
+              "path": "docs/V1_2_0_EMBEDDING_ARCHITECTURE_DECISION.md",
+              "score": 0.41457998231143933
+            }
+          ]
+        },
+        {
+          "id": "Q005",
+          "query": "Agent Dashboard Next.js shadcn/ui",
+          "category": "dashboard",
+          "expected_files": [
+            "agent-dashboard/README.md",
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.5542634104845797
+            },
+            {
+              "path": "agents/model-router/SOUL.md",
+              "score": 0.509298117316312
+            }
+          ]
+        },
+        {
+          "id": "Q006",
+          "query": "RAG memory retrieval policy",
+          "category": "rag_memory",
+          "expected_files": [
+            "agents/rag-memory/RAG_RETRIEVAL_POLICY.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0.16666666666666666,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
+              "score": 0.6487094049719814
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.6279258703520583
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.6173710453081498
+            },
+            {
+              "path": "docs/V1_2_0_PHASE_B_DEPENDENCY_PLAN.md",
+              "score": 0.5844659069337925
+            },
+            {
+              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
+              "score": 0.5824571935078152
+            }
+          ]
+        },
+        {
+          "id": "Q007",
+          "query": "token cost analysis Agent Intelligence",
+          "category": "token_cost",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/templates/WEBGL_RUNTIME_QA_TEMPLATE.md",
+              "score": 0.4843834836280365
+            },
+            {
+              "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
+              "score": 0.44968278449520727
+            }
+          ]
+        },
+        {
+          "id": "Q008",
+          "query": "canary deployment pipeline v0.4.0",
+          "category": "canary_pipeline",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md",
+            "docs/V1_1_4_RUNTIME_SANITY_REPORT.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 1,
+          "ndcgAt5": 0.6131471927654584,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.5976084390534112
+            },
+            {
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 0.5881793524581359
+            },
+            {
+              "path": "docs/RUNBOOK.md",
+              "score": 0.5503424774670591
+            },
+            {
+              "path": "docs/V1_2_0_EMBEDDING_ARCHITECTURE_DECISION.md",
+              "score": 0.540976775542889
+            },
+            {
+              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
+              "score": 0.5215277884881769
+            }
+          ]
+        },
+        {
+          "id": "Q009",
+          "query": "Unity WebGL build verification 26 checks",
+          "category": "unity_webgl",
+          "expected_files": [
+            "scripts/check-unity-webgl-build.js",
+            "docs/STASH_VALIDATION_REPORT.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.3333333333333333,
+          "ndcgAt5": 0.3065735963827292,
+          "violations": [],
+          "top5": [
+            {
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md",
+              "score": 0.6453669655299137
+            },
+            {
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_FIX_REPORT.md",
+              "score": 0.6453669655299137
+            },
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.6401928117629937
+            },
+            {
+              "path": "UnityExamples/BreakoutTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "score": 0.6289564731248662
+            },
+            {
+              "path": "docs/HTTPS_WSS_SUPPLEMENTAL_QA_PLAN.md",
+              "score": 0.6288893478445292
+            }
+          ]
+        },
+        {
+          "id": "Q010",
+          "query": "Five Iron Laws PartyGameSDK",
+          "category": "hard_constraints",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md",
+            "docs/BASELINE.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_0_0_TAG_APPROVAL.md",
+              "score": 0.7233901985037646
+            },
+            {
+              "path": "UnityExamples/_GameTemplateSkeleton/BUILD_GUIDE.md",
+              "score": 0.710829698641725
+            },
+            {
+              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
+              "score": 0.6960073708988082
+            },
+            {
+              "path": "docs/MANUAL_DEVICE_QA_RESULT_TEMPLATE.md",
+              "score": 0.6742208166262414
+            },
+            {
+              "path": "UnityExamples/SnakeTemplateDemo/GAME_SPEC.md",
+              "score": 0.6685534520599834
+            }
+          ]
+        },
+        {
+          "id": "Q011",
+          "query": "agent runtime architecture v1.1.2",
+          "category": "agent_runtime",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0.14285714285714285,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+              "score": 0.7051194753398858
+            },
+            {
+              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+              "score": 0.675473516890331
+            },
+            {
+              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
+              "score": 0.654618103632185
+            },
+            {
+              "path": "docs/RUNTIME_ARTIFACT_POLICY.md",
+              "score": 0.646561888652751
+            },
+            {
+              "path": "docs/WORKFLOW_COMMANDS.md",
+              "score": 0.6396224042240075
+            }
+          ]
+        },
+        {
+          "id": "Q012",
+          "query": "Git workflow rebase force push SSH key",
+          "category": "git_governance",
+          "expected_files": [
+            "docs/STASH_VALIDATION_REPORT.md",
+            "memory/2026-05-25.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 1,
+          "ndcgAt5": 0.6131471927654584,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.5977062698028413
+            },
+            {
+              "path": "docs/WEBGL_RUNTIME_AUTOMATION_PLAN.md",
+              "score": 0.5963966790045122
+            },
+            {
+              "path": "docs/PATH_SCOPED_RULES.md",
+              "score": 0.5846213196781351
+            },
+            {
+              "path": "docs/QA_MOBILE_LOG.md",
+              "score": 0.5607725402391798
+            },
+            {
+              "path": "docs/RUNTIME_FAILURE_MATRIX.md",
+              "score": 0.560555176317834
+            }
+          ]
+        },
+        {
+          "id": "Q013",
+          "query": "Unity WebGL runtime pipeline WEBGL_RUNTIME_PIPELINE",
+          "category": "unity_webgl",
+          "expected_files": [
+            "UnityExamples/WEBGL_RUNTIME_PIPELINE.md"
+          ],
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 0.5,
+          "ndcgAt5": 0.6309297535714575,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.6462835123497946
+            },
+            {
+              "path": "UnityExamples/WEBGL_RUNTIME_PIPELINE.md",
+              "score": 0.6437080439882069
+            },
+            {
+              "path": "docs/RUNTIME_ARTIFACT_POLICY.md",
+              "score": 0.6365994677112304
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.6364826558779159
+            },
+            {
+              "path": "docs/WORKFLOW_COMMANDS.md",
+              "score": 0.6121809569792487
+            }
+          ]
+        },
+        {
+          "id": "Q014",
+          "query": "Material Policy URP Lit SimpleLit Unlit",
+          "category": "material_policy",
+          "expected_files": [
+            "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_0_0_TAG_APPROVAL.md",
+              "score": 0.7369818739694498
+            },
+            {
+              "path": "UnityExamples/_GameTemplateSkeleton/BUILD_GUIDE.md",
+              "score": 0.7130377161267639
+            },
+            {
+              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
+              "score": 0.7123490183347663
+            },
+            {
+              "path": "docs/MANUAL_DEVICE_QA_RESULT_TEMPLATE.md",
+              "score": 0.6980178175192605
+            },
+            {
+              "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.6891168638662108
+            }
+          ]
+        },
+        {
+          "id": "Q015",
+          "query": "QClaw review prompt template",
+          "category": "rag_memory",
+          "expected_files": [
+            "prompts/qclaw_review.prompt.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/PATH_SCOPED_RULES.md",
+              "score": 0.5985255513335432
+            },
+            {
+              "path": "UnityExamples/MULTI_GAME_WEBGL_BUILD_REPORT.md",
+              "score": 0.5867527905041617
+            },
+            {
+              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
+              "score": 0.5856066958984159
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.5838817460329819
+            },
+            {
+              "path": "docs/HTTPS_WSS_SUPPLEMENTAL_QA_PLAN.md",
+              "score": 0.5763134269898448
+            }
+          ]
+        },
+        {
+          "id": "Q016",
+          "query": "Codex task decomposition prompt",
+          "category": "rag_memory",
+          "expected_files": [
+            "prompts/codex_task.prompt.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
+              "score": 0.5894379431279494
+            },
+            {
+              "path": "docs/WEBGL_RUNTIME_AUTOMATION_PLAN.md",
+              "score": 0.5668818271653286
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+              "score": 0.5483798119960248
+            },
+            {
+              "path": "docs/V1_2_0_PHASE_B_ENV_SETUP.md",
+              "score": 0.5433778917773016
+            },
+            {
+              "path": "agents/rag-memory/SOUL.md",
+              "score": 0.5404011110968236
+            }
+          ]
+        },
+        {
+          "id": "Q017",
+          "query": "Prometheus metrics Grafana dashboard Agent Dashboard",
+          "category": "dashboard",
+          "expected_files": [
+            "docker/prometheus/prometheus.yml"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/PRODUCTION_RELEASE_REPORT.md",
+              "score": 0.5584647317333559
+            },
+            {
+              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
+              "score": 0.5256945590495866
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.49084757794961864
+            },
+            {
+              "path": "agents/model-router/SOUL.md",
+              "score": 0.4896376204852473
+            },
+            {
+              "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
+              "score": 0.4615267613002523
+            }
+          ]
+        },
+        {
+          "id": "Q018",
+          "query": "PostgreSQL pgvector RAG Memory v1.2.0 Phase B",
+          "category": "rag_memory",
+          "expected_files": [
+            "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md"
+          ],
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 0.3333333333333333,
+          "ndcgAt5": 0.5,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_2_0_PHASE_B_ENV_SETUP.md",
+              "score": 0.7980331759747306
+            },
+            {
+              "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
+              "score": 0.7558211250709114
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.7373086287911333
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+              "score": 0.7269029953407319
+            },
+            {
+              "path": "docs/EMBEDDING_COST_MODEL.md",
+              "score": 0.6779046771601247
+            }
+          ]
+        },
+        {
+          "id": "Q019",
+          "query": "Unity WebGL baseline v0.1.0 PartyGameSDK",
+          "category": "unity_webgl",
+          "expected_files": [
+            "docs/BASELINE.md",
+            "PartyGameSDK-MVP/BASELINE.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_0_0_TAG_APPROVAL.md",
+              "score": 0.7295399794436845
+            },
+            {
+              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
+              "score": 0.7014332566389786
+            },
+            {
+              "path": "docs/RUNTIME_AUTOMATION_PHASE_REPORT.md",
+              "score": 0.6869627538595336
+            },
+            {
+              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
+              "score": 0.6853145082530646
+            },
+            {
+              "path": "docs/PRODUCTION_RELEASE_REPORT.md",
+              "score": 0.6815368694151062
+            }
+          ]
+        },
+        {
+          "id": "Q020",
+          "query": "server.js injection playerIndex PartyGameSDK protocol",
+          "category": "hard_constraints",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md",
+            "docs/PROTOCOL_GENERALIZATION_REPORT.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/BUILD_GUIDE.md",
+              "score": 0.6489668255459907
+            },
+            {
+              "path": "UnityExamples/JumpJumpTemplateDemo/BUILD_GUIDE.md",
+              "score": 0.6489668255459907
+            },
+            {
+              "path": "UnityExamples/AGENT_GAME_GENERATION_PROMPT.md",
+              "score": 0.6422786192782041
+            },
+            {
+              "path": "docs/AGENT_DASHBOARD_PLAN.md",
+              "score": 0.6372206984059577
+            },
+            {
+              "path": "docs/EMBEDDING_SECURITY_CONSTRAINTS.md",
+              "score": 0.6250734283243033
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "summary": {
+        "meanRecallAt5": 0.4,
+        "meanPrecisionAt5": 0.10999999999999999,
+        "meanMRR": 0.29097222222222224,
+        "meanNDCGAt5": 0.27942121398806596,
+        "totalViolations": 0,
+        "totalBlocked": 0
+      },
+      "results": [
+        {
+          "id": "Q001",
+          "query": "hard constraints server.js",
+          "category": "hard_constraints",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md",
+            "agents/rag-memory/RAG_RETRIEVAL_POLICY.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.3333333333333333,
+          "ndcgAt5": 0.3065735963827292,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.8308941599466669
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.7850000000000001
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.7526354790440628
+            },
+            {
+              "path": "agents/rag-memory/SOUL.md",
+              "score": 0.7447158009669195
+            },
+            {
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "score": 0.6052849349417609
+            }
+          ]
+        },
+        {
+          "id": "Q002",
+          "query": "Unity WebGL material policy",
+          "category": "material_policy",
+          "expected_files": [
+            "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.3333333333333333,
+          "ndcgAt5": 0.3065735963827292,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.8018504175178789
+            },
+            {
+              "path": "UnityExamples/RUNTIME_VERIFIED_TEMPLATE_REPORT.md",
+              "score": 0.7883574820370421
+            },
+            {
+              "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
+              "score": 0.775
+            },
+            {
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_CURRENT_SCENE_VALIDATION_REPORT.md",
+              "score": 0.55
+            },
+            {
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_CURRENT_SCENE_VALIDATION_REPORT.md",
+              "score": 0.55
+            }
+          ]
+        },
+        {
+          "id": "Q003",
+          "query": "stash validation report",
+          "category": "git_governance",
+          "expected_files": [
+            "docs/STASH_VALIDATION_REPORT.md"
+          ],
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 1,
+          "ndcgAt5": 1,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.875
+            },
+            {
+              "path": "UnityExamples/MULTI_GAME_WEBGL_BUILD_REPORT.md",
+              "score": 0.7449864591567885
+            },
+            {
+              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
+              "score": 0.7405159612554305
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.7378227231030747
+            },
+            {
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_FIX_REPORT.md",
+              "score": 0.7335340307082745
+            }
+          ]
+        },
+        {
+          "id": "Q004",
+          "query": "release gate process",
+          "category": "release_gate",
+          "expected_files": [
+            "prompts/release_gate.prompt.md",
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/templates/RELEASE_GATE_REPORT_TEMPLATE.md",
+              "score": 0.8583333333333333
+            },
+            {
+              "path": "docs/GOVERNANCE_LAYER_REPORT.md",
+              "score": 0.8068043395645423
+            },
+            {
+              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+              "score": 0.7669593829245722
+            },
+            {
+              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+              "score": 0.6658306324461634
+            },
+            {
+              "path": "docs/WORKFLOW_COMMANDS.md",
+              "score": 0.6586633972551585
+            }
+          ]
+        },
+        {
+          "id": "Q005",
+          "query": "Agent Dashboard Next.js shadcn/ui",
+          "category": "dashboard",
+          "expected_files": [
+            "agent-dashboard/README.md",
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.5,
+          "ndcgAt5": 0.38685280723454163,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+              "score": 0.769885984013009
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.7552762162663229
+            },
+            {
+              "path": "docs/AGENT_DASHBOARD_PLAN.md",
+              "score": 0.7067461869437892
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.6659515737996207
+            },
+            {
+              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+              "score": 0.5333333333333333
+            }
+          ]
+        },
+        {
+          "id": "Q006",
+          "query": "RAG memory retrieval policy",
+          "category": "rag_memory",
+          "expected_files": [
+            "agents/rag-memory/RAG_RETRIEVAL_POLICY.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0.125,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.8497871552109021
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.832436716393054
+            },
+            {
+              "path": "docs/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.7825897945676981
+            },
+            {
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 0.7641499631969776
+            },
+            {
+              "path": "agents/rag-memory/SOUL.md",
+              "score": 0.7028206093798679
+            }
+          ]
+        },
+        {
+          "id": "Q007",
+          "query": "token cost analysis Agent Intelligence",
+          "category": "token_cost",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 0.3333333333333333,
+          "ndcgAt5": 0.5,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 0.8205623910097748
+            },
+            {
+              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+              "score": 0.7954641372147575
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.6741946631738369
+            },
+            {
+              "path": "agents/token-cost/SOUL.md",
+              "score": 0.6414963374078827
+            },
+            {
+              "path": "docs/AGENT_DASHBOARD_PLAN.md",
+              "score": 0.635
+            }
+          ]
+        },
+        {
+          "id": "Q008",
+          "query": "canary deployment pipeline v0.4.0",
+          "category": "canary_pipeline",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md",
+            "docs/V1_1_4_RUNTIME_SANITY_REPORT.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0.16666666666666666,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
+              "score": 0.6781296928029937
+            },
+            {
+              "path": "docs/templates/RELEASE_GATE_REPORT_TEMPLATE.md",
+              "score": 0.6012018959401619
+            },
+            {
+              "path": "docs/GOVERNANCE_LAYER_REPORT.md",
+              "score": 0.5567727785973634
+            },
+            {
+              "path": "docs/PRODUCTION_RELEASE_REPORT.md",
+              "score": 0.5514508135271112
+            },
+            {
+              "path": "docs/WORKFLOW_COMMANDS.md",
+              "score": 0.45670951618030964
+            }
+          ]
+        },
+        {
+          "id": "Q009",
+          "query": "Unity WebGL build verification 26 checks",
+          "category": "unity_webgl",
+          "expected_files": [
+            "scripts/check-unity-webgl-build.js",
+            "docs/STASH_VALIDATION_REPORT.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0.1111111111111111,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md",
+              "score": 0.77
+            },
+            {
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_FIX_REPORT.md",
+              "score": 0.77
+            },
+            {
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "score": 0.7490001363335935
+            },
+            {
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "score": 0.7490001363335935
+            },
+            {
+              "path": "UnityExamples/BreakoutTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "score": 0.7381478978050787
+            }
+          ]
+        },
+        {
+          "id": "Q010",
+          "query": "Five Iron Laws PartyGameSDK",
+          "category": "hard_constraints",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md",
+            "docs/BASELINE.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.25,
+          "ndcgAt5": 0.2640681225725909,
+          "violations": [],
+          "top5": [
+            {
+              "path": "agents/rag-memory/SOUL.md",
+              "score": 0.9524232580609124
+            },
+            {
+              "path": "agents/model-router/SOUL.md",
+              "score": 0.952162313243547
+            },
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.852792938912467
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.6
+            },
+            {
+              "path": "PARTY_GAME_SDK_FINAL_HANDOFF.md",
+              "score": 0.6
+            }
+          ]
+        },
+        {
+          "id": "Q011",
+          "query": "agent runtime architecture v1.1.2",
+          "category": "agent_runtime",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md"
+          ],
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 0.5,
+          "ndcgAt5": 0.6309297535714575,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+              "score": 0.8262262249634864
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.7375
+            },
+            {
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 0.7367531310467965
+            },
+            {
+              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
+              "score": 0.7148241046666213
+            },
+            {
+              "path": "docs/AGENT_DASHBOARD_PLAN.md",
+              "score": 0.7126917894838
+            }
+          ]
+        },
+        {
+          "id": "Q012",
+          "query": "Git workflow rebase force push SSH key",
+          "category": "git_governance",
+          "expected_files": [
+            "docs/STASH_VALIDATION_REPORT.md",
+            "memory/2026-05-25.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.3333333333333333,
+          "ndcgAt5": 0.3065735963827292,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.625
+            },
+            {
+              "path": "docs/ROLLBACK.md",
+              "score": 0.6072563599771905
+            },
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.5016161451978992
+            },
+            {
+              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
+              "score": 0.49107190736922735
+            },
+            {
+              "path": "docs/PRODUCTION_RELEASE_REPORT.md",
+              "score": 0.49064482207094207
+            }
+          ]
+        },
+        {
+          "id": "Q013",
+          "query": "Unity WebGL runtime pipeline WEBGL_RUNTIME_PIPELINE",
+          "category": "unity_webgl",
+          "expected_files": [
+            "UnityExamples/WEBGL_RUNTIME_PIPELINE.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.8193870967255477
+            },
+            {
+              "path": "docs/GOVERNANCE_LAYER_REPORT.md",
+              "score": 0.7816592259410766
+            },
+            {
+              "path": "docs/WORKFLOW_COMMANDS.md",
+              "score": 0.725
+            },
+            {
+              "path": "docs/WEBGL_RUNTIME_AUTOMATION_PLAN.md",
+              "score": 0.7244457504382664
+            },
+            {
+              "path": "docs/templates/UNITY_BUILD_REPORT_TEMPLATE.md",
+              "score": 0.6820612736383987
+            }
+          ]
+        },
+        {
+          "id": "Q014",
+          "query": "Material Policy URP Lit SimpleLit Unlit",
+          "category": "material_policy",
+          "expected_files": [
+            "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md"
+          ],
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 0.3333333333333333,
+          "ndcgAt5": 0.5,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.6333333333333333
+            },
+            {
+              "path": "agents/rag-memory/SOUL.md",
+              "score": 0.44236532708294396
+            },
+            {
+              "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
+              "score": 0.4416666666666667
+            },
+            {
+              "path": "UnityExamples/GAME_TEMPLATE_FACTORY.md",
+              "score": 0.4222546352206916
+            },
+            {
+              "path": "docs/templates/HOTFIX_REPORT_TEMPLATE.md",
+              "score": 0.33303820211699187
+            }
+          ]
+        },
+        {
+          "id": "Q015",
+          "query": "QClaw review prompt template",
+          "category": "rag_memory",
+          "expected_files": [
+            "prompts/qclaw_review.prompt.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
+              "score": 0.691859537396348
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.5852769589388781
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.5715303081017759
+            },
+            {
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_FIX_REPORT.md",
+              "score": 0.5599305937095704
+            },
+            {
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md",
+              "score": 0.5599305937095704
+            }
+          ]
+        },
+        {
+          "id": "Q016",
+          "query": "Codex task decomposition prompt",
+          "category": "rag_memory",
+          "expected_files": [
+            "prompts/codex_task.prompt.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.7821091825944968
+            },
+            {
+              "path": "docs/CODEX_QCLAW_HANDOFF.md",
+              "score": 0.7627958561535997
+            },
+            {
+              "path": "agents/model-router/SOUL.md",
+              "score": 0.6789970188864005
+            },
+            {
+              "path": "docs/WORKFLOW_COMMANDS.md",
+              "score": 0.6364460494755385
+            },
+            {
+              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+              "score": 0.6115928622507099
+            }
+          ]
+        },
+        {
+          "id": "Q017",
+          "query": "Prometheus metrics Grafana dashboard Agent Dashboard",
+          "category": "dashboard",
+          "expected_files": [
+            "docker/prometheus/prometheus.yml"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.7969226855914275
+            },
+            {
+              "path": "docs/AGENT_DASHBOARD_PLAN.md",
+              "score": 0.7408723581798997
+            },
+            {
+              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
+              "score": 0.6929282913971196
+            },
+            {
+              "path": "docs/PHASE_3_GRAFANA_READINESS_REPORT.md",
+              "score": 0.6746220875079751
+            },
+            {
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 0.6669669693076217
+            }
+          ]
+        },
+        {
+          "id": "Q018",
+          "query": "PostgreSQL pgvector RAG Memory v1.2.0 Phase B",
+          "category": "rag_memory",
+          "expected_files": [
+            "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md"
+          ],
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 1,
+          "ndcgAt5": 1,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.8583333333333333
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.8171844546535887
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.7000897413838378
+            },
+            {
+              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+              "score": 0.5287785735374809
+            },
+            {
+              "path": "docs/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.5153183752806112
+            }
+          ]
+        },
+        {
+          "id": "Q019",
+          "query": "Unity WebGL baseline v0.1.0 PartyGameSDK",
+          "category": "unity_webgl",
+          "expected_files": [
+            "docs/BASELINE.md",
+            "PartyGameSDK-MVP/BASELINE.md"
+          ],
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
+          "violations": [],
+          "top5": [
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.7478816259300407
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.7436246328940442
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.7418637427386212
+            },
+            {
+              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
+              "score": 0.725
+            },
+            {
+              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
+              "score": 0.723376511401021
+            }
+          ]
+        },
+        {
+          "id": "Q020",
+          "query": "server.js injection playerIndex PartyGameSDK protocol",
+          "category": "hard_constraints",
+          "expected_files": [
+            "docs/V1_1_4_STATE_SNAPSHOT.md",
+            "docs/PROTOCOL_GENERALIZATION_REPORT.md"
+          ],
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.5,
+          "ndcgAt5": 0.38685280723454163,
+          "violations": [],
+          "top5": [
+            {
+              "path": "agents/rag-memory/SOUL.md",
+              "score": 0.9654757631363633
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.8916666666666666
+            },
+            {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.7353198688255578
+            },
+            {
+              "path": "docs/RUNTIME_AUTOMATION_PHASE_REPORT.md",
+              "score": 0.6942219473264295
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.6933656322651125
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
