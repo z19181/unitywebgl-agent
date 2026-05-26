@@ -1,21 +1,17 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { retrieveWithSnippets } from './retrieve_semantic.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const fs = require('fs');
+const path = require('path');
+const { queryIndex, loadIndex } = require('./query_index.cjs');
 
 // ========================================
 // v1.2.0 Phase A.1 — RAG Evaluation Harness
-// evaluate_retrieval.js
+// evaluate_retrieval.cjs
 // 功能：评测 RAG retrieval 性能
 //       计算 Recall@5, Precision@5, MRR, NDCG@5, must_not_suggest violations
-// 用法：node agents/rag-memory/evaluate_retrieval.js
+// 用法：node agents/rag-memory/evaluate_retrieval.cjs
 // ========================================
 
-const TEST_QUERIES_PATH = path.join(__dirname, 'test_queries.json');
-const EVAL_RESULTS_JSON = path.join(__dirname, 'eval_results.json');
+const TEST_QUERIES_PATH = path.join(__dirname, 'test_queries.cjson');
+const EVAL_RESULTS_JSON = path.join(__dirname, 'eval_results.cjson');
 const EVAL_RESULTS_MD = path.join(__dirname, 'eval_results.md');
 
 // ========================================
@@ -24,7 +20,7 @@ const EVAL_RESULTS_MD = path.join(__dirname, 'eval_results.md');
 
 function loadTestQueries() {
   if (!fs.existsSync(TEST_QUERIES_PATH)) {
-    console.error('[Evaluate] ❌ test_queries.json not found.');
+    console.error('[Evaluate] ❌ test_queries.cjson not found.');
     process.exit(1);
   }
   return JSON.parse(fs.readFileSync(TEST_QUERIES_PATH, 'utf-8'));
@@ -188,14 +184,14 @@ function formatResults(evalResults) {
 // Main
 // ========================================
 
-(async () => {
-console.log('[Evaluate] Starting RAG retrieval evaluation...\n');
+if (require.main === module) {
+  console.log('[Evaluate] Starting RAG retrieval evaluation...\n');
 
-// 1. Load test queries
-const testQueries = loadTestQueries();
-console.log(`[Evaluate] Loaded ${testQueries.queries.length} test queries\n`);
+  // 1. Load test queries
+  const testQueries = loadTestQueries();
+  console.log(`[Evaluate] Loaded ${testQueries.queries.length} test queries\n`);
 
-  // 2. Run evaluation (semantic search)
+  // 2. Run evaluation
   const results = [];
   let totalViolations = 0;
   const violationsList = [];
@@ -204,26 +200,23 @@ console.log(`[Evaluate] Loaded ${testQueries.queries.length} test queries\n`);
   for (const q of testQueries.queries) {
     console.log(`[Evaluate] Processing ${q.id}: "${q.query}"...`);
 
-    // Semantic search via pgvector
-    const queryResults = await retrieveWithSnippets(q.query, { topK: 5 });
-
-    // Convert to expected format
-    const formattedResults = queryResults.map(r => ({
-      path: r.documentPath,
-      score: r.bestSimilarity,
-      matchedTokens: [],
-      snippet: r.snippets[0]?.content || '',
-    }));
+    // Call queryIndex (imported from query_index.cjs)
+    const queryResults = queryIndex(q.query, { k: 5, silent: true });
 
     // Calculate metrics
-    const metrics = calculateMetrics(q.query, formattedResults, q.expected_files, q.must_not_suggest);
+    const metrics = calculateMetrics(q.query, queryResults, q.expected_files, q.must_not_suggest);
 
     results.push({
       id: q.id,
       query: q.query,
       category: q.category,
       expected_files: q.expected_files,
-      results: formattedResults,
+      results: queryResults.map(r => ({
+        path: r.path,
+        score: r.score,
+        matchedTokens: r.matchedTokens,
+        snippet: r.snippet,
+      })),
       metrics: {
         recallAt5: metrics.recallAt5,
         precisionAt5: metrics.precisionAt5,
@@ -263,26 +256,26 @@ console.log(`[Evaluate] Loaded ${testQueries.queries.length} test queries\n`);
     results,
   };
 
-  // 4. Write eval_results.json
+  // 4. Write eval_results.cjson
   fs.writeFileSync(EVAL_RESULTS_JSON, JSON.stringify(evalResults, null, 2), 'utf-8');
-  console.log(`\n[Evaluate] ✅ eval_results.json written (${fs.statSync(EVAL_RESULTS_JSON).size} bytes)`);
+  console.log(`\n[Evaluate] ✅ eval_results.cjson written (${fs.statSync(EVAL_RESULTS_JSON).size} bytes)`);
 
   // 5. Write eval_results.md
   const mdContent = formatResults(evalResults);
   fs.writeFileSync(EVAL_RESULTS_MD, mdContent, 'utf-8');
   console.log(`[Evaluate] ✅ eval_results.md written (${fs.statSync(EVAL_RESULTS_MD).size} bytes)`);
 
-// 6. Print summary
-console.log('\n' + '='.repeat(80));
-console.log('[Evaluate] Summary:');
-console.log(`  Total queries: ${results.length}`);
-console.log(`  Mean Recall@5: ${meanRecallAt5.toFixed(4)}`);
-console.log(`  Mean Precision@5: ${meanPrecisionAt5.toFixed(4)}`);
-console.log(`  Mean MRR: ${meanMRR.toFixed(4)}`);
-console.log(`  Mean NDCG@5: ${meanNDCGAt5.toFixed(4)}`);
-console.log(`  Total must_not_suggest violations: ${totalViolations}`);
-console.log('='.repeat(80));
-console.log('\n[Evaluate] ✅ SUCCESS');
-})();
+  // 6. Print summary
+  console.log('\n' + '='.repeat(80));
+  console.log('[Evaluate] Summary:');
+  console.log(`  Total queries: ${results.length}`);
+  console.log(`  Mean Recall@5: ${meanRecallAt5.toFixed(4)}`);
+  console.log(`  Mean Precision@5: ${meanPrecisionAt5.toFixed(4)}`);
+  console.log(`  Mean MRR: ${meanMRR.toFixed(4)}`);
+  console.log(`  Mean NDCG@5: ${meanNDCGAt5.toFixed(4)}`);
+  console.log(`  Total must_not_suggest violations: ${totalViolations}`);
+  console.log('='.repeat(80));
+  console.log('\n[Evaluate] ✅ SUCCESS');
+}
 
-export { calculateMetrics, formatResults };
+module.exports = { calculateMetrics, formatResults };

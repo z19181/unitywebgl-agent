@@ -1,0 +1,14 @@
+{
+  "name": "rag-memory",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RAG Memory for PartyGameSDK v1.2.0 Phase B",
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^16.4.0",
+    "https-proxy-agent": "^9.0.0",
+    "openai": "^4.73.0",
+    "pg": "^8.13.0",
+    "undici": "^7.26.0"
+  }
+}
