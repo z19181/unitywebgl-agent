@@ -1,0 +1,14 @@
+{
+  "name": "memory-store",
+  "version": "1.3.0",
+  "description": "Persistent agent memory store for v1.3.0",
+  "main": "memory_store.js",
+  "type": "module",
+  "dependencies": {
+    "pg": "^8.13.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test_memory_store.js"
+  }
+}
