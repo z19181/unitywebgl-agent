@@ -5,7 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { embedBatch, getProviderInfo } from './embedder.js';
+import { embedBatch, embedText, getProviderInfo } from './embedder.js';
 import * as store from './vector_store.js';
 import { chunkBySections, computeChunkStats, validateChunkQuality } from './chunking/semantic_chunker.js';
 import 'dotenv/config';
@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
 
 // Inline scan logic (avoids CJS/ESM mismatch with build_index.js)
-const EXCLUDE_PATTERNS = ['node_modules', '.git', 'Library', 'agent-dashboard/node_modules', '*.log', '*.tmp', '.qclaw_handoff'];
+const EXCLUDE_PATTERNS = ['node_modules', '.git', 'Library', 'agent-dashboard/node_modules', '*.log', '*.tmp', '.qclaw_handoff', 'eval_results', 'agents/memory'];
 const ROOT_MD_WHITELIST = ['README.md', 'CHANGELOG.md', 'LICENSE.md', 'BASELINE.md'];
 
 function shouldExclude(filePath) {
@@ -49,6 +49,9 @@ async function ingest({ force = false } = {}) {
     path.join(PROJECT_ROOT, 'docs'),
     path.join(PROJECT_ROOT, 'agents'),
     path.join(PROJECT_ROOT, 'UnityExamples'),
+    path.join(PROJECT_ROOT, 'prompts'),
+    path.join(PROJECT_ROOT, 'docker'),
+    path.join(PROJECT_ROOT, 'scripts'),
     PROJECT_ROOT,
   ];
 
@@ -62,8 +65,17 @@ async function ingest({ force = false } = {}) {
         if (fs.existsSync(fp)) allFiles.push(fp);
       }
     } else if (dir.endsWith('agents')) {
-      const files = scanDirectory(dir, ['.md']);
-      allFiles.push(...files.filter(f => f.endsWith('SOUL.md') || f.endsWith('IMPLEMENTATION.md') || f.endsWith('PROMPT.md') || f.endsWith('POLICY.md')));
+      // Include all .md files in agents/ (SOUL, POLICY, IMPLEMENTATION, PROMPT, etc.)
+      allFiles.push(...scanDirectory(dir, ['.md']));
+    } else if (dir.endsWith('prompts')) {
+      // Prompt files: .prompt.md and .md
+      allFiles.push(...scanDirectory(dir, ['.md']));
+    } else if (dir.endsWith('docker')) {
+      // Docker configs: .yml, .yaml, .conf, .md, .json (for prometheus, grafana, etc.)
+      allFiles.push(...scanDirectory(dir, ['.yml', '.yaml', '.conf', '.md', '.json']));
+    } else if (dir.endsWith('scripts')) {
+      // Scripts: .js, .sh, .md
+      allFiles.push(...scanDirectory(dir, ['.js', '.sh', '.md']));
     } else {
       allFiles.push(...scanDirectory(dir, ['.md']));
     }
@@ -92,12 +104,8 @@ async function ingest({ force = false } = {}) {
     const stat = fs.statSync(filePath);
     const chunks = chunkBySections(content, filePath);
 
-    // Upsert document
+    // Upsert document (now auto-cleans old chunks + embeddings)
     const docId = await store.upsertDocument(relativePath, filePath, stat.size, stat.mtime.toISOString());
-
-    if (force) {
-      await store.clearChunksForDocument(docId);
-    }
 
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[i];
@@ -146,25 +154,27 @@ async function ingest({ force = false } = {}) {
     console.log('[Ingest] ✅ Chunk quality validation passed');
   }
 
-  // 4. Generate embeddings (batched)
+  // 4. Generate embeddings (one-by-one with error handling)
   console.log(`[Ingest] Generating embeddings for ${allChunkTexts.length} chunks...`);
   console.log(`[Ingest] Model: ${providerInfo.model} (${providerInfo.dimensions} dims, ${providerInfo.provider})`);
 
+  let skipped = 0;
   try {
-    const embeddings = await embedBatch(allChunkTexts, {
-      onProgress: ({ completed, total }) => {
-        if (completed % 20 === 0 || completed === total) {
-          console.log(`[Ingest] Embedding progress: ${completed}/${total}`);
-        }
-      },
-    });
-
-    // 5. Store embeddings
-    console.log('[Ingest] Storing embeddings in pgvector...');
-    for (let i = 0; i < embeddings.length; i++) {
-      await store.insertEmbedding(chunkMeta[i].chunkId, embeddings[i], providerInfo.model);
-      totalEmbeddings++;
+    for (let i = 0; i < allChunkTexts.length; i++) {
+      try {
+        const embedding = await embedText(allChunkTexts[i]);
+        await store.insertEmbedding(chunkMeta[i].chunkId, embedding, providerInfo.model);
+        totalEmbeddings++;
+      } catch (embedErr) {
+        console.log(`[Ingest] ⚠️  Skipping chunk ${i} (${chunkMeta[i].path}): ${embedErr.message}`);
+        skipped++;
+      }
+      if (i > 0 && i % 50 === 0) {
+        console.log(`[Ingest] Embedding progress: ${i}/${allChunkTexts.length} (${skipped} skipped)`);
+      }
     }
+
+    console.log(`[Ingest] Storing embeddings complete: ${totalEmbeddings} stored, ${skipped} skipped`);
 
     await store.completeEmbeddingRun(runId, totalChunks, 'completed');
     console.log(`[Ingest] ✅ SUCCESS: ${totalEmbeddings} embeddings stored`);

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { extractKeywords } = require('./tokenizer.js');
+const { extractKeywords } = require('./tokenizer.cjs');
 
 // ========================================
 // v1.2.0 Phase A - RAG Memory Minimal Loop
@@ -31,6 +31,8 @@ const EXCLUDE_PATTERNS = [
   '*.tmp',
   '.qclaw_handoff',
   'agents/rag-memory/logs',
+  'eval_results',
+  'agents/memory',
 ];
 
 // 根目录重要 md 文件(白名单)

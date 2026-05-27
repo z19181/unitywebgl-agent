@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-05-26T06:37:54.658Z",
+  "generatedAt": "2026-05-27T03:47:12.177Z",
   "modes": [
     {
       "mode": "keyword",
       "summary": {
-        "meanRecallAt5": 0.45,
-        "meanPrecisionAt5": 0.13,
-        "meanMRR": 0.29708333333333337,
-        "meanNDCGAt5": 0.2835255412450058,
-        "totalViolations": 0,
+        "meanRecallAt5": 0.425,
+        "meanPrecisionAt5": 0.10999999999999999,
+        "meanMRR": 0.2895833333333333,
+        "meanNDCGAt5": 0.28067613448531914,
+        "totalViolations": 1,
         "totalBlocked": 0
       },
       "results": [
@@ -31,20 +31,20 @@
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "path": "docs/V1_2_0_EMBEDDING_ARCHITECTURE_DECISION.md",
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
               "score": 1
             },
             {
-              "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 0.7575645357743588
+              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
+              "score": 1
             },
             {
-              "path": "UnityExamples/_RuntimeVerifiedTemplate/BUILD_GUIDE.md",
-              "score": 0.6584403640441664
+              "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
+              "score": 1
             }
           ]
         },
@@ -58,8 +58,8 @@
           ],
           "recallAt5": 0.5,
           "precisionAt5": 0.2,
-          "mrr": 0.25,
-          "ndcgAt5": 0.2640681225725909,
+          "mrr": 0.3333333333333333,
+          "ndcgAt5": 0.3065735963827292,
           "violations": [],
           "top5": [
             {
@@ -71,11 +71,11 @@
               "score": 1
             },
             {
-              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
               "score": 1
             },
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
               "score": 1
             },
             {
@@ -106,15 +106,15 @@
               "score": 1
             },
             {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+              "score": 1
+            },
+            {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
               "score": 1
             },
             {
-              "path": "UnityExamples/BreakoutTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
-              "score": 1
-            },
-            {
-              "path": "UnityExamples/SnakeTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
               "score": 1
             }
           ]
@@ -142,7 +142,7 @@
               "score": 1
             },
             {
-              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
+              "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
               "score": 1
             },
             {
@@ -165,8 +165,8 @@
           ],
           "recallAt5": 0.5,
           "precisionAt5": 0.2,
-          "mrr": 0.2,
-          "ndcgAt5": 0.23719771276929622,
+          "mrr": 0.25,
+          "ndcgAt5": 0.2640681225725909,
           "violations": [],
           "top5": [
             {
@@ -182,11 +182,11 @@
               "score": 1
             },
             {
-              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
               "score": 1
             },
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
               "score": 1
             }
           ]
@@ -217,11 +217,11 @@
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
               "score": 1
             }
           ]
@@ -271,29 +271,29 @@
           ],
           "recallAt5": 0.5,
           "precisionAt5": 0.2,
-          "mrr": 0.3333333333333333,
-          "ndcgAt5": 0.3065735963827292,
+          "mrr": 0.2,
+          "ndcgAt5": 0.23719771276929622,
           "violations": [],
           "top5": [
             {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+              "score": 0.9473311823794406
+            },
+            {
               "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
-              "score": 0.9322580961989404
+              "score": 0.9040078345561597
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.8333333333333333
+              "score": 0.770909572590792
+            },
+            {
+              "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
+              "score": 0.6482574165840717
             },
             {
               "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.7047692398328991
-            },
-            {
-              "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 0.6447985783275503
-            },
-            {
-              "path": "PARTY_GAME_SDK_FINAL_HANDOFF.md",
-              "score": 0.5964117585931267
+              "score": 0.6430870928234749
             }
           ]
         },
@@ -305,20 +305,12 @@
             "scripts/check-unity-webgl-build.js",
             "docs/STASH_VALIDATION_REPORT.md"
           ],
-          "recallAt5": 0.5,
-          "precisionAt5": 0.2,
-          "mrr": 0.5,
-          "ndcgAt5": 0.38685280723454163,
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
           "violations": [],
           "top5": [
-            {
-              "path": "docs/GOVERNANCE_LAYER_REPORT.md",
-              "score": 1
-            },
-            {
-              "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 1
-            },
             {
               "path": "docs/V1_0_0_TAG_APPROVAL.md",
               "score": 1
@@ -329,6 +321,14 @@
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
               "score": 1
             }
           ]
@@ -341,10 +341,10 @@
             "docs/V1_1_4_STATE_SNAPSHOT.md",
             "docs/BASELINE.md"
           ],
-          "recallAt5": 0.5,
-          "precisionAt5": 0.2,
-          "mrr": 0.3333333333333333,
-          "ndcgAt5": 0.3065735963827292,
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
           "violations": [],
           "top5": [
             {
@@ -356,7 +356,7 @@
               "score": 1
             },
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
               "score": 1
             },
             {
@@ -364,7 +364,7 @@
               "score": 1
             },
             {
-              "path": "agents/rag-memory/SOUL.md",
+              "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
               "score": 1
             }
           ]
@@ -378,8 +378,8 @@
           ],
           "recallAt5": 1,
           "precisionAt5": 0.2,
-          "mrr": 0.25,
-          "ndcgAt5": 0.43067655807339306,
+          "mrr": 0.3333333333333333,
+          "ndcgAt5": 0.5,
           "violations": [],
           "top5": [
             {
@@ -391,11 +391,11 @@
               "score": 1
             },
             {
-              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
               "score": 1
             },
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "path": "docs/V1_2_0_EMBEDDING_ARCHITECTURE_DECISION.md",
               "score": 1
             },
             {
@@ -412,31 +412,31 @@
             "docs/STASH_VALIDATION_REPORT.md",
             "memory/2026-05-25.md"
           ],
-          "recallAt5": 0.5,
-          "precisionAt5": 0.2,
-          "mrr": 0.25,
-          "ndcgAt5": 0.2640681225725909,
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
           "violations": [],
           "top5": [
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.9860215053763441
+              "score": 0.9235977446338026
             },
             {
               "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.9697692398328992
+              "score": 0.908087092823475
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.6377595247397236
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+              "score": 0.8305322405804987
             },
             {
-              "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 0.461465244994217
+              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
+              "score": 0.73804022643437
             },
             {
-              "path": "docs/RUNTIME_ARTIFACT_POLICY.md",
-              "score": 0.38692533677081176
+              "path": "docs/V1_2_0_PHASE_B_ENV_SETUP.md",
+              "score": 0.7314113383291685
             }
           ]
         },
@@ -505,8 +505,8 @@
               "score": 1
             },
             {
-              "path": "UnityExamples/RUNTIME_VERIFIED_TEMPLATE_REPORT.md",
-              "score": 0.7691355713694166
+              "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.8449433349764042
             }
           ]
         },
@@ -517,31 +517,31 @@
           "expected_files": [
             "prompts/qclaw_review.prompt.md"
           ],
-          "recallAt5": 0,
-          "precisionAt5": 0,
-          "mrr": 0,
-          "ndcgAt5": 0,
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 0.5,
+          "ndcgAt5": 0.6309297535714575,
           "violations": [],
           "top5": [
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.8333333333333333
+              "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
+              "score": 1
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.7064103183905173
+              "path": "prompts/qclaw_review.prompt.md",
+              "score": 1
             },
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.7047692398328991
+              "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.9189743427283422
             },
             {
-              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
-              "score": 0.6363078723684912
+              "path": "prompts/rag_retrieval.prompt.md",
+              "score": 0.8940088752229225
             },
             {
-              "path": "UnityExamples/AGENT_GAME_GENERATION_PROMPT.md",
-              "score": 0.6016422980425956
+              "path": "prompts/codex_task.prompt.md",
+              "score": 0.8340447376996469
             }
           ]
         },
@@ -552,31 +552,31 @@
           "expected_files": [
             "prompts/codex_task.prompt.md"
           ],
-          "recallAt5": 0,
-          "precisionAt5": 0,
-          "mrr": 0,
-          "ndcgAt5": 0,
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 0.5,
+          "ndcgAt5": 0.6309297535714575,
           "violations": [],
           "top5": [
             {
+              "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "prompts/codex_task.prompt.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+              "score": 0.7723311823794405
+            },
+            {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.8333333333333333
+              "score": 0.770909572590792
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.7064103183905173
-            },
-            {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.5297692398328991
-            },
-            {
-              "path": "UnityExamples/AGENT_GAME_GENERATION_PROMPT.md",
-              "score": 0.4266422980425956
-            },
-            {
-              "path": "docs/CODEX_QCLAW_HANDOFF.md",
-              "score": 0.4199682315537313
+              "path": "prompts/rag_retrieval.prompt.md",
+              "score": 0.7690088752229224
             }
           ]
         },
@@ -610,7 +610,7 @@
               "score": 1
             },
             {
-              "path": "docs/DEPLOYMENT_CHECKLIST.md",
+              "path": "docs/PHASE_3_GRAFANA_READINESS_REPORT.md",
               "score": 1
             }
           ]
@@ -622,10 +622,10 @@
           "expected_files": [
             "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md"
           ],
-          "recallAt5": 1,
-          "precisionAt5": 0.2,
-          "mrr": 0.25,
-          "ndcgAt5": 0.43067655807339306,
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0.1,
+          "ndcgAt5": 0,
           "violations": [],
           "top5": [
             {
@@ -637,16 +637,16 @@
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
               "score": 1
             },
             {
-              "path": "docs/GOVERNANCE_LAYER_REPORT.md",
-              "score": 0.9590606364667196
+              "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
+              "score": 1
             }
           ]
         },
@@ -677,11 +677,11 @@
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
               "score": 1
             }
           ]
@@ -698,10 +698,20 @@
           "precisionAt5": 0.2,
           "mrr": 1,
           "ndcgAt5": 0.6131471927654584,
-          "violations": [],
+          "violations": [
+            "modify server.js"
+          ],
           "top5": [
             {
               "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
               "score": 1
             },
             {
@@ -709,16 +719,8 @@
               "score": 1
             },
             {
-              "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 0.9408978691076921
-            },
-            {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.8536325406127394
-            },
-            {
-              "path": "UnityExamples/WEBGL_RUNTIME_PIPELINE.md",
-              "score": 0.8403028485125172
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+              "score": 1
             }
           ]
         }
@@ -727,10 +729,10 @@
     {
       "mode": "semantic",
       "summary": {
-        "meanRecallAt5": 0.25,
-        "meanPrecisionAt5": 0.07999999999999999,
-        "meanMRR": 0.24380952380952378,
-        "meanNDCGAt5": 0.18756701768945772,
+        "meanRecallAt5": 0.225,
+        "meanPrecisionAt5": 0.14000000000000004,
+        "meanMRR": 0.19916666666666666,
+        "meanNDCGAt5": 0.16405107318040738,
         "totalViolations": 0,
         "totalBlocked": 0
       },
@@ -743,31 +745,31 @@
             "docs/V1_1_4_STATE_SNAPSHOT.md",
             "agents/rag-memory/RAG_RETRIEVAL_POLICY.md"
           ],
-          "recallAt5": 0.5,
-          "precisionAt5": 0.2,
-          "mrr": 0.2,
-          "ndcgAt5": 0.23719771276929622,
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
           "violations": [],
           "top5": [
             {
-              "path": "agents/model-router/SOUL.md",
-              "score": 0.5311138739359117
+              "path": "agents/rag-memory/SOUL.md",
+              "score": 0.6170703039051002
             },
             {
-              "path": "docs/PRODUCTION_RELEASE_REPORT.md",
-              "score": 0.46877024663859634
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.5922552470483063
             },
             {
-              "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
-              "score": 0.41158459858142327
+              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
+              "score": 0.5762053510362279
             },
             {
-              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
-              "score": 0.4083456336145521
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_SHADER_COMPATIBILITY_REPORT.md",
+              "score": 0.5758949405404851
             },
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.4023199337683603
+              "path": "UnityExamples/AGENT_GAME_GENERATION_PROMPT.md",
+              "score": 0.5738230931321437
             }
           ]
         },
@@ -779,31 +781,27 @@
             "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
             "docs/V1_1_4_STATE_SNAPSHOT.md"
           ],
-          "recallAt5": 0.5,
-          "precisionAt5": 0.2,
-          "mrr": 0.2,
-          "ndcgAt5": 0.23719771276929622,
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
           "violations": [],
           "top5": [
             {
-              "path": "docs/EMBEDDING_SECURITY_CONSTRAINTS.md",
-              "score": 0.5444564550606743
+              "path": "agents/rag-memory/SOUL.md",
+              "score": 0.5781872198258298
             },
             {
-              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
-              "score": 0.46235243594719244
+              "path": "prompts/release_gate.prompt.md",
+              "score": 0.4949462299694134
             },
             {
-              "path": "UnityExamples/AGENT_GAME_GENERATION_PROMPT.md",
-              "score": 0.46143574312898794
+              "path": "docs/MANUAL_DEVICE_QA_RESULT_TEMPLATE.md",
+              "score": 0.44269150700493176
             },
             {
-              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
-              "score": 0.440703420141352
-            },
-            {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.4406968169506462
+              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+              "score": 0.42208195607998356
             }
           ]
         },
@@ -814,31 +812,15 @@
           "expected_files": [
             "docs/STASH_VALIDATION_REPORT.md"
           ],
-          "recallAt5": 0,
-          "precisionAt5": 0,
-          "mrr": 0,
-          "ndcgAt5": 0,
+          "recallAt5": 1,
+          "precisionAt5": 1,
+          "mrr": 1,
+          "ndcgAt5": 1,
           "violations": [],
           "top5": [
             {
-              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
-              "score": 0.5097943410307757
-            },
-            {
-              "path": "docs/PATH_SCOPED_RULES.md",
-              "score": 0.5017036173816499
-            },
-            {
-              "path": "UnityExamples/MULTI_GAME_WEBGL_BUILD_REPORT.md",
-              "score": 0.48328697631742656
-            },
-            {
-              "path": "docs/templates/HOTFIX_REPORT_TEMPLATE.md",
-              "score": 0.4736316968541142
-            },
-            {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.46885093562416014
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.4157307075471417
             }
           ]
         },
@@ -851,30 +833,14 @@
             "docs/V1_1_4_STATE_SNAPSHOT.md"
           ],
           "recallAt5": 0.5,
-          "precisionAt5": 0.2,
+          "precisionAt5": 1,
           "mrr": 1,
           "ndcgAt5": 0.6131471927654584,
           "violations": [],
           "top5": [
             {
               "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.514850517708452
-            },
-            {
-              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
-              "score": 0.4660999105856366
-            },
-            {
-              "path": "docs/EMBEDDING_SECURITY_CONSTRAINTS.md",
-              "score": 0.46495856646199596
-            },
-            {
-              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
-              "score": 0.44423587089866334
-            },
-            {
-              "path": "docs/V1_2_0_EMBEDDING_ARCHITECTURE_DECISION.md",
-              "score": 0.41457998231143933
+              "score": 0.5790544682930728
             }
           ]
         },
@@ -893,12 +859,24 @@
           "violations": [],
           "top5": [
             {
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.6240305657886162
+            },
+            {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.5542634104845797
+              "score": 0.6224161878297239
             },
             {
               "path": "agents/model-router/SOUL.md",
-              "score": 0.509298117316312
+              "score": 0.6088774466155679
+            },
+            {
+              "path": "scripts/ci-test.sh",
+              "score": 0.608683870233642
+            },
+            {
+              "path": "prompts/qclaw_review.prompt.md",
+              "score": 0.608574499359373
             }
           ]
         },
@@ -911,29 +889,29 @@
           ],
           "recallAt5": 0,
           "precisionAt5": 0,
-          "mrr": 0.16666666666666666,
+          "mrr": 0,
           "ndcgAt5": 0,
           "violations": [],
           "top5": [
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.6552969165841174
+            },
             {
               "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
               "score": 0.6487094049719814
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.6279258703520583
+              "path": "agents/rag-memory/README.md",
+              "score": 0.6427657485073669
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
               "score": 0.6173710453081498
             },
             {
-              "path": "docs/V1_2_0_PHASE_B_DEPENDENCY_PLAN.md",
-              "score": 0.5844659069337925
-            },
-            {
-              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
-              "score": 0.5824571935078152
+              "path": "agents/rag-memory/SOUL.md",
+              "score": 0.6098030015130624
             }
           ]
         },
@@ -944,19 +922,31 @@
           "expected_files": [
             "docs/V1_1_4_STATE_SNAPSHOT.md"
           ],
-          "recallAt5": 0,
-          "precisionAt5": 0,
-          "mrr": 0,
-          "ndcgAt5": 0,
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 0.25,
+          "ndcgAt5": 0.43067655807339306,
           "violations": [],
           "top5": [
             {
-              "path": "docs/templates/WEBGL_RUNTIME_QA_TEMPLATE.md",
-              "score": 0.4843834836280365
+              "path": "docs/EMBEDDING_COST_MODEL.md",
+              "score": 0.6587854580050475
             },
             {
-              "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
-              "score": 0.44968278449520727
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 0.6406797910477606
+            },
+            {
+              "path": "agents/token-cost/README.md",
+              "score": 0.6128569711436274
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.5793750886954951
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.5689612052045141
             }
           ]
         },
@@ -970,29 +960,29 @@
           ],
           "recallAt5": 0.5,
           "precisionAt5": 0.2,
-          "mrr": 1,
-          "ndcgAt5": 0.6131471927654584,
+          "mrr": 0.2,
+          "ndcgAt5": 0.23719771276929622,
           "violations": [],
           "top5": [
             {
+              "path": "docs/WORKFLOW_COMMANDS.md",
+              "score": 0.6606185861503786
+            },
+            {
+              "path": "docs/PRODUCTION_RELEASE_REPORT.md",
+              "score": 0.6456256900060624
+            },
+            {
+              "path": "prompts/release_gate.prompt.md",
+              "score": 0.6403962830539658
+            },
+            {
+              "path": "docs/GOVERNANCE_LAYER_REPORT.md",
+              "score": 0.6382942904288165
+            },
+            {
               "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
               "score": 0.5976084390534112
-            },
-            {
-              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
-              "score": 0.5881793524581359
-            },
-            {
-              "path": "docs/RUNBOOK.md",
-              "score": 0.5503424774670591
-            },
-            {
-              "path": "docs/V1_2_0_EMBEDDING_ARCHITECTURE_DECISION.md",
-              "score": 0.540976775542889
-            },
-            {
-              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
-              "score": 0.5215277884881769
             }
           ]
         },
@@ -1004,23 +994,15 @@
             "scripts/check-unity-webgl-build.js",
             "docs/STASH_VALIDATION_REPORT.md"
           ],
-          "recallAt5": 0.5,
-          "precisionAt5": 0.2,
-          "mrr": 0.3333333333333333,
-          "ndcgAt5": 0.3065735963827292,
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0.16666666666666666,
+          "ndcgAt5": 0,
           "violations": [],
           "top5": [
             {
-              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md",
-              "score": 0.6453669655299137
-            },
-            {
-              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_FIX_REPORT.md",
-              "score": 0.6453669655299137
-            },
-            {
-              "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 0.6401928117629937
+              "path": "UnityExamples/WEBGL_RUNTIME_PIPELINE.md",
+              "score": 0.6665412746081589
             },
             {
               "path": "UnityExamples/BreakoutTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
@@ -1029,6 +1011,14 @@
             {
               "path": "docs/HTTPS_WSS_SUPPLEMENTAL_QA_PLAN.md",
               "score": 0.6288893478445292
+            },
+            {
+              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
+              "score": 0.6253095019439976
+            },
+            {
+              "path": "docs/WORKFLOW_COMMANDS.md",
+              "score": 0.6251786544079142
             }
           ]
         },
@@ -1047,24 +1037,24 @@
           "violations": [],
           "top5": [
             {
-              "path": "docs/V1_0_0_TAG_APPROVAL.md",
-              "score": 0.7233901985037646
-            },
-            {
-              "path": "UnityExamples/_GameTemplateSkeleton/BUILD_GUIDE.md",
-              "score": 0.710829698641725
-            },
-            {
-              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
-              "score": 0.6960073708988082
-            },
-            {
-              "path": "docs/MANUAL_DEVICE_QA_RESULT_TEMPLATE.md",
-              "score": 0.6742208166262414
-            },
-            {
               "path": "UnityExamples/SnakeTemplateDemo/GAME_SPEC.md",
               "score": 0.6685534520599834
+            },
+            {
+              "path": "UnityExamples/UNITY_WEBGL_REAL_BUILD_GATE.md",
+              "score": 0.6447492513776314
+            },
+            {
+              "path": "docs/DEPLOYMENT_CHECKLIST.md",
+              "score": 0.6431067670873419
+            },
+            {
+              "path": "README.md",
+              "score": 0.6393910831282038
+            },
+            {
+              "path": "UnityExamples/_GameTemplateSkeleton/TEST_CHECKLIST.md",
+              "score": 0.6307847424522183
             }
           ]
         },
@@ -1077,7 +1067,7 @@
           ],
           "recallAt5": 0,
           "precisionAt5": 0,
-          "mrr": 0.14285714285714285,
+          "mrr": 0,
           "ndcgAt5": 0,
           "violations": [],
           "top5": [
@@ -1086,20 +1076,20 @@
               "score": 0.7051194753398858
             },
             {
-              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
-              "score": 0.675473516890331
+              "path": "agents/token-cost/README.md",
+              "score": 0.6457250267067046
             },
             {
               "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
-              "score": 0.654618103632185
-            },
-            {
-              "path": "docs/RUNTIME_ARTIFACT_POLICY.md",
-              "score": 0.646561888652751
+              "score": 0.6419586242307039
             },
             {
               "path": "docs/WORKFLOW_COMMANDS.md",
               "score": 0.6396224042240075
+            },
+            {
+              "path": "docs/GOVERNANCE_LAYER_REPORT.md",
+              "score": 0.6064370149782818
             }
           ]
         },
@@ -1111,31 +1101,31 @@
             "docs/STASH_VALIDATION_REPORT.md",
             "memory/2026-05-25.md"
           ],
-          "recallAt5": 0.5,
-          "precisionAt5": 0.2,
-          "mrr": 1,
-          "ndcgAt5": 0.6131471927654584,
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
           "violations": [],
           "top5": [
             {
-              "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 0.5977062698028413
+              "path": "docs/templates/GAME_SPEC_TEMPLATE.md",
+              "score": 0.5653869097018506
             },
             {
-              "path": "docs/WEBGL_RUNTIME_AUTOMATION_PLAN.md",
-              "score": 0.5963966790045122
+              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
+              "score": 0.5596212585496156
             },
             {
-              "path": "docs/PATH_SCOPED_RULES.md",
-              "score": 0.5846213196781351
+              "path": "UnityExamples/GAME_TEMPLATE_FACTORY.md",
+              "score": 0.5521114791349728
             },
             {
-              "path": "docs/QA_MOBILE_LOG.md",
-              "score": 0.5607725402391798
+              "path": "docs/templates/CONTROLLER_SPEC_TEMPLATE.md",
+              "score": 0.5518514681514818
             },
             {
-              "path": "docs/RUNTIME_FAILURE_MATRIX.md",
-              "score": 0.560555176317834
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.5482521349461745
             }
           ]
         },
@@ -1146,31 +1136,31 @@
           "expected_files": [
             "UnityExamples/WEBGL_RUNTIME_PIPELINE.md"
           ],
-          "recallAt5": 1,
-          "precisionAt5": 0.2,
-          "mrr": 0.5,
-          "ndcgAt5": 0.6309297535714575,
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0.16666666666666666,
+          "ndcgAt5": 0,
           "violations": [],
           "top5": [
             {
-              "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 0.6462835123497946
-            },
-            {
-              "path": "UnityExamples/WEBGL_RUNTIME_PIPELINE.md",
-              "score": 0.6437080439882069
-            },
-            {
-              "path": "docs/RUNTIME_ARTIFACT_POLICY.md",
-              "score": 0.6365994677112304
-            },
-            {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.6364826558779159
-            },
-            {
               "path": "docs/WORKFLOW_COMMANDS.md",
-              "score": 0.6121809569792487
+              "score": 0.658605814797971
+            },
+            {
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "score": 0.6032716920685283
+            },
+            {
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "score": 0.6032716920685283
+            },
+            {
+              "path": "UnityExamples/RUNTIME_VERIFIED_TEMPLATE_REPORT.md",
+              "score": 0.5934103602741195
+            },
+            {
+              "path": "docs/templates/RELEASE_GATE_REPORT_TEMPLATE.md",
+              "score": 0.5895341757802814
             }
           ]
         },
@@ -1188,24 +1178,24 @@
           "violations": [],
           "top5": [
             {
-              "path": "docs/V1_0_0_TAG_APPROVAL.md",
-              "score": 0.7369818739694498
+              "path": "UnityExamples/SnakeTemplateDemo/GAME_SPEC.md",
+              "score": 0.6827526351356744
             },
             {
-              "path": "UnityExamples/_GameTemplateSkeleton/BUILD_GUIDE.md",
-              "score": 0.7130377161267639
+              "path": "UnityExamples/UNITY_WEBGL_REAL_BUILD_GATE.md",
+              "score": 0.658941347705487
             },
             {
-              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
-              "score": 0.7123490183347663
+              "path": "README.md",
+              "score": 0.6579417957315986
             },
             {
-              "path": "docs/MANUAL_DEVICE_QA_RESULT_TEMPLATE.md",
-              "score": 0.6980178175192605
+              "path": "docs/DEPLOYMENT_CHECKLIST.md",
+              "score": 0.6548165670803114
             },
             {
-              "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
-              "score": 0.6891168638662108
+              "path": "UnityExamples/_GameTemplateSkeleton/TEST_CHECKLIST.md",
+              "score": 0.6462207572431135
             }
           ]
         },
@@ -1216,31 +1206,31 @@
           "expected_files": [
             "prompts/qclaw_review.prompt.md"
           ],
-          "recallAt5": 0,
-          "precisionAt5": 0,
-          "mrr": 0,
-          "ndcgAt5": 0,
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 0.2,
+          "ndcgAt5": 0.38685280723454163,
           "violations": [],
           "top5": [
             {
-              "path": "docs/PATH_SCOPED_RULES.md",
-              "score": 0.5985255513335432
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_FIX_REPORT.md",
+              "score": 0.595517615643023
             },
             {
-              "path": "UnityExamples/MULTI_GAME_WEBGL_BUILD_REPORT.md",
-              "score": 0.5867527905041617
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md",
+              "score": 0.595517615643023
+            },
+            {
+              "path": "agents/runtime-triage/SOUL.md",
+              "score": 0.5873766878658472
             },
             {
               "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
               "score": 0.5856066958984159
             },
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.5838817460329819
-            },
-            {
-              "path": "docs/HTTPS_WSS_SUPPLEMENTAL_QA_PLAN.md",
-              "score": 0.5763134269898448
+              "path": "prompts/qclaw_review.prompt.md",
+              "score": 0.5827216476087501
             }
           ]
         },
@@ -1258,24 +1248,24 @@
           "violations": [],
           "top5": [
             {
-              "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
-              "score": 0.5894379431279494
+              "path": "scripts/ci-test.sh",
+              "score": 0.5021070823426712
             },
             {
-              "path": "docs/WEBGL_RUNTIME_AUTOMATION_PLAN.md",
-              "score": 0.5668818271653286
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "score": 0.4723207226641617
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
-              "score": 0.5483798119960248
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "score": 0.4723207226641617
             },
             {
-              "path": "docs/V1_2_0_PHASE_B_ENV_SETUP.md",
-              "score": 0.5433778917773016
+              "path": "UnityExamples/GAME_TEMPLATE_FACTORY.md",
+              "score": 0.46353164336613606
             },
             {
-              "path": "agents/rag-memory/SOUL.md",
-              "score": 0.5404011110968236
+              "path": "docs/DEPLOYMENT_CHECKLIST.md",
+              "score": 0.45647712539866214
             }
           ]
         },
@@ -1293,24 +1283,24 @@
           "violations": [],
           "top5": [
             {
-              "path": "docs/PRODUCTION_RELEASE_REPORT.md",
-              "score": 0.5584647317333559
-            },
-            {
               "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
-              "score": 0.5256945590495866
+              "score": 0.692645605261514
             },
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.49084757794961864
+              "path": "docs/templates/RELEASE_GATE_REPORT_TEMPLATE.md",
+              "score": 0.6802154699328606
             },
             {
-              "path": "agents/model-router/SOUL.md",
-              "score": 0.4896376204852473
+              "path": "agents/token-cost/README.md",
+              "score": 0.6801924564616212
             },
             {
-              "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
-              "score": 0.4615267613002523
+              "path": "docs/QA_BUGFIX_LOG.md",
+              "score": 0.6728285147586416
+            },
+            {
+              "path": "docs/PHASE_3_GRAFANA_READINESS_REPORT.md",
+              "score": 0.6488328064447982
             }
           ]
         },
@@ -1321,31 +1311,19 @@
           "expected_files": [
             "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md"
           ],
-          "recallAt5": 1,
-          "precisionAt5": 0.2,
-          "mrr": 0.3333333333333333,
-          "ndcgAt5": 0.5,
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0,
+          "ndcgAt5": 0,
           "violations": [],
           "top5": [
             {
               "path": "docs/V1_2_0_PHASE_B_ENV_SETUP.md",
-              "score": 0.7980331759747306
+              "score": 0.6828136722789423
             },
             {
-              "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
-              "score": 0.7558211250709114
-            },
-            {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.7373086287911333
-            },
-            {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
-              "score": 0.7269029953407319
-            },
-            {
-              "path": "docs/EMBEDDING_COST_MODEL.md",
-              "score": 0.6779046771601247
+              "path": "docs/V1_2_0_PHASE_B_DEPENDENCY_PLAN.md",
+              "score": 0.5180011139040471
             }
           ]
         },
@@ -1364,24 +1342,24 @@
           "violations": [],
           "top5": [
             {
-              "path": "docs/V1_0_0_TAG_APPROVAL.md",
-              "score": 0.7295399794436845
+              "path": "docs/GOVERNANCE_LAYER_REPORT.md",
+              "score": 0.6509853639837857
             },
             {
-              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
-              "score": 0.7014332566389786
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.6425655384713364
             },
             {
-              "path": "docs/RUNTIME_AUTOMATION_PHASE_REPORT.md",
-              "score": 0.6869627538595336
-            },
-            {
-              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
-              "score": 0.6853145082530646
+              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+              "score": 0.6325217492468929
             },
             {
               "path": "docs/PRODUCTION_RELEASE_REPORT.md",
-              "score": 0.6815368694151062
+              "score": 0.6301254255540097
+            },
+            {
+              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
+              "score": 0.6248052436722361
             }
           ]
         },
@@ -1393,31 +1371,31 @@
             "docs/V1_1_4_STATE_SNAPSHOT.md",
             "docs/PROTOCOL_GENERALIZATION_REPORT.md"
           ],
-          "recallAt5": 0,
-          "precisionAt5": 0,
-          "mrr": 0,
-          "ndcgAt5": 0,
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 1,
+          "ndcgAt5": 0.6131471927654584,
           "violations": [],
           "top5": [
             {
-              "path": "UnityExamples/_RuntimeVerifiedTemplate/BUILD_GUIDE.md",
-              "score": 0.6489668255459907
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.7344604972111741
             },
             {
-              "path": "UnityExamples/JumpJumpTemplateDemo/BUILD_GUIDE.md",
-              "score": 0.6489668255459907
+              "path": "UnityExamples/SnakeTemplateDemo/BUILD_GUIDE.md",
+              "score": 0.6466552080138
             },
             {
-              "path": "UnityExamples/AGENT_GAME_GENERATION_PROMPT.md",
-              "score": 0.6422786192782041
+              "path": "UnityExamples/UNITY_WEBGL_REAL_BUILD_GATE.md",
+              "score": 0.6444541353910245
             },
             {
-              "path": "docs/AGENT_DASHBOARD_PLAN.md",
-              "score": 0.6372206984059577
+              "path": "UnityExamples/_GameTemplateSkeleton/BUILD_GUIDE.md",
+              "score": 0.6443538601158524
             },
             {
-              "path": "docs/EMBEDDING_SECURITY_CONSTRAINTS.md",
-              "score": 0.6250734283243033
+              "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
+              "score": 0.6238982026783964
             }
           ]
         }
@@ -1426,12 +1404,12 @@
     {
       "mode": "hybrid",
       "summary": {
-        "meanRecallAt5": 0.4,
-        "meanPrecisionAt5": 0.10999999999999999,
-        "meanMRR": 0.29097222222222224,
-        "meanNDCGAt5": 0.27942121398806596,
+        "meanRecallAt5": 0.525,
+        "meanPrecisionAt5": 0.14,
+        "meanMRR": 0.4804166666666667,
+        "meanNDCGAt5": 0.446597119670764,
         "totalViolations": 0,
-        "totalBlocked": 0
+        "totalBlocked": 15
       },
       "results": [
         {
@@ -1442,31 +1420,31 @@
             "docs/V1_1_4_STATE_SNAPSHOT.md",
             "agents/rag-memory/RAG_RETRIEVAL_POLICY.md"
           ],
-          "recallAt5": 0.5,
-          "precisionAt5": 0.2,
-          "mrr": 0.3333333333333333,
-          "ndcgAt5": 0.3065735963827292,
+          "recallAt5": 1,
+          "precisionAt5": 0.4,
+          "mrr": 0.5,
+          "ndcgAt5": 0.6509209298071326,
           "violations": [],
           "top5": [
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.8308941599466669
+              "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
+              "score": 0.8231651029765634
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.7850000000000001
+              "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.8128576996686405
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.8029470799733334
             },
             {
               "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.7526354790440628
+              "score": 0.7138177395220313
             },
             {
-              "path": "agents/rag-memory/SOUL.md",
-              "score": 0.7447158009669195
-            },
-            {
-              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
-              "score": 0.6052849349417609
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.6799999999999999
             }
           ]
         },
@@ -1480,29 +1458,29 @@
           ],
           "recallAt5": 0.5,
           "precisionAt5": 0.2,
-          "mrr": 0.3333333333333333,
-          "ndcgAt5": 0.3065735963827292,
+          "mrr": 1,
+          "ndcgAt5": 0.6131471927654584,
           "violations": [],
           "top5": [
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.8018504175178789
+              "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
+              "score": 0.875
+            },
+            {
+              "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.8200754828002963
             },
             {
               "path": "UnityExamples/RUNTIME_VERIFIED_TEMPLATE_REPORT.md",
-              "score": 0.7883574820370421
+              "score": 0.8090479016975353
             },
             {
-              "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
-              "score": 0.775
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.8057086812648991
             },
             {
               "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_CURRENT_SCENE_VALIDATION_REPORT.md",
-              "score": 0.55
-            },
-            {
-              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_CURRENT_SCENE_VALIDATION_REPORT.md",
-              "score": 0.55
+              "score": 0.6250000000000001
             }
           ]
         },
@@ -1521,23 +1499,23 @@
           "top5": [
             {
               "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 0.875
-            },
-            {
-              "path": "UnityExamples/MULTI_GAME_WEBGL_BUILD_REPORT.md",
-              "score": 0.7449864591567885
+              "score": 0.8750000000000001
             },
             {
               "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
-              "score": 0.7405159612554305
+              "score": 0.7742328630591759
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.7378227231030747
+              "score": 0.7724373709576055
             },
             {
               "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_FIX_REPORT.md",
-              "score": 0.7335340307082745
+              "score": 0.7695782426944053
+            },
+            {
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md",
+              "score": 0.7695782426944053
             }
           ]
         },
@@ -1549,31 +1527,31 @@
             "prompts/release_gate.prompt.md",
             "docs/V1_1_4_STATE_SNAPSHOT.md"
           ],
-          "recallAt5": 0,
-          "precisionAt5": 0,
-          "mrr": 0,
-          "ndcgAt5": 0,
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.3333333333333333,
+          "ndcgAt5": 0.3065735963827292,
           "violations": [],
           "top5": [
             {
               "path": "docs/templates/RELEASE_GATE_REPORT_TEMPLATE.md",
-              "score": 0.8583333333333333
-            },
-            {
-              "path": "docs/GOVERNANCE_LAYER_REPORT.md",
-              "score": 0.8068043395645423
+              "score": 0.8333333333333334
             },
             {
               "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
-              "score": 0.7669593829245722
+              "score": 0.7709796914622862
             },
             {
-              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
-              "score": 0.6658306324461634
+              "path": "prompts/release_gate.prompt.md",
+              "score": 0.7687115619497863
             },
             {
               "path": "docs/WORKFLOW_COMMANDS.md",
-              "score": 0.6586633972551585
+              "score": 0.7168316986275792
+            },
+            {
+              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
+              "score": 0.65
             }
           ]
         },
@@ -1587,29 +1565,29 @@
           ],
           "recallAt5": 0.5,
           "precisionAt5": 0.2,
-          "mrr": 0.5,
-          "ndcgAt5": 0.38685280723454163,
+          "mrr": 0.3333333333333333,
+          "ndcgAt5": 0.3065735963827292,
           "violations": [],
           "top5": [
             {
               "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
-              "score": 0.769885984013009
-            },
-            {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.7552762162663229
+              "score": 0.831849431121952
             },
             {
               "path": "docs/AGENT_DASHBOARD_PLAN.md",
-              "score": 0.7067461869437892
+              "score": 0.8125662668976021
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.7668968468886025
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+              "score": 0.6628978743610523
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.6659515737996207
-            },
-            {
-              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
-              "score": 0.5333333333333333
+              "score": 0.6507929781663506
             }
           ]
         },
@@ -1620,31 +1598,31 @@
           "expected_files": [
             "agents/rag-memory/RAG_RETRIEVAL_POLICY.md"
           ],
-          "recallAt5": 0,
-          "precisionAt5": 0,
-          "mrr": 0.125,
-          "ndcgAt5": 0,
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 1,
+          "ndcgAt5": 1,
           "violations": [],
           "top5": [
             {
+              "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.9750000000000001
+            },
+            {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.8497871552109021
+              "score": 0.9247516810793858
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.832436716393054
+              "score": 0.9045095024585631
             },
             {
               "path": "docs/RAG_RETRIEVAL_POLICY.md",
-              "score": 0.7825897945676981
+              "score": 0.8567714269956478
             },
             {
-              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
-              "score": 0.7641499631969776
-            },
-            {
-              "path": "agents/rag-memory/SOUL.md",
-              "score": 0.7028206093798679
+              "path": "agents/rag-memory/README.md",
+              "score": 0.8359012240457159
             }
           ]
         },
@@ -1655,31 +1633,31 @@
           "expected_files": [
             "docs/V1_1_4_STATE_SNAPSHOT.md"
           ],
-          "recallAt5": 1,
-          "precisionAt5": 0.2,
-          "mrr": 0.3333333333333333,
-          "ndcgAt5": 0.5,
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0.16666666666666666,
+          "ndcgAt5": 0,
           "violations": [],
           "top5": [
             {
               "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
-              "score": 0.8205623910097748
+              "score": 0.8864894561780706
             },
             {
               "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
-              "score": 0.7954641372147575
+              "score": 0.8488748267505505
             },
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.6741946631738369
+              "path": "agents/token-cost/README.md",
+              "score": 0.762588162358495
             },
             {
               "path": "agents/token-cost/SOUL.md",
-              "score": 0.6414963374078827
+              "score": 0.7567457269758632
             },
             {
               "path": "docs/AGENT_DASHBOARD_PLAN.md",
-              "score": 0.635
+              "score": 0.7325
             }
           ]
         },
@@ -1693,29 +1671,29 @@
           ],
           "recallAt5": 0,
           "precisionAt5": 0,
-          "mrr": 0.16666666666666666,
+          "mrr": 0.125,
           "ndcgAt5": 0,
           "violations": [],
           "top5": [
             {
               "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
-              "score": 0.6781296928029937
+              "score": 0.7359414106691615
             },
             {
               "path": "docs/templates/RELEASE_GATE_REPORT_TEMPLATE.md",
-              "score": 0.6012018959401619
+              "score": 0.5551682466168016
             },
             {
               "path": "docs/GOVERNANCE_LAYER_REPORT.md",
-              "score": 0.5567727785973634
+              "score": 0.5181439821644696
             },
             {
               "path": "docs/PRODUCTION_RELEASE_REPORT.md",
-              "score": 0.5514508135271112
+              "score": 0.5137090112725927
             },
             {
               "path": "docs/WORKFLOW_COMMANDS.md",
-              "score": 0.45670951618030964
+              "score": 0.4680912634835913
             }
           ]
         },
@@ -1729,29 +1707,29 @@
           ],
           "recallAt5": 0,
           "precisionAt5": 0,
-          "mrr": 0.1111111111111111,
+          "mrr": 0.1,
           "ndcgAt5": 0,
           "violations": [],
           "top5": [
             {
+              "path": "UnityExamples/WEBGL_RUNTIME_PIPELINE.md",
+              "score": 0.7944041263493822
+            },
+            {
               "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md",
-              "score": 0.77
+              "score": 0.775
             },
             {
               "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_FIX_REPORT.md",
-              "score": 0.77
+              "score": 0.775
             },
             {
               "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
-              "score": 0.7490001363335935
+              "score": 0.757500113611328
             },
             {
               "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
-              "score": 0.7490001363335935
-            },
-            {
-              "path": "UnityExamples/BreakoutTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
-              "score": 0.7381478978050787
+              "score": 0.757500113611328
             }
           ]
         },
@@ -1763,31 +1741,31 @@
             "docs/V1_1_4_STATE_SNAPSHOT.md",
             "docs/BASELINE.md"
           ],
-          "recallAt5": 0.5,
-          "precisionAt5": 0.2,
-          "mrr": 0.25,
-          "ndcgAt5": 0.2640681225725909,
+          "recallAt5": 0,
+          "precisionAt5": 0,
+          "mrr": 0.1,
+          "ndcgAt5": 0,
           "violations": [],
           "top5": [
             {
-              "path": "agents/rag-memory/SOUL.md",
-              "score": 0.9524232580609124
+              "path": "agents/model-router/SOUL.md",
+              "score": 1
             },
             {
-              "path": "agents/model-router/SOUL.md",
-              "score": 0.952162313243547
+              "path": "agents/rag-memory/SOUL.md",
+              "score": 1
+            },
+            {
+              "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.8300000000000001
             },
             {
               "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 0.852792938912467
+              "score": 0.8263964694562334
             },
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.6
-            },
-            {
-              "path": "PARTY_GAME_SDK_FINAL_HANDOFF.md",
-              "score": 0.6
+              "path": "docs/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.6799999999999999
             }
           ]
         },
@@ -1800,29 +1778,29 @@
           ],
           "recallAt5": 1,
           "precisionAt5": 0.2,
-          "mrr": 0.5,
-          "ndcgAt5": 0.6309297535714575,
+          "mrr": 0.25,
+          "ndcgAt5": 0.43067655807339306,
           "violations": [],
           "top5": [
             {
               "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
-              "score": 0.8262262249634864
+              "score": 0.8868472624574009
             },
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.7375
-            },
-            {
-              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
-              "score": 0.7367531310467965
-            },
-            {
-              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
-              "score": 0.7148241046666213
+              "path": "agents/runtime-triage/README.md",
+              "score": 0.8545938230606732
             },
             {
               "path": "docs/AGENT_DASHBOARD_PLAN.md",
-              "score": 0.7126917894838
+              "score": 0.8210570877311001
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.7875000000000001
+            },
+            {
+              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+              "score": 0.7866286528879294
             }
           ]
         },
@@ -1836,29 +1814,29 @@
           ],
           "recallAt5": 0.5,
           "precisionAt5": 0.2,
-          "mrr": 0.3333333333333333,
-          "ndcgAt5": 0.3065735963827292,
+          "mrr": 0.2,
+          "ndcgAt5": 0.23719771276929622,
           "violations": [],
           "top5": [
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.625
+              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
+              "score": 0.7479578315549573
             },
             {
-              "path": "docs/ROLLBACK.md",
-              "score": 0.6072563599771905
+              "path": "prompts/codex_task.prompt.md",
+              "score": 0.6892038685950596
+            },
+            {
+              "path": "docs/V1_2_0_PHASE_B_ENV_SETUP.md",
+              "score": 0.6250000000000001
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.55
             },
             {
               "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 0.5016161451978992
-            },
-            {
-              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
-              "score": 0.49107190736922735
-            },
-            {
-              "path": "docs/PRODUCTION_RELEASE_REPORT.md",
-              "score": 0.49064482207094207
+              "score": 0.46774409679859946
             }
           ]
         },
@@ -1877,23 +1855,23 @@
           "top5": [
             {
               "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 0.8193870967255477
-            },
-            {
-              "path": "docs/GOVERNANCE_LAYER_REPORT.md",
-              "score": 0.7816592259410766
-            },
-            {
-              "path": "docs/WORKFLOW_COMMANDS.md",
-              "score": 0.725
+              "score": 0.820322580604623
             },
             {
               "path": "docs/WEBGL_RUNTIME_AUTOMATION_PLAN.md",
-              "score": 0.7244457504382664
+              "score": 0.8078714586985553
+            },
+            {
+              "path": "docs/GOVERNANCE_LAYER_REPORT.md",
+              "score": 0.7888826882842306
+            },
+            {
+              "path": "docs/WORKFLOW_COMMANDS.md",
+              "score": 0.775
             },
             {
               "path": "docs/templates/UNITY_BUILD_REPORT_TEMPLATE.md",
-              "score": 0.6820612736383987
+              "score": 0.6665986804129513
             }
           ]
         },
@@ -1906,29 +1884,29 @@
           ],
           "recallAt5": 1,
           "precisionAt5": 0.2,
-          "mrr": 0.3333333333333333,
-          "ndcgAt5": 0.5,
+          "mrr": 1,
+          "ndcgAt5": 1,
           "violations": [],
           "top5": [
             {
-              "path": "docs/RAG_RETRIEVAL_POLICY.md",
-              "score": 0.6333333333333333
-            },
-            {
-              "path": "agents/rag-memory/SOUL.md",
-              "score": 0.44236532708294396
-            },
-            {
               "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
-              "score": 0.4416666666666667
+              "score": 0.5583333333333333
+            },
+            {
+              "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.509496179101756
             },
             {
               "path": "UnityExamples/GAME_TEMPLATE_FACTORY.md",
-              "score": 0.4222546352206916
+              "score": 0.435212196017243
             },
             {
-              "path": "docs/templates/HOTFIX_REPORT_TEMPLATE.md",
-              "score": 0.33303820211699187
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.325
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.325
             }
           ]
         },
@@ -1939,31 +1917,31 @@
           "expected_files": [
             "prompts/qclaw_review.prompt.md"
           ],
-          "recallAt5": 0,
-          "precisionAt5": 0,
-          "mrr": 0,
-          "ndcgAt5": 0,
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 1,
+          "ndcgAt5": 1,
           "violations": [],
           "top5": [
             {
+              "path": "prompts/qclaw_review.prompt.md",
+              "score": 0.8984047579080993
+            },
+            {
+              "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.7012425304669357
+            },
+            {
               "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
-              "score": 0.691859537396348
+              "score": 0.6363361269624058
+            },
+            {
+              "path": "agents/rag-memory/README.md",
+              "score": 0.6062556539109084
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.5852769589388781
-            },
-            {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.5715303081017759
-            },
-            {
-              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_FIX_REPORT.md",
-              "score": 0.5599305937095704
-            },
-            {
-              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md",
-              "score": 0.5599305937095704
+              "score": 0.5286564520953578
             }
           ]
         },
@@ -1974,31 +1952,31 @@
           "expected_files": [
             "prompts/codex_task.prompt.md"
           ],
-          "recallAt5": 0,
-          "precisionAt5": 0,
-          "mrr": 0,
-          "ndcgAt5": 0,
+          "recallAt5": 1,
+          "precisionAt5": 0.2,
+          "mrr": 1,
+          "ndcgAt5": 1,
           "violations": [],
           "top5": [
             {
+              "path": "prompts/codex_task.prompt.md",
+              "score": 0.9
+            },
+            {
+              "path": "prompts/rag_retrieval.prompt.md",
+              "score": 0.6596550878242481
+            },
+            {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.7821091825944968
+              "score": 0.5191491294217808
             },
             {
-              "path": "docs/CODEX_QCLAW_HANDOFF.md",
-              "score": 0.7627958561535997
+              "path": "prompts/release_gate.prompt.md",
+              "score": 0.477056177198316
             },
             {
-              "path": "agents/model-router/SOUL.md",
-              "score": 0.6789970188864005
-            },
-            {
-              "path": "docs/WORKFLOW_COMMANDS.md",
-              "score": 0.6364460494755385
-            },
-            {
-              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
-              "score": 0.6115928622507099
+              "path": "prompts/qclaw_review.prompt.md",
+              "score": 0.4701108562650897
             }
           ]
         },
@@ -2016,24 +1994,24 @@
           "violations": [],
           "top5": [
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.7969226855914275
+              "path": "docs/AGENT_DASHBOARD_PLAN.md",
+              "score": 0.8626084916989849
             },
             {
-              "path": "docs/AGENT_DASHBOARD_PLAN.md",
-              "score": 0.7408723581798997
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.7971288388708133
             },
             {
               "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
-              "score": 0.6929282913971196
+              "score": 0.7438658888067387
+            },
+            {
+              "path": "docker/monitoring/README.md",
+              "score": 0.7269365656193458
             },
             {
               "path": "docs/PHASE_3_GRAFANA_READINESS_REPORT.md",
-              "score": 0.6746220875079751
-            },
-            {
-              "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
-              "score": 0.6669669693076217
+              "score": 0.6948751101545735
             }
           ]
         },
@@ -2052,23 +2030,23 @@
           "top5": [
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.8583333333333333
+              "score": 0.9416666666666668
             },
             {
               "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.8171844546535887
+              "score": 0.8728263082069647
+            },
+            {
+              "path": "docs/V1_2_0_PHASE_B_ENV_SETUP.md",
+              "score": 0.8296884502273414
+            },
+            {
+              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
+              "score": 0.7670113749502638
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.7000897413838378
-            },
-            {
-              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
-              "score": 0.5287785735374809
-            },
-            {
-              "path": "docs/RAG_RETRIEVAL_POLICY.md",
-              "score": 0.5153183752806112
+              "score": 0.7626046982811442
             }
           ]
         },
@@ -2087,24 +2065,24 @@
           "violations": [],
           "top5": [
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.7478816259300407
+              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
+              "score": 0.775
+            },
+            {
+              "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.717558128590233
+            },
+            {
+              "path": "PARTY_GAME_SDK_FINAL_HANDOFF.md",
+              "score": 0.7
+            },
+            {
+              "path": "agents/release-manager/SOUL.md",
+              "score": 0.7
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 0.7436246328940442
-            },
-            {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.7418637427386212
-            },
-            {
-              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
-              "score": 0.725
-            },
-            {
-              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
-              "score": 0.723376511401021
+              "score": 0.6955205274117036
             }
           ]
         },
@@ -2124,23 +2102,23 @@
           "top5": [
             {
               "path": "agents/rag-memory/SOUL.md",
-              "score": 0.9654757631363633
+              "score": 1
             },
             {
               "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.8916666666666666
+              "score": 0.836778543766193
             },
             {
-              "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 0.7353198688255578
+              "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
+              "score": 0.793150046095219
             },
             {
-              "path": "docs/RUNTIME_AUTOMATION_PHASE_REPORT.md",
-              "score": 0.6942219473264295
+              "path": "prompts/codex_task.prompt.md",
+              "score": 0.7489718653742781
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.6933656322651125
+              "path": "docs/QA_PHASE1_LOG.md",
+              "score": 0.7165814331852576
             }
           ]
         }

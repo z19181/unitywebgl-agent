@@ -44,15 +44,50 @@ const MUST_NOT_SUGGEST_PATTERNS = [
   'HDRP materials', 'ShaderGraph', 'ComputeShader',
 ];
 
-// Score weights
+// Score weights (base)
 const W = {
-  keyword: 0.40,
-  semantic: 0.30,
-  pathBoost: 0.05,
+  keyword: 0.50,
+  semantic: 0.25,
+  pathBoost: 0.10,
   headingBoost: 0.05,
-  governance: 0.20,       // was 0.10 — stronger governance priority
-  hardConstraintMin: 0.30, // was 0.25 — ensure HC docs make top 5
+  governance: 0.10,
+  hardConstraintMin: 0.30,
 };
+
+// Query-category-specific weight overrides
+const CATEGORY_WEIGHTS = {
+  hard_constraints: { keyword: 0.60, semantic: 0.15, governance: 0.20, pathBoost: 0.05, headingBoost: 0.00 },
+  release_gate:    { keyword: 0.60, semantic: 0.15, governance: 0.20, pathBoost: 0.05, headingBoost: 0.00 },
+  git_governance:  { keyword: 0.55, semantic: 0.20, governance: 0.15, pathBoost: 0.05, headingBoost: 0.05 },
+  rag_memory:     { keyword: 0.45, semantic: 0.35, governance: 0.05, pathBoost: 0.10, headingBoost: 0.05 },
+  agent_runtime:  { keyword: 0.45, semantic: 0.35, governance: 0.05, pathBoost: 0.10, headingBoost: 0.05 },
+  token_cost:     { keyword: 0.45, semantic: 0.35, governance: 0.05, pathBoost: 0.10, headingBoost: 0.05 },
+  material_policy: { keyword: 0.50, semantic: 0.25, governance: 0.10, pathBoost: 0.10, headingBoost: 0.05 },
+  unity_webgl:    { keyword: 0.50, semantic: 0.25, governance: 0.10, pathBoost: 0.10, headingBoost: 0.05 },
+  canary_pipeline:{ keyword: 0.50, semantic: 0.25, governance: 0.10, pathBoost: 0.10, headingBoost: 0.05 },
+  dashboard:      { keyword: 0.50, semantic: 0.25, governance: 0.10, pathBoost: 0.10, headingBoost: 0.05 },
+};
+
+// File-like terms that boost path scoring
+const FILE_LIKE_TERMS = [/\.md\b/i, /\.yml\b/i, /\.yaml\b/i, /\.js\b/i, /\.prompt\b/i,
+  /docker/i, /prometheus/i, /grafana/i, /baseline/i];
+
+function getWeights(query, queryCategory) {
+  const w = { ...W };
+
+  // Apply category-specific overrides if known
+  if (queryCategory && CATEGORY_WEIGHTS[queryCategory]) {
+    Object.assign(w, CATEGORY_WEIGHTS[queryCategory]);
+  }
+
+  // If query contains file-like terms, boost path scoring
+  const hasFileTerms = FILE_LIKE_TERMS.some(re => re.test(query));
+  if (hasFileTerms) {
+    w.pathBoost = Math.max(w.pathBoost, 0.20);
+  }
+
+  return w;
+}
 
 // ========================================
 // Safety Guard
@@ -113,7 +148,19 @@ function calcPathBoost(filePath, query) {
   const lowerPath = filePath.toLowerCase();
   const tokens = tokenize(query);
   const matched = tokens.filter(t => lowerPath.includes(t.toLowerCase())).length;
-  return matched > 0 ? Math.min(matched / Math.max(tokens.length, 1), 1) : 0;
+  let boost = matched > 0 ? Math.min(matched / Math.max(tokens.length, 1), 1) : 0;
+
+  // Prompt file bonus: boost when query mentions prompt-related terms
+  if (lowerPath.includes('prompts/') && /prompt|template|review|codex|task|release|rag/i.test(query)) {
+    boost = Math.max(boost, 0.6);
+  }
+
+  // Docker path bonus
+  if (lowerPath.includes('docker/') && /prometheus|grafana|docker|metrics|dashboard/i.test(query)) {
+    boost = Math.max(boost, 0.5);
+  }
+
+  return boost;
 }
 
 function calcHeadingBoost(snippet, query) {
@@ -174,8 +221,9 @@ function normalizeScores(candidates, scoreKey) {
 // ========================================
 // Hybrid retrieval
 // ========================================
-async function hybridSearch(query, { topK = 5 } = {}) {
+async function hybridSearch(query, { topK = 5, queryCategory } = {}) {
   const isHCQuery = isHardConstraintQuery(query);
+  const w = getWeights(query, queryCategory);
 
   // A. Keyword candidates (top 20)
   const kwCandidates = await keywordSearchCandidates(query, 20);
@@ -242,13 +290,11 @@ async function hybridSearch(query, { topK = 5 } = {}) {
     const hb = c.headingBoost ?? 0;
     const gov = calcGovernanceBoost(query, c.path);
 
-    let final = W.keyword * kwNorm + W.semantic * semNorm + W.pathBoost * pb + W.headingBoost * hb + gov;
+    let final = w.keyword * kwNorm + w.semantic * semNorm + w.pathBoost * pb + w.headingBoost * hb + gov;
 
     // Hard constraint override: HC docs must appear in top 5
     if (isHCQuery && isHardConstraintDoc(c.path)) {
-      // Guarantee: HC doc gets at least W.hardConstraintMin
-      // Plus: add governanceBoost (now 0.20) to the minimum
-      final = Math.max(final, W.hardConstraintMin + calcGovernanceBoost(query, c.path));
+      final = Math.max(final, w.hardConstraintMin + calcGovernanceBoost(query, c.path));
     }
 
     c.finalScore = Math.min(final, 1.0);

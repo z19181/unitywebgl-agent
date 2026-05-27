@@ -117,20 +117,25 @@ async function embedText(text, { retries = 3 } = {}) {
  * Batch embed multiple texts (respects rate limits)
  */
 async function embedBatch(texts, { onProgress, batchSize = 20 } = {}) {
+  // Truncate texts that exceed Ollama context (~8192 tokens ≈ ~32K chars)
+  // Use 8000 chars as safe limit for any provider
+  const MAX_CHARS = 4000;
+  const truncated = texts.map(t => t.length > MAX_CHARS ? t.slice(0, MAX_CHARS) : t);
+
   const { name, provider: prov } = await getProvider();
   
   // Ollama: call embedBatch directly (accepts string[], returns number[][])
   if (name === 'ollama') {
     const allEmbeddings = [];
-    for (let i = 0; i < texts.length; i += batchSize) {
-      const batch = texts.slice(i, i + batchSize);
+    for (let i = 0; i < truncated.length; i += batchSize) {
+      const batch = truncated.slice(i, i + batchSize);
       // Ollama embedText with array input returns number[][] directly
       const results = await prov.embedText(batch);
       allEmbeddings.push(...results);
       if (onProgress) {
-        onProgress({ completed: Math.min(i + batchSize, texts.length), total: texts.length });
+        onProgress({ completed: Math.min(i + batchSize, truncated.length), total: truncated.length });
       }
-      if (i + batchSize < texts.length) {
+      if (i + batchSize < truncated.length) {
         await new Promise(r => setTimeout(r, 200));
       }
     }
@@ -140,8 +145,8 @@ async function embedBatch(texts, { onProgress, batchSize = 20 } = {}) {
   // OpenAI: use embeddings.create API directly
   if (name === 'openai') {
     const allEmbeddings = [];
-    for (let i = 0; i < texts.length; i += batchSize) {
-      const batch = texts.slice(i, i + batchSize);
+    for (let i = 0; i < truncated.length; i += batchSize) {
+      const batch = truncated.slice(i, i + batchSize);
       const response = await prov.embeddings.create({
         model: 'text-embedding-3-small',
         input: batch,
@@ -149,9 +154,9 @@ async function embedBatch(texts, { onProgress, batchSize = 20 } = {}) {
       });
       allEmbeddings.push(...response.data.map(d => d.embedding));
       if (onProgress) {
-        onProgress({ completed: Math.min(i + batchSize, texts.length), total: texts.length });
+        onProgress({ completed: Math.min(i + batchSize, truncated.length), total: truncated.length });
       }
-      if (i + batchSize < texts.length) {
+      if (i + batchSize < truncated.length) {
         await new Promise(r => setTimeout(r, 200));
       }
     }
@@ -160,11 +165,11 @@ async function embedBatch(texts, { onProgress, batchSize = 20 } = {}) {
   
   // Mock: same as single-text wrapper
   const embeddings = [];
-  for (let i = 0; i < texts.length; i++) {
-    const result = await prov.embedText(texts[i]);
+  for (let i = 0; i < truncated.length; i++) {
+    const result = await prov.embedText(truncated[i]);
     embeddings.push(Array.isArray(result[0]) ? result[0] : result);
     if (onProgress) {
-      onProgress({ completed: i + 1, total: texts.length });
+      onProgress({ completed: i + 1, total: truncated.length });
     }
   }
   return embeddings;
