@@ -30,9 +30,12 @@ function buildPromptContext(response, options = {}) {
   lines.push(`[Mode] ${response.mode}`);
   lines.push(`[Governance Enforced] ${response.governance_enforced ? 'Yes' : 'No'}`);
   lines.push(`[Retrieval Hash] ${response.retrieval_hash}`);
+  if (response.memory_results) {
+    lines.push(`[Memory Results] ${response.memory_results}`);
+  }
   lines.push('');
 
-  // Sort chunks: governance first
+  // Sort chunks: governance first, then memory governance, then by score
   let chunks = [...response.chunks];
   if (opts.includeGovernanceFirst) {
     chunks.sort((a, b) => {
@@ -46,36 +49,67 @@ function buildPromptContext(response, options = {}) {
 
   // Build context sections
   let totalChars = 0;
-  let includedCount = 0;
+  let docCount = 0;
+  let memCount = 0;
 
-  for (let i = 0; i < chunks.length; i++) {
-    const chunk = chunks[i];
-    const section = buildChunkSection(chunk, i + 1, opts);
-    const sectionChars = section.length;
+  // Group by source type for section headers
+  const docChunks = chunks.filter(c => c.source_type !== 'memory');
+  const memoryChunks = chunks.filter(c => c.source_type === 'memory');
 
-    // Check if adding this section would exceed maxChars
-    if (totalChars + sectionChars > opts.maxChars) {
-      // Try to add at least a truncated version
-      if (opts.truncateLongChunks && includedCount === 0) {
-        const truncated = truncateChunkSection(chunk, i + 1, opts.maxChars - totalChars - 50);
-        if (truncated) {
-          lines.push(truncated);
-          totalChars += truncated.length;
-          includedCount++;
+  // Document sources
+  if (docChunks.length > 0) {
+    lines.push('[Document Source]');
+    for (let i = 0; i < docChunks.length; i++) {
+      const chunk = docChunks[i];
+      const section = buildChunkSection(chunk, docCount + 1, opts);
+      const sectionChars = section.length;
+
+      if (totalChars + sectionChars > opts.maxChars) {
+        if (opts.truncateLongChunks && docCount === 0 && memCount === 0) {
+          const truncated = truncateChunkSection(chunk, docCount + 1, opts.maxChars - totalChars - 50);
+          if (truncated) { lines.push(truncated); totalChars += truncated.length; docCount++; }
         }
+        break;
       }
-      break;
+      lines.push(section);
+      totalChars += sectionChars;
+      docCount++;
     }
+    lines.push('');
+  }
 
-    lines.push(section);
-    totalChars += sectionChars;
-    includedCount++;
+  // Memory sources (v1.3.0)
+  if (memoryChunks.length > 0) {
+    // Check if we still have room
+    if (totalChars < opts.maxChars) {
+      lines.push('[Memory Source]');
+      for (let i = 0; i < memoryChunks.length; i++) {
+        const chunk = memoryChunks[i];
+        const section = buildMemoryChunkSection(chunk, memCount + 1, opts);
+        const sectionChars = section.length;
+
+        if (totalChars + sectionChars > opts.maxChars) {
+          if (opts.truncateLongChunks && docCount === 0 && memCount === 0) {
+            const truncated = truncateMemoryChunkSection(chunk, memCount + 1, opts.maxChars - totalChars - 50);
+            if (truncated) { lines.push(truncated); totalChars += truncated.length; memCount++; }
+          }
+          break;
+        }
+        lines.push(section);
+        totalChars += sectionChars;
+        memCount++;
+      }
+      lines.push('');
+    }
   }
 
   // Footer
-  lines.push('');
   lines.push('=== RETRIEVED CONTEXT END ===');
-  lines.push(`[Total Chunks Included] ${includedCount}/${response.top_k}`);
+  const includedCount = docCount + memCount;
+  lines.push(`[Documents Included] ${docCount}/${docChunks.length}`);
+  if (memoryChunks.length > 0) {
+    lines.push(`[Memories Included] ${memCount}/${memoryChunks.length}`);
+  }
   lines.push(`[Total Characters] ${totalChars}`);
 
   return lines.join('\n');
@@ -177,4 +211,52 @@ function deduplicateChunks(chunks) {
   return deduped;
 }
 
-export { buildPromptContext, buildMinimalContext, deduplicateChunks, truncateChunkSection };
+/**
+ * Build a single memory chunk section (v1.3.0 Phase B.1)
+ */
+function buildMemoryChunkSection(chunk, index, opts) {
+  const marker = chunk.isHardConstraintDoc ? '🧠🛡️' : '🧠';
+  const memType = chunk.metadata?.memoryType || 'unknown';
+  const importance = chunk.metadata?.importance || '—';
+  
+  const lines = [];
+  
+  lines.push(`--- Memory ${index} ${marker} [${memType}] ---`);
+  lines.push(`[Title] ${chunk.sectionTitle || '(untitled)'}`);
+  lines.push(`[Importance] ${importance}/10`);
+  
+  if (chunk.metadata?.agentName) {
+    lines.push(`[Agent] ${chunk.metadata.agentName}`);
+  }
+
+  lines.push(`[Content]`);
+  lines.push(chunk.content);
+  
+  if (opts.includeSourceMarkers && chunk.hybridScore !== undefined) {
+    lines.push(`[Relevance] ${(chunk.hybridScore * 100).toFixed(1)}%`);
+  }
+
+  lines.push('');
+
+  return lines.join('\n');
+}
+
+/**
+ * Truncate a memory chunk section to fit within character limit (v1.3.0)
+ */
+function truncateMemoryChunkSection(chunk, index, maxChars) {
+  const marker = chunk.isHardConstraintDoc ? '🧠🛡️' : '🧠';
+  const memType = chunk.metadata?.memoryType || 'unknown';
+  
+  const header = `--- Memory ${index} ${marker} [${memType}] ---\n[Title] ${chunk.sectionTitle || '(untitled)'}\n[Content]\n`;
+  const footer = '\n[Truncated] ...\n';
+  const availableChars = maxChars - header.length - footer.length;
+
+  if (availableChars <= 0) return null;
+
+  const truncatedContent = chunk.content.slice(0, availableChars);
+  
+  return `${header}${truncatedContent}${footer}`;
+}
+
+export { buildPromptContext, buildMinimalContext, deduplicateChunks, truncateChunkSection, buildMemoryChunkSection, truncateMemoryChunkSection };
