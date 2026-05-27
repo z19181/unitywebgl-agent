@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-05-27T03:47:12.177Z",
+  "generatedAt": "2026-05-27T09:49:36.474Z",
   "modes": [
     {
       "mode": "keyword",
       "summary": {
-        "meanRecallAt5": 0.425,
-        "meanPrecisionAt5": 0.10999999999999999,
-        "meanMRR": 0.2895833333333333,
-        "meanNDCGAt5": 0.28067613448531914,
+        "meanRecallAt5": 0.45,
+        "meanPrecisionAt5": 0.12,
+        "meanMRR": 0.3388888888888889,
+        "meanNDCGAt5": 0.32319337976205686,
         "totalViolations": 1,
         "totalBlocked": 0
       },
@@ -39,11 +39,11 @@
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
+              "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
+              "path": "docs/V1_2_0_PHASE_B_DEPENDENCY_PLAN.md",
               "score": 1
             }
           ]
@@ -75,11 +75,11 @@
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
               "score": 1
             }
           ]
@@ -127,30 +127,30 @@
             "prompts/release_gate.prompt.md",
             "docs/V1_1_4_STATE_SNAPSHOT.md"
           ],
-          "recallAt5": 0,
-          "precisionAt5": 0,
-          "mrr": 0.125,
-          "ndcgAt5": 0,
+          "recallAt5": 0.5,
+          "precisionAt5": 0.2,
+          "mrr": 0.2,
+          "ndcgAt5": 0.23719771276929622,
           "violations": [],
           "top5": [
-            {
-              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
-              "score": 1
-            },
-            {
-              "path": "docs/AGENT_DASHBOARD_PLAN.md",
-              "score": 1
-            },
-            {
-              "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
-              "score": 1
-            },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
               "score": 1
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/WORKFLOW_COMMANDS.md",
+              "score": 1
+            },
+            {
+              "path": "docs/templates/RELEASE_GATE_REPORT_TEMPLATE.md",
+              "score": 1
+            },
+            {
+              "path": "prompts/release_gate.prompt.md",
               "score": 1
             }
           ]
@@ -200,7 +200,7 @@
           ],
           "recallAt5": 0,
           "precisionAt5": 0,
-          "mrr": 0,
+          "mrr": 0.1,
           "ndcgAt5": 0,
           "violations": [],
           "top5": [
@@ -221,7 +221,7 @@
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
+              "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
               "score": 1
             }
           ]
@@ -235,8 +235,8 @@
           ],
           "recallAt5": 1,
           "precisionAt5": 0.2,
-          "mrr": 0.2,
-          "ndcgAt5": 0.38685280723454163,
+          "mrr": 0.25,
+          "ndcgAt5": 0.43067655807339306,
           "violations": [],
           "top5": [
             {
@@ -252,11 +252,11 @@
               "score": 1
             },
             {
-              "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
               "score": 1
             },
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "path": "docs/V1_2_0_EMBEDDING_ARCHITECTURE_DECISION.md",
               "score": 1
             }
           ]
@@ -277,23 +277,23 @@
           "top5": [
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
-              "score": 0.9473311823794406
+              "score": 0.894389203297479
             },
             {
               "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
-              "score": 0.9040078345561597
+              "score": 0.8801911267729597
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.770909572590792
+              "score": 0.7182825036052756
             },
             {
               "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
-              "score": 0.6482574165840717
+              "score": 0.5951102612962058
             },
             {
               "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.6430870928234749
+              "score": 0.5910852498196859
             }
           ]
         },
@@ -320,15 +320,15 @@
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "path": "UnityExamples/BreakoutTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md",
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
               "score": 1
             }
           ]
@@ -348,23 +348,23 @@
           "violations": [],
           "top5": [
             {
-              "path": "docs/RAG_RETRIEVAL_POLICY.md",
-              "score": 1
-            },
-            {
               "path": "docs/STASH_VALIDATION_REPORT.md",
               "score": 1
             },
             {
-              "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
-              "score": 1
-            },
-            {
-              "path": "agents/model-router/SOUL.md",
-              "score": 1
-            },
-            {
               "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
+              "score": 1
+            },
+            {
+              "path": "prompts/codex_task.prompt.md",
+              "score": 1
+            },
+            {
+              "path": "prompts/qclaw_review.prompt.md",
+              "score": 1
+            },
+            {
+              "path": "prompts/release_gate.prompt.md",
               "score": 1
             }
           ]
@@ -420,23 +420,23 @@
           "top5": [
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.9235977446338026
+              "score": 0.8709706756482865
             },
             {
               "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 0.908087092823475
+              "score": 0.856085249819686
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
-              "score": 0.8305322405804987
+              "score": 0.777590261498537
             },
             {
               "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
-              "score": 0.73804022643437
+              "score": 0.6845248569275866
             },
             {
               "path": "docs/V1_2_0_PHASE_B_ENV_SETUP.md",
-              "score": 0.7314113383291685
+              "score": 0.6779443208877702
             }
           ]
         },
@@ -484,29 +484,29 @@
           ],
           "recallAt5": 1,
           "precisionAt5": 0.2,
-          "mrr": 0.25,
-          "ndcgAt5": 0.43067655807339306,
+          "mrr": 1,
+          "ndcgAt5": 1,
           "violations": [],
           "top5": [
-            {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
-              "score": 1
-            },
-            {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 1
-            },
-            {
-              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
-              "score": 1
-            },
             {
               "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
               "score": 1
             },
             {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+              "score": 0.9599541130687705
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 0.951615836938609
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.9494185831530193
+            },
+            {
               "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
-              "score": 0.8449433349764042
+              "score": 0.7927449514343157
             }
           ]
         },
@@ -533,15 +533,15 @@
             },
             {
               "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
-              "score": 0.9189743427283422
+              "score": 0.8667759591862537
             },
             {
               "path": "prompts/rag_retrieval.prompt.md",
-              "score": 0.8940088752229225
+              "score": 0.8418028421617565
             },
             {
               "path": "prompts/codex_task.prompt.md",
-              "score": 0.8340447376996469
+              "score": 0.7818307605063471
             }
           ]
         },
@@ -568,15 +568,15 @@
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
-              "score": 0.7723311823794405
+              "score": 0.7193892032974789
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
-              "score": 0.770909572590792
+              "score": 0.7182825036052756
             },
             {
               "path": "prompts/rag_retrieval.prompt.md",
-              "score": 0.7690088752229224
+              "score": 0.7168028421617566
             }
           ]
         },
@@ -594,10 +594,6 @@
           "violations": [],
           "top5": [
             {
-              "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
-              "score": 1
-            },
-            {
               "path": "docs/AGENT_DASHBOARD_PLAN.md",
               "score": 1
             },
@@ -612,6 +608,10 @@
             {
               "path": "docs/PHASE_3_GRAFANA_READINESS_REPORT.md",
               "score": 1
+            },
+            {
+              "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
+              "score": 1
             }
           ]
         },
@@ -624,14 +624,10 @@
           ],
           "recallAt5": 0,
           "precisionAt5": 0,
-          "mrr": 0.1,
+          "mrr": 0.1111111111111111,
           "ndcgAt5": 0,
           "violations": [],
           "top5": [
-            {
-              "path": "docs/AGENT_DASHBOARD_PLAN.md",
-              "score": 1
-            },
             {
               "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
               "score": 1
@@ -646,6 +642,10 @@
             },
             {
               "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_PHASE_B_DEPENDENCY_PLAN.md",
               "score": 1
             }
           ]
@@ -665,10 +665,6 @@
           "violations": [],
           "top5": [
             {
-              "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 1
-            },
-            {
               "path": "docs/V1_0_0_RELEASE_SUMMARY.md",
               "score": 1
             },
@@ -682,6 +678,10 @@
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+              "score": 1
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
               "score": 1
             }
           ]
@@ -1147,11 +1147,11 @@
               "score": 0.658605814797971
             },
             {
-              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
               "score": 0.6032716920685283
             },
             {
-              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
               "score": 0.6032716920685283
             },
             {
@@ -1213,11 +1213,11 @@
           "violations": [],
           "top5": [
             {
-              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_FIX_REPORT.md",
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md",
               "score": 0.595517615643023
             },
             {
-              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md",
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_FIX_REPORT.md",
               "score": 0.595517615643023
             },
             {
@@ -1252,11 +1252,11 @@
               "score": 0.5021070823426712
             },
             {
-              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
               "score": 0.4723207226641617
             },
             {
-              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
               "score": 0.4723207226641617
             },
             {
@@ -1394,8 +1394,8 @@
               "score": 0.6443538601158524
             },
             {
-              "path": "docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md",
-              "score": 0.6238982026783964
+              "path": "docs/V1_2_0_PHASE_B4_RETRIEVAL_RELIABILITY_REPORT.md",
+              "score": 0.6319427849377652
             }
           ]
         }
@@ -1409,7 +1409,7 @@
         "meanMRR": 0.4804166666666667,
         "meanNDCGAt5": 0.446597119670764,
         "totalViolations": 0,
-        "totalBlocked": 15
+        "totalBlocked": 16
       },
       "results": [
         {
@@ -1502,10 +1502,6 @@
               "score": 0.8750000000000001
             },
             {
-              "path": "docs/V1_0_1_GOVERNANCE_REPORT.md",
-              "score": 0.7742328630591759
-            },
-            {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
               "score": 0.7724373709576055
             },
@@ -1516,6 +1512,10 @@
             {
               "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md",
               "score": 0.7695782426944053
+            },
+            {
+              "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
+              "score": 0.6583333333333334
             }
           ]
         },
@@ -1757,11 +1757,11 @@
             },
             {
               "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
-              "score": 0.8300000000000001
+              "score": 0.8164465947904282
             },
             {
               "path": "docs/STASH_VALIDATION_REPORT.md",
-              "score": 0.8263964694562334
+              "score": 0.8131686649776266
             },
             {
               "path": "docs/RAG_RETRIEVAL_POLICY.md",
@@ -1870,8 +1870,8 @@
               "score": 0.775
             },
             {
-              "path": "docs/templates/UNITY_BUILD_REPORT_TEMPLATE.md",
-              "score": 0.6665986804129513
+              "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md",
+              "score": 0.6809394734894332
             }
           ]
         },
@@ -1893,15 +1893,15 @@
               "score": 0.5583333333333333
             },
             {
-              "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
-              "score": 0.509496179101756
-            },
-            {
               "path": "UnityExamples/GAME_TEMPLATE_FACTORY.md",
               "score": 0.435212196017243
             },
             {
-              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
+              "score": 0.3416666666666667
+            },
+            {
+              "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
               "score": 0.325
             },
             {
@@ -1932,16 +1932,16 @@
               "score": 0.7012425304669357
             },
             {
-              "path": "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
-              "score": 0.6363361269624058
-            },
-            {
               "path": "agents/rag-memory/README.md",
               "score": 0.6062556539109084
             },
             {
               "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
               "score": 0.5286564520953578
+            },
+            {
+              "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+              "score": 0.5126186927854052
             }
           ]
         },
@@ -2117,8 +2117,8 @@
               "score": 0.7489718653742781
             },
             {
-              "path": "docs/QA_PHASE1_LOG.md",
-              "score": 0.7165814331852576
+              "path": "docs/STASH_VALIDATION_REPORT.md",
+              "score": 0.6093255730863689
             }
           ]
         }

@@ -1,12 +1,12 @@
 # RAG Retrieval Evaluation Report
 
-Generated: 2026-05-27T03:47:12.181Z
+Generated: 2026-05-27T09:49:36.483Z
 
 ## Summary
 
 | Mode | Recall@5 | Precision@5 | MRR | NDCG@5 | Violations |
 |------|----------|-------------|-----|--------|------------|
-| keyword | 0.4250 | 0.1100 | 0.2896 | 0.2807 | 1 |
+| keyword | 0.4500 | 0.1200 | 0.3389 | 0.3232 | 1 |
 | semantic | 0.2250 | 0.1400 | 0.1992 | 0.1641 | 0 |
 | hybrid | 0.5250 | 0.1400 | 0.4804 | 0.4466 | 0 |
 
@@ -21,8 +21,8 @@ Generated: 2026-05-27T03:47:12.181Z
   - docs/V1_1_4_STATE_SNAPSHOT.md (score: 1.0000)
   - docs/V1_2_0_EMBEDDING_ARCHITECTURE_DECISION.md (score: 1.0000)
   - docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md (score: 1.0000)
-  - docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md (score: 1.0000)
   - docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md (score: 1.0000)
+  - docs/V1_2_0_PHASE_B_DEPENDENCY_PLAN.md (score: 1.0000)
 
 **[✅] Q002: Unity WebGL material policy** (R@5=0.50, MRR=0.3333)
 - Expected: UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md, docs/V1_1_4_STATE_SNAPSHOT.md
@@ -31,8 +31,8 @@ Generated: 2026-05-27T03:47:12.181Z
   - docs/AGENT_INTELLIGENCE_LAYER_REPORT.md (score: 1.0000)
   - docs/RUNTIME_AUTOMATION_PHASE_REPORT.md (score: 1.0000)
   - docs/V1_1_4_STATE_SNAPSHOT.md (score: 1.0000)
-  - docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md (score: 1.0000)
   - docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md (score: 1.0000)
+  - docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md (score: 1.0000)
 
 **[✅] Q003: stash validation report** (R@5=1.00, MRR=1.0000)
 - Expected: docs/STASH_VALIDATION_REPORT.md
@@ -44,15 +44,15 @@ Generated: 2026-05-27T03:47:12.181Z
   - docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md (score: 1.0000)
   - UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md (score: 1.0000)
 
-**[❌] Q004: release gate process** (R@5=0.00, MRR=0.1250)
+**[✅] Q004: release gate process** (R@5=0.50, MRR=0.2000)
 - Expected: prompts/release_gate.prompt.md, docs/V1_1_4_STATE_SNAPSHOT.md
 - Violations: 0
 - Top 5:
-  - docs/AGENT_DASHBOARD_PHASE_REPORT.md (score: 1.0000)
-  - docs/AGENT_DASHBOARD_PLAN.md (score: 1.0000)
-  - docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md (score: 1.0000)
   - docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md (score: 1.0000)
   - docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md (score: 1.0000)
+  - docs/WORKFLOW_COMMANDS.md (score: 1.0000)
+  - docs/templates/RELEASE_GATE_REPORT_TEMPLATE.md (score: 1.0000)
+  - prompts/release_gate.prompt.md (score: 1.0000)
 
 **[✅] Q005: Agent Dashboard Next.js shadcn/ui** (R@5=0.50, MRR=0.2500)
 - Expected: agent-dashboard/README.md, docs/V1_1_4_STATE_SNAPSHOT.md
@@ -64,7 +64,7 @@ Generated: 2026-05-27T03:47:12.181Z
   - docs/V1_1_4_STATE_SNAPSHOT.md (score: 1.0000)
   - docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md (score: 1.0000)
 
-**[❌] Q006: RAG memory retrieval policy** (R@5=0.00, MRR=0.0000)
+**[❌] Q006: RAG memory retrieval policy** (R@5=0.00, MRR=0.1000)
 - Expected: agents/rag-memory/RAG_RETRIEVAL_POLICY.md
 - Violations: 0
 - Top 5:
@@ -72,27 +72,27 @@ Generated: 2026-05-27T03:47:12.181Z
   - docs/RAG_RETRIEVAL_POLICY.md (score: 1.0000)
   - docs/V1_1_4_STATE_SNAPSHOT.md (score: 1.0000)
   - docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md (score: 1.0000)
-  - docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md (score: 1.0000)
+  - docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md (score: 1.0000)
 
-**[✅] Q007: token cost analysis Agent Intelligence** (R@5=1.00, MRR=0.2000)
+**[✅] Q007: token cost analysis Agent Intelligence** (R@5=1.00, MRR=0.2500)
 - Expected: docs/V1_1_4_STATE_SNAPSHOT.md
 - Violations: 0
 - Top 5:
   - docs/AGENT_DASHBOARD_PHASE_REPORT.md (score: 1.0000)
   - docs/AGENT_DASHBOARD_PLAN.md (score: 1.0000)
   - docs/AGENT_INTELLIGENCE_LAYER_REPORT.md (score: 1.0000)
-  - docs/AGENT_STUDIO_HIERARCHY.md (score: 1.0000)
   - docs/V1_1_4_STATE_SNAPSHOT.md (score: 1.0000)
+  - docs/V1_2_0_EMBEDDING_ARCHITECTURE_DECISION.md (score: 1.0000)
 
 **[✅] Q008: canary deployment pipeline v0.4.0** (R@5=0.50, MRR=0.2000)
 - Expected: docs/V1_1_4_STATE_SNAPSHOT.md, docs/V1_1_4_RUNTIME_SANITY_REPORT.md
 - Violations: 0
 - Top 5:
-  - docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md (score: 0.9473)
-  - docs/V1_0_0_RELEASE_SUMMARY.md (score: 0.9040)
-  - docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md (score: 0.7709)
-  - docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md (score: 0.6483)
-  - docs/V1_1_4_STATE_SNAPSHOT.md (score: 0.6431)
+  - docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md (score: 0.8944)
+  - docs/V1_0_0_RELEASE_SUMMARY.md (score: 0.8802)
+  - docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md (score: 0.7183)
+  - docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md (score: 0.5951)
+  - docs/V1_1_4_STATE_SNAPSHOT.md (score: 0.5911)
 
 **[❌] Q009: Unity WebGL build verification 26 checks** (R@5=0.00, MRR=0.0000)
 - Expected: scripts/check-unity-webgl-build.js, docs/STASH_VALIDATION_REPORT.md
@@ -100,19 +100,19 @@ Generated: 2026-05-27T03:47:12.181Z
 - Top 5:
   - docs/V1_0_0_TAG_APPROVAL.md (score: 1.0000)
   - docs/V1_1_4_STATE_SNAPSHOT.md (score: 1.0000)
-  - docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md (score: 1.0000)
-  - docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md (score: 1.0000)
-  - docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md (score: 1.0000)
+  - UnityExamples/BreakoutTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md (score: 1.0000)
+  - UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md (score: 1.0000)
+  - UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md (score: 1.0000)
 
 **[❌] Q010: Five Iron Laws PartyGameSDK** (R@5=0.00, MRR=0.0000)
 - Expected: docs/V1_1_4_STATE_SNAPSHOT.md, docs/BASELINE.md
 - Violations: 0
 - Top 5:
-  - docs/RAG_RETRIEVAL_POLICY.md (score: 1.0000)
   - docs/STASH_VALIDATION_REPORT.md (score: 1.0000)
-  - docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md (score: 1.0000)
-  - agents/model-router/SOUL.md (score: 1.0000)
   - agents/rag-memory/RAG_RETRIEVAL_POLICY.md (score: 1.0000)
+  - prompts/codex_task.prompt.md (score: 1.0000)
+  - prompts/qclaw_review.prompt.md (score: 1.0000)
+  - prompts/release_gate.prompt.md (score: 1.0000)
 
 **[✅] Q011: agent runtime architecture v1.1.2** (R@5=1.00, MRR=0.3333)
 - Expected: docs/V1_1_4_STATE_SNAPSHOT.md
@@ -128,11 +128,11 @@ Generated: 2026-05-27T03:47:12.181Z
 - Expected: docs/STASH_VALIDATION_REPORT.md, memory/2026-05-25.md
 - Violations: 0
 - Top 5:
-  - docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md (score: 0.9236)
-  - docs/V1_1_4_STATE_SNAPSHOT.md (score: 0.9081)
-  - docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md (score: 0.8305)
-  - docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md (score: 0.7380)
-  - docs/V1_2_0_PHASE_B_ENV_SETUP.md (score: 0.7314)
+  - docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md (score: 0.8710)
+  - docs/V1_1_4_STATE_SNAPSHOT.md (score: 0.8561)
+  - docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md (score: 0.7776)
+  - docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md (score: 0.6845)
+  - docs/V1_2_0_PHASE_B_ENV_SETUP.md (score: 0.6779)
 
 **[❌] Q013: Unity WebGL runtime pipeline WEBGL_RUNTIME_PIPELINE** (R@5=0.00, MRR=0.0000)
 - Expected: UnityExamples/WEBGL_RUNTIME_PIPELINE.md
@@ -144,15 +144,15 @@ Generated: 2026-05-27T03:47:12.181Z
   - docs/RUNTIME_ARTIFACT_POLICY.md (score: 1.0000)
   - docs/RUNTIME_AUTOMATION_PHASE_REPORT.md (score: 1.0000)
 
-**[✅] Q014: Material Policy URP Lit SimpleLit Unlit** (R@5=1.00, MRR=0.2500)
+**[✅] Q014: Material Policy URP Lit SimpleLit Unlit** (R@5=1.00, MRR=1.0000)
 - Expected: UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md
 - Violations: 0
 - Top 5:
-  - docs/V1_1_4_STATE_SNAPSHOT.md (score: 1.0000)
-  - docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md (score: 1.0000)
-  - docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md (score: 1.0000)
   - UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md (score: 1.0000)
-  - agents/rag-memory/RAG_RETRIEVAL_POLICY.md (score: 0.8449)
+  - docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md (score: 0.9600)
+  - docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md (score: 0.9516)
+  - docs/V1_1_4_STATE_SNAPSHOT.md (score: 0.9494)
+  - agents/rag-memory/RAG_RETRIEVAL_POLICY.md (score: 0.7927)
 
 **[✅] Q015: QClaw review prompt template** (R@5=1.00, MRR=0.5000)
 - Expected: prompts/qclaw_review.prompt.md
@@ -160,9 +160,9 @@ Generated: 2026-05-27T03:47:12.181Z
 - Top 5:
   - docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md (score: 1.0000)
   - prompts/qclaw_review.prompt.md (score: 1.0000)
-  - agents/rag-memory/RAG_RETRIEVAL_POLICY.md (score: 0.9190)
-  - prompts/rag_retrieval.prompt.md (score: 0.8940)
-  - prompts/codex_task.prompt.md (score: 0.8340)
+  - agents/rag-memory/RAG_RETRIEVAL_POLICY.md (score: 0.8668)
+  - prompts/rag_retrieval.prompt.md (score: 0.8418)
+  - prompts/codex_task.prompt.md (score: 0.7818)
 
 **[✅] Q016: Codex task decomposition prompt** (R@5=1.00, MRR=0.5000)
 - Expected: prompts/codex_task.prompt.md
@@ -170,39 +170,39 @@ Generated: 2026-05-27T03:47:12.181Z
 - Top 5:
   - docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md (score: 1.0000)
   - prompts/codex_task.prompt.md (score: 1.0000)
-  - docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md (score: 0.7723)
-  - docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md (score: 0.7709)
-  - prompts/rag_retrieval.prompt.md (score: 0.7690)
+  - docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md (score: 0.7194)
+  - docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md (score: 0.7183)
+  - prompts/rag_retrieval.prompt.md (score: 0.7168)
 
 **[❌] Q017: Prometheus metrics Grafana dashboard Agent Dashboard** (R@5=0.00, MRR=0.0000)
 - Expected: docker/prometheus/prometheus.yml
 - Violations: 0
 - Top 5:
-  - docs/AGENT_DASHBOARD_PHASE_REPORT.md (score: 1.0000)
   - docs/AGENT_DASHBOARD_PLAN.md (score: 1.0000)
   - docs/AGENT_INTELLIGENCE_LAYER_REPORT.md (score: 1.0000)
   - docs/AGENT_STUDIO_HIERARCHY.md (score: 1.0000)
   - docs/PHASE_3_GRAFANA_READINESS_REPORT.md (score: 1.0000)
+  - docs/V1_0_0_RELEASE_SUMMARY.md (score: 1.0000)
 
-**[❌] Q018: PostgreSQL pgvector RAG Memory v1.2.0 Phase B** (R@5=0.00, MRR=0.1000)
+**[❌] Q018: PostgreSQL pgvector RAG Memory v1.2.0 Phase B** (R@5=0.00, MRR=0.1111)
 - Expected: docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md
 - Violations: 0
 - Top 5:
-  - docs/AGENT_DASHBOARD_PLAN.md (score: 1.0000)
   - docs/V1_1_4_STATE_SNAPSHOT.md (score: 1.0000)
   - docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md (score: 1.0000)
   - docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md (score: 1.0000)
   - docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md (score: 1.0000)
+  - docs/V1_2_0_PHASE_B_DEPENDENCY_PLAN.md (score: 1.0000)
 
 **[❌] Q019: Unity WebGL baseline v0.1.0 PartyGameSDK** (R@5=0.00, MRR=0.0000)
 - Expected: docs/BASELINE.md, PartyGameSDK-MVP/BASELINE.md
 - Violations: 0
 - Top 5:
-  - docs/STASH_VALIDATION_REPORT.md (score: 1.0000)
   - docs/V1_0_0_RELEASE_SUMMARY.md (score: 1.0000)
   - docs/V1_1_4_STATE_SNAPSHOT.md (score: 1.0000)
   - docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md (score: 1.0000)
   - docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md (score: 1.0000)
+  - docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md (score: 1.0000)
 
 **[✅] Q020: server.js injection playerIndex PartyGameSDK protocol** (R@5=0.50, MRR=1.0000)
 - Expected: docs/V1_1_4_STATE_SNAPSHOT.md, docs/PROTOCOL_GENERALIZATION_REPORT.md
@@ -332,8 +332,8 @@ Generated: 2026-05-27T03:47:12.181Z
 - Violations: 0
 - Top 5:
   - docs/WORKFLOW_COMMANDS.md (score: 0.6586)
-  - UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md (score: 0.6033)
   - UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md (score: 0.6033)
+  - UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md (score: 0.6033)
   - UnityExamples/RUNTIME_VERIFIED_TEMPLATE_REPORT.md (score: 0.5934)
   - docs/templates/RELEASE_GATE_REPORT_TEMPLATE.md (score: 0.5895)
 
@@ -351,8 +351,8 @@ Generated: 2026-05-27T03:47:12.181Z
 - Expected: prompts/qclaw_review.prompt.md
 - Violations: 0
 - Top 5:
-  - UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_FIX_REPORT.md (score: 0.5955)
   - UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md (score: 0.5955)
+  - UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_FIX_REPORT.md (score: 0.5955)
   - agents/runtime-triage/SOUL.md (score: 0.5874)
   - docs/V1_0_1_GOVERNANCE_REPORT.md (score: 0.5856)
   - prompts/qclaw_review.prompt.md (score: 0.5827)
@@ -362,8 +362,8 @@ Generated: 2026-05-27T03:47:12.181Z
 - Violations: 0
 - Top 5:
   - scripts/ci-test.sh (score: 0.5021)
-  - UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md (score: 0.4723)
   - UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md (score: 0.4723)
+  - UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md (score: 0.4723)
   - UnityExamples/GAME_TEMPLATE_FACTORY.md (score: 0.4635)
   - docs/DEPLOYMENT_CHECKLIST.md (score: 0.4565)
 
@@ -402,7 +402,7 @@ Generated: 2026-05-27T03:47:12.181Z
   - UnityExamples/SnakeTemplateDemo/BUILD_GUIDE.md (score: 0.6467)
   - UnityExamples/UNITY_WEBGL_REAL_BUILD_GATE.md (score: 0.6445)
   - UnityExamples/_GameTemplateSkeleton/BUILD_GUIDE.md (score: 0.6444)
-  - docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md (score: 0.6239)
+  - docs/V1_2_0_PHASE_B4_RETRIEVAL_RELIABILITY_REPORT.md (score: 0.6319)
 
 ### HYBRID
 
@@ -431,10 +431,10 @@ Generated: 2026-05-27T03:47:12.181Z
 - Violations: 0
 - Top 5:
   - docs/STASH_VALIDATION_REPORT.md (score: 0.8750)
-  - docs/V1_0_1_GOVERNANCE_REPORT.md (score: 0.7742)
   - docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md (score: 0.7724)
   - UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_FIX_REPORT.md (score: 0.7696)
   - UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md (score: 0.7696)
+  - UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md (score: 0.6583)
 
 **[✅] Q004: release gate process** (R@5=0.50, MRR=0.3333)
 - Expected: prompts/release_gate.prompt.md, docs/V1_1_4_STATE_SNAPSHOT.md
@@ -502,8 +502,8 @@ Generated: 2026-05-27T03:47:12.181Z
 - Top 5:
   - agents/model-router/SOUL.md (score: 1.0000)
   - agents/rag-memory/SOUL.md (score: 1.0000)
-  - agents/rag-memory/RAG_RETRIEVAL_POLICY.md (score: 0.8300)
-  - docs/STASH_VALIDATION_REPORT.md (score: 0.8264)
+  - agents/rag-memory/RAG_RETRIEVAL_POLICY.md (score: 0.8164)
+  - docs/STASH_VALIDATION_REPORT.md (score: 0.8132)
   - docs/RAG_RETRIEVAL_POLICY.md (score: 0.6800)
 
 **[✅] Q011: agent runtime architecture v1.1.2** (R@5=1.00, MRR=0.2500)
@@ -534,16 +534,16 @@ Generated: 2026-05-27T03:47:12.181Z
   - docs/WEBGL_RUNTIME_AUTOMATION_PLAN.md (score: 0.8079)
   - docs/GOVERNANCE_LAYER_REPORT.md (score: 0.7889)
   - docs/WORKFLOW_COMMANDS.md (score: 0.7750)
-  - docs/templates/UNITY_BUILD_REPORT_TEMPLATE.md (score: 0.6666)
+  - UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_FIX_REPORT.md (score: 0.6809)
 
 **[✅] Q014: Material Policy URP Lit SimpleLit Unlit** (R@5=1.00, MRR=1.0000)
 - Expected: UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md
 - Violations: 0
 - Top 5:
   - UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md (score: 0.5583)
-  - agents/rag-memory/RAG_RETRIEVAL_POLICY.md (score: 0.5095)
   - UnityExamples/GAME_TEMPLATE_FACTORY.md (score: 0.4352)
-  - docs/V1_1_4_STATE_SNAPSHOT.md (score: 0.3250)
+  - agents/rag-memory/RAG_RETRIEVAL_POLICY.md (score: 0.3417)
+  - docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md (score: 0.3250)
   - docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md (score: 0.3250)
 
 **[✅] Q015: QClaw review prompt template** (R@5=1.00, MRR=1.0000)
@@ -552,9 +552,9 @@ Generated: 2026-05-27T03:47:12.181Z
 - Top 5:
   - prompts/qclaw_review.prompt.md (score: 0.8984)
   - agents/rag-memory/RAG_RETRIEVAL_POLICY.md (score: 0.7012)
-  - UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md (score: 0.6363)
   - agents/rag-memory/README.md (score: 0.6063)
   - docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md (score: 0.5287)
+  - docs/V1_1_4_STATE_SNAPSHOT.md (score: 0.5126)
 
 **[✅] Q016: Codex task decomposition prompt** (R@5=1.00, MRR=1.0000)
 - Expected: prompts/codex_task.prompt.md
@@ -604,5 +604,5 @@ Generated: 2026-05-27T03:47:12.181Z
   - docs/V1_1_4_STATE_SNAPSHOT.md (score: 0.8368)
   - docs/V1_2_0_PHASE_B2_CHUNK_RECONSTRUCTION_REPORT.md (score: 0.7932)
   - prompts/codex_task.prompt.md (score: 0.7490)
-  - docs/QA_PHASE1_LOG.md (score: 0.7166)
+  - docs/STASH_VALIDATION_REPORT.md (score: 0.6093)
 
