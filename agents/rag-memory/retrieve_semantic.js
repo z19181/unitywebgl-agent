@@ -30,7 +30,7 @@ async function retrieve(query, { topK = 5, minSimilarity = 0.0 } = {}) {
     }
   }
   
-  await store.closePool();
+  // Note: Don't close pool here - caller should manage pool lifecycle
   return deduped;
 }
 
@@ -116,7 +116,7 @@ async function retrieveWithSnippets(queryOrEmbedding, { topK = 5, minSimilarity 
   }
   
   aggregated.sort((a, b) => b.bestSimilarity - a.bestSimilarity);
-  await store.closePool();
+  // Note: Don't close pool here - caller should manage pool lifecycle
   return aggregated.slice(0, topK);
 }
 
@@ -134,6 +134,9 @@ if (process.argv[1] === new URL(import.meta.url).pathname) {
     console.log(`     ${r.content.slice(0, 120)}...`);
     console.log();
   }
+  
+  // Close pool when running standalone
+  await store.closePool();
 }
 
 export { retrieve, retrieveWithSnippets };

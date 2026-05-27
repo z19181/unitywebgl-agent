@@ -40,7 +40,9 @@ function assertGreater(actual, expected, msg) {
 // ========================================
 async function t1_hybrid_runnable() {
   const result = await hybridSearch('hard constraints server.js', { topK: 5 });
-  return result.results.length > 0 && result.totalCandidates > 0;
+  const passed = result.results.length > 0 && result.totalCandidates > 0;
+  // Don't close pool here - other tests need it
+  return passed;
 }
 
 // ========================================
@@ -171,6 +173,10 @@ async function main() {
   console.log('\n' + '='.repeat(80));
   console.log(`[Test] Results: ${passed} passed, ${failed} failed`);
   console.log('='.repeat(80) + '\n');
+
+  // Close pg pool after all tests
+  const { closePool } = await import('./vector_store.js');
+  await closePool();
 
   if (failed > 0) {
     console.log('[Test] ❌ SOME TESTS FAILED');

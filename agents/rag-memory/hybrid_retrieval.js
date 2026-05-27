@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url';
 import queryIndexModule from './query_index.cjs';
 const { queryIndex, loadIndex, tokenize } = queryIndexModule;
 import { retrieveWithSnippets } from './retrieve_semantic.js';
+import { enforceGovernanceResults } from './governance_enforcer.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -325,13 +326,16 @@ async function hybridSearch(query, { topK = 5, queryCategory } = {}) {
     reason: buildReason(c),
   }));
 
+  // Governance routing enforcement (Phase B.4.1)
+  const enforcedResults = enforceGovernanceResults(query, topResults, { topK });
+
   return {
     query,
     isHardConstraintQuery: isHCQuery,
     totalCandidates: candidates.length + blockedRecords.length,
     blockedCount: blockedRecords.length,
     topK,
-    results: topResults,
+    results: enforcedResults,
     blockedRecords,
   };
 }

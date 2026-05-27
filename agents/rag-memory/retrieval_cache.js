@@ -222,3 +222,7 @@ if (process.argv[1]?.includes('retrieval_cache')) {
 
 export default RetrievalCache;
 export { _cache as cache, RetrievalCache };
+
+export function clear() {
+  _cache.cache?.clear();
+}
