@@ -1,0 +1,1012 @@
+{
+  "generatedAt": "2026-05-26T03:25:14.997Z",
+  "summary": {
+    "totalQueries": 20,
+    "categories": [
+      "hard_constraints",
+      "material_policy",
+      "git_governance",
+      "release_gate",
+      "dashboard",
+      "rag_memory",
+      "token_cost",
+      "canary_pipeline",
+      "unity_webgl",
+      "agent_runtime"
+    ],
+    "meanRecallAt5": 0.1,
+    "meanPrecisionAt5": 0.030000000000000006,
+    "meanMRR": 0.034999999999999996,
+    "meanNDCGAt5": 0.04574945261898617,
+    "totalViolations": 4,
+    "violationsList": [
+      {
+        "query": "Q001",
+        "phrase": "modify server.js",
+        "file": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
+        "snippet": "v1.2.0 Phase A.2 Final Summary\n4. must_not_suggest Violation Analysis\n4.1 Violation Details\n\n## v1.2.0 Phase A.2 Final Summary\n### 4. must_not_suggest Violation Analysis\n\n- **Query:** Q020 (\"do NOT modify server.js under any circumstances\")\n- **Violation:** `must_not_suggest` phrase `\"modify server.js\"` found in snippet\n- **File:** `docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md`\n- **Expected:** This file DISCUSSES the hard constraint (should NOT modify `server.js`), so it should NOT be a violation."
+      },
+      {
+        "query": "Q001",
+        "phrase": "modify server.js",
+        "file": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+        "snippet": "v1.2.0 Phase A.2 — Keyword Retrieval Improvement Report\n4. Metrics Comparison\n4.3 must_not_suggest Violation Analysis\n\n**Violation:** Q020, phrase `\"modify server.js\"`, file `docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md`\n\n**Root Cause:** False positive. The document DISCUSSES the hard constraint (should NOT modify `server.js`), but the `must_not_suggest` check uses SUBSTRING matching (case-insensitive). If the snippet contains `\"modify server.js\"` (even in a quote or code block explaining the constraint), it triggers a violation.\n\n**Fix Needed:** Use semantic check (not substring check) for `must_not_suggest`. Possibly use embedding similarity to detect conceptual violations.\n\n---"
+      },
+      {
+        "query": "Q020",
+        "phrase": "modify server.js",
+        "file": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
+        "snippet": "v1.2.0 Phase A.2 Final Summary\n6. Why Embedding Retrieval is Necessary\n6.3 Embedding Retrieval Can Fix must_not_suggest False Positives\n\nUse embedding similarity to check `must_not_suggest` violations:\n\n- **Current (substring):** `\"modify server.js\"` in snippet → violation (false positive).\n- **Proposed (embedding):** Embedding similarity between snippet and `\"modify server.js\"` > 0.8 → check context (is it discussing the constraint or violating it?)."
+      },
+      {
+        "query": "Q020",
+        "phrase": "modify server.js",
+        "file": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+        "snippet": "v1.2.0 Phase A.1 — RAG Evaluation Harness Report\n5. Current Weaknesses\n5.4 must_not_suggest Uses Substring Check\n\n**Problem:** `must_not_suggest` violation detection uses simple substring check, which may have false positives.\n\n**Example:**\n- Query Q001: `must_not_suggest = [\"modify server.js\"]`\n- Retrieved snippet: \"We should NOT modify server.js because of hard constraints\"\n- Substring \"modify server.js\" is present → **false positive violation**\n- **Current behavior:** `calculateMetrics()` in `evaluate_retrieval.js` does NOT check for negation (e.g., \"NOT modify\"). It simply checks if phrase is substring of snippet.\n- **Risk:** False positives may block valid retrieval results.\n\n**Mitigation (Phase B):** Use embedding-based semantic check for `must_not_suggest` (detect conceptual violation, not just substring).\n\n---"
+      }
+    ]
+  },
+  "results": [
+    {
+      "id": "Q001",
+      "query": "hard constraints server.js",
+      "category": "hard_constraints",
+      "expected_files": [
+        "docs/V1_1_4_STATE_SNAPSHOT.md",
+        "agents/rag-memory/RAG_RETRIEVAL_POLICY.md"
+      ],
+      "results": [
+        {
+          "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+          "score": 1.09760484197518,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.1 — RAG Evaluation Harness Report\n8. Verification Commands\n8.2 Query Index (CLI)\n\n```bash\nnode agents/rag-memory/query_index.js \"hard constraints server.js\"\n```\n**Expected output:**\n```\nFound 5 relevant document(s) for query: \"hard constraints server.js\"\n[1] docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md ...\n```"
+        },
+        {
+          "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
+          "score": 0.9029992040925577,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.2 Final Summary\n4. must_not_suggest Violation Analysis\n4.1 Violation Details\n\n## v1.2.0 Phase A.2 Final Summary\n### 4. must_not_suggest Violation Analysis\n\n- **Query:** Q020 (\"do NOT modify server.js under any circumstances\")\n- **Violation:** `must_not_suggest` phrase `\"modify server.js\"` found in snippet\n- **File:** `docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md`\n- **Expected:** This file DISCUSSES the hard constraint (should NOT modify `server.js`), so it should NOT be a violation."
+        },
+        {
+          "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+          "score": 0.8629126306295398,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.2 — Keyword Retrieval Improvement Report\n4. Metrics Comparison\n4.3 must_not_suggest Violation Analysis\n\n**Violation:** Q020, phrase `\"modify server.js\"`, file `docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md`\n\n**Root Cause:** False positive. The document DISCUSSES the hard constraint (should NOT modify `server.js`), but the `must_not_suggest` check uses SUBSTRING matching (case-insensitive). If the snippet contains `\"modify server.js\"` (even in a quote or code block explaining the constraint), it triggers a violation.\n\n**Fix Needed:** Use semantic check (not substring check) for `must_not_suggest`. Possibly use embedding similarity to detect conceptual violations.\n\n---"
+        },
+        {
+          "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+          "score": 0.8386927516789321,
+          "matchedTokens": [],
+          "snippet": "V1.1.4 State Snapshot\n3. Hard Constraints\n\n| # | Constraint | Scope | Enforcement |\n|---|------------|-------|-------------|\n| 1 | **Do NOT modify `server.js`** | All branches | Absolute |\n| 2 | **Do NOT modify PartyGameSDK protocol** | `game_message.type` transparent | Server must NOT parse game semantics |\n| 3 | **Do NOT parse `game_message.type`** | server.js | Protocol泛化验证 38/38 PASS |\n| 4 | **Do NOT inject `playerIndex` from controller** | controller/*.html | Server injects `playerIndex` (Law 2) |\n| 5 | **`RELEASE_STATE.json` only modified in release phase** | All branches | Check before edit |\n| 6 | **Git tags require human approval** | All branches | Do NOT create tags without user confirmation |\n| 7 | **Five Iron Laws must be preserved** | All game templates | Verified in every new game branch |\n| 8 | **Unity WebGL materials must be WebGL-safe** | All Unity projects | URP Lit/SimpleLit/Unlit/Sprite only; no HDRP/ShaderGraph/ComputeShader |\n| 9 | **Do NOT redo Unity WebGL baseline** | `game/<name>` branches | Start from v0.1.0 tag `2cc1d21` |\n\n**Material Policy (WebGL-safe):**\n- ✅ Allowed: URP Lit, SimpleLit, Unlit, Sprite-Lit\n- ❌ Forbidden: HDRP, ShaderGraph, ComputeShader, Custom Render Features\n- ⚠️ Texture max size: 1024 (6-gate verification required)\n\n---"
+        },
+        {
+          "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
+          "score": 0.8183679852978063,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase B.0 — Environment + Secret Safety Prep Report\n3. Hard Constraints Compliance\n\n| # | Constraint | Status | Evidence |\n|---|------------|--------|----------|\n| 1 | Do NOT modify `server.js` | ✅ | `git diff --stat` = empty |\n| 2 | Do NOT modify PartyGameSDK protocol | ✅ | No protocol files touched |\n| 3 | Do NOT modify `RELEASE_STATE.json` | ✅ | `git diff --stat` = empty |\n| 4 | Do NOT create tags | ✅ | `git tag -l` = no new tags |\n| 5 | Do NOT generate embeddings | ✅ | No `embedder.js` created |\n| 6 | Do NOT call OpenAI API | ✅ | No API calls in Phase B.0 |\n| 7 | Do NOT commit real `.env` | ✅ | `.env` not in `git status` |\n| 8 | Do NOT hardcode secrets | ✅ | `check-no-secrets.js` passed |\n| 9 | Do NOT write dead code | ✅ | All files have purpose |\n| 10 | Do NOT break Five Iron Laws | ✅ | No Unity files modified |\n\n---"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0.5,
+        "precisionAt5": 0.2,
+        "mrr": 0.25,
+        "ndcgAt5": 0.2640681225725909,
+        "violations": [
+          {
+            "query": "hard constraints server.js",
+            "phrase": "modify server.js",
+            "file": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
+            "snippet": "v1.2.0 Phase A.2 Final Summary\n4. must_not_suggest Violation Analysis\n4.1 Violation Details\n\n## v1.2.0 Phase A.2 Final Summary\n### 4. must_not_suggest Violation Analysis\n\n- **Query:** Q020 (\"do NOT modify server.js under any circumstances\")\n- **Violation:** `must_not_suggest` phrase `\"modify server.js\"` found in snippet\n- **File:** `docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md`\n- **Expected:** This file DISCUSSES the hard constraint (should NOT modify `server.js`), so it should NOT be a violation."
+          },
+          {
+            "query": "hard constraints server.js",
+            "phrase": "modify server.js",
+            "file": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+            "snippet": "v1.2.0 Phase A.2 — Keyword Retrieval Improvement Report\n4. Metrics Comparison\n4.3 must_not_suggest Violation Analysis\n\n**Violation:** Q020, phrase `\"modify server.js\"`, file `docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md`\n\n**Root Cause:** False positive. The document DISCUSSES the hard constraint (should NOT modify `server.js`), but the `must_not_suggest` check uses SUBSTRING matching (case-insensitive). If the snippet contains `\"modify server.js\"` (even in a quote or code block explaining the constraint), it triggers a violation.\n\n**Fix Needed:** Use semantic check (not substring check) for `must_not_suggest`. Possibly use embedding similarity to detect conceptual violations.\n\n---"
+          }
+        ],
+        "numRelevantRetrieved": 1,
+        "totalRelevant": 2
+      }
+    },
+    {
+      "id": "Q002",
+      "query": "Unity WebGL material policy",
+      "category": "material_policy",
+      "expected_files": [
+        "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md",
+        "docs/V1_1_4_STATE_SNAPSHOT.md"
+      ],
+      "results": [
+        {
+          "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+          "score": 0.8071104385954035,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.1 — RAG Evaluation Harness Report\n2. Test Set Structure\n\n**File:** `agents/rag-memory/test_queries.json` (6,975 bytes)\n\n**Statistics:**\n- Total queries: **20**\n- Categories: **9** (hard_constraints, unity_webgl, material_policy, release_gate, dashboard, agent_runtime, git_governance, rag_memory, token_cost, canary_pipeline)\n- Avg expected_files per query: **1.75**\n- Avg must_not_suggest phrases per query: **2.25**\n\n**Category Distribution:**\n| Category | Count |\n|----------|-------|\n| hard_constraints | 3 |\n| unity_webgl | 4 |\n| material_policy | 2 |\n| release_gate | 1 |\n| dashboard | 2 |\n| agent_runtime | 1 |\n| git_governance | 2 |\n| rag_memory | 4 |\n| token_cost | 1 |\n| canary_pipeline | 1 |\n\n---"
+        },
+        {
+          "path": "UnityExamples/JumpJumpTemplateDemo/BUILD_GUIDE.md",
+          "score": 0.6265353752009233,
+          "matchedTokens": [],
+          "snippet": "JumpJump Template Demo — WebGL Build Guide\n环境要求\n\n| 工具 | 版本要求 |\n|---|---|\n| Unity | 2022.3 LTS 或更高 |\n| WebGL Build Support | 已安装 (Unity Hub → Installs → Add Modules) |\n| Node.js | v18+ |\n| PartyGameSDK Server | v0.2.6 (`platform/v0.2.6` 分支) |\n\n---"
+        },
+        {
+          "path": "UnityExamples/_RuntimeVerifiedTemplate/BUILD_GUIDE.md",
+          "score": 0.6265353752009233,
+          "matchedTokens": [],
+          "snippet": "JumpJump Template Demo — WebGL Build Guide\n环境要求\n\n| 工具 | 版本要求 |\n|---|---|\n| Unity | 2022.3 LTS 或更高 |\n| WebGL Build Support | 已安装 (Unity Hub → Installs → Add Modules) |\n| Node.js | v18+ |\n| PartyGameSDK Server | v0.2.6 (`platform/v0.2.6` 分支) |\n\n---"
+        },
+        {
+          "path": "docs/STASH_VALIDATION_REPORT.md",
+          "score": 0.6257075896061783,
+          "matchedTokens": [],
+          "snippet": "STASH VALIDATION REPORT\nRecommendations\nFor File 3 (check-unity-webgl-build.js)\n\n⚠️ **Make build output path configurable**\n- Support environment variable: `PARTYGAME_BUILD_DIR`\n- Support config file: `.partygame.json`\n\n---"
+        },
+        {
+          "path": "UnityExamples/UNITY_AI_OPTIONAL_WORKFLOW.md",
+          "score": 0.6070898107630122,
+          "matchedTokens": [],
+          "snippet": "Unity AI Optional Workflow — v0.4.2\n2. AI 能力分层\nTier 4 — 🔴 长期探索（ML-Agents 强化学习）\n\n| 条件 | 说明 |\n|---|---|\n| **触发条件** | 需要 AI 自己学会玩游戏，或批量仿真测试 |\n| **引入方式** | `com.unity.ml-agents` 包 + Python 训练环境 |\n| **对 SDK 影响** | **零** — 训练在 Editor/Python 侧完成 |\n| **WebGL 体积影响** | +5-10 MB（推理模型 `.onnx`） |\n| **⚠️ 限制** | **不入默认模板** — 训练成本高，仅长期探索 |\n\n**适用场景（非 MVP）:**\n- 🎮 AI 对手自动匹配玩家水平\n- ⚖️ 游戏平衡性自动化测试（1000 局仿真）\n- 🏆 AI 自动学习最佳策略\n\n**文件位置:** `Assets/ML/{GameName}/` + `python/train_{GameName}.py`\n\n---"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 2
+      }
+    },
+    {
+      "id": "Q003",
+      "query": "stash validation report",
+      "category": "git_governance",
+      "expected_files": [
+        "docs/STASH_VALIDATION_REPORT.md"
+      ],
+      "results": [
+        {
+          "path": "docs/RUNTIME_AUTOMATION_PHASE_REPORT.md",
+          "score": 0.5104175607994187,
+          "matchedTokens": [],
+          "snippet": "Runtime Automation Phase Report — v1.1.0\n9. Final Status\n\n**PASS** ✅\n\nv1.1.0 Runtime Automation Phase delivered:\n\n- ✅ Playwright test skeleton (7 files, ~670 lines)\n- ✅ Runtime Visual automation (Gate 4)\n- ✅ Runtime E2E automation (Gate 5)\n- ✅ Controller input type verification\n- ✅ Unity JS hooks (3 read-only globals)\n- ✅ GitHub Actions CI workflow\n- ✅ Runtime Failure Matrix (8 categories)\n- ✅ Runtime Artifact Policy\n- ✅ 3 files updated (PIPELINE, WORKFLOW, HANDOFF)\n\n**Next step:** Install Playwright deps and run `npx playwright test --config=tests/runtime/playwright.config.ts` to validate the suite.\n\n---\n\n**Report Version:** v1.1.0  \n**Generated:** 2026-05-24"
+        },
+        {
+          "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+          "score": 0.49353104428617117,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.1 — RAG Evaluation Harness Report\n1. Why Evaluate First?\n\nBefore introducing OpenAI/Cohere embeddings and PostgreSQL pgvector (Phase B), we must:\n\n1. **Establish baseline metrics** for current keyword-based retrieval\n2. **Create test set** that covers all major categories (9 categories, 20 queries)\n3. **Define evaluation metrics** (Recall@5, Precision@5, MRR, NDCG@5, must_not_suggest violations)\n4. **Set Phase B admission criteria** (embedding must outperform keyword baseline)\n\n**Without evaluation harness, Phase B improvements are unmeasurable.**\n\n---"
+        },
+        {
+          "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+          "score": 0.4838775907384421,
+          "matchedTokens": [],
+          "snippet": "Agent Dashboard Phase Report — v1.1.2\n3. Page Details\n/cost — Token Cost\n\n- 4 KPI cards: Total Tokens, Est. Cost, Avg Latency, Cache Hit Rate\n- Model breakdown: tokens + cost by model with progress bars\n- 24h cost history bar chart"
+        },
+        {
+          "path": "docs/V1_2_0_PHASE_B_DEPENDENCY_PLAN.md",
+          "score": 0.48214550794558286,
+          "matchedTokens": [],
+          "snippet": "Re-run check\nAppendices\nA. `package.json` Scripts (Recommended)\n\n## Re-run check\n### Appendices\n\n```json\n{\n  \"scripts\": {\n    \"build-index\": \"node build_index.js\",\n    \"query-index\": \"node query_index.js\",\n    \"embed\": \"node embedder.js\",\n    \"query-vector\": \"node vector_store.js\",\n    \"evaluate\": \"node evaluate_retrieval.js\",\n    \"test\": \"node test_rag_memory.js && node test_evaluation.js\",\n    \"check-secrets\": \"node ../../scripts/check-no-secrets.js\"\n  }\n}\n```"
+        },
+        {
+          "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+          "score": 0.4146375674430298,
+          "matchedTokens": [],
+          "snippet": "V1.1.4 State Snapshot\n7. Next Architecture Phase\nPhase C: PostgreSQL Persistence + pgvector + Agent Memory Graph (Future)\n\n**Objective:** Persistent storage, vector search, agent memory graph  \n**Components:**\n- PostgreSQL with `pgvector` extension\n- Agent memory graph (nodes = agents, edges = interactions)\n- Persistent session state (replace file-based `agents/*/memory/`)\n\n**Deliverables:**\n- 📋 PostgreSQL + pgvector installation playbook\n- 📋 Agent memory graph schema (nodes, edges, embeddings)\n- 📋 Migration script (file-based → PostgreSQL)\n- 📋 Vector search API (embedding → similar memories)\n\n---"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 1
+      }
+    },
+    {
+      "id": "Q004",
+      "query": "release gate process",
+      "category": "release_gate",
+      "expected_files": [
+        "prompts/release_gate.prompt.md",
+        "docs/V1_1_4_STATE_SNAPSHOT.md"
+      ],
+      "results": [
+        {
+          "path": "docs/templates/RELEASE_GATE_REPORT_TEMPLATE.md",
+          "score": 0.8289125872284818,
+          "matchedTokens": [],
+          "snippet": "RELEASE_GATE_REPORT_TEMPLATE.md\n\n> **Purpose:** Document a canary phase gate check for the PartyGameSDK release pipeline.\n> **Agent:** Release Manager Agent\n> **Command:** `/run-release-gate`\n\n---"
+        },
+        {
+          "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+          "score": 0.8009972770842546,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.1 — RAG Evaluation Harness Report\n5. Current Weaknesses\n5.2 No Semantic Understanding\n\n**Problem:** Keyword-based retrieval cannot handle:\n- Synonyms (\"hard constraints\" vs \"Five Iron Laws\")\n- Paraphrasing (\"server.js injection\" vs \"server injects playerIndex\")\n- Conceptual queries (\"how to deploy safely\" vs specific keywords)\n\n**Example:**\n- Query Q004: \"release gate process\"\n- Expected files: [`prompts/release_gate.prompt.md`, `docs/V1_1_4_STATE_SNAPSHOT.md`]\n- Keyword \"release\" appears in many files, but \"gate\" and \"process\" are not top keywords\n- **Result:** Recall@5 = 0.0000"
+        },
+        {
+          "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+          "score": 0.6206946976225411,
+          "matchedTokens": [],
+          "snippet": "Agent Dashboard Phase Report — v1.1.2\n3. Page Details\n/release — Canary\n\n- Phase progress bar (1%→100%)\n- Gate checklist (7/7 PASS)\n- Rollback readiness indicator (🟢/🔴)\n- Active blocker detection"
+        },
+        {
+          "path": "docs/V1_0_0_TAG_APPROVAL.md",
+          "score": 0.5654076135665731,
+          "matchedTokens": [],
+          "snippet": "v1.0.0 Tag Approval\n4. Human Approval Checklist\n\nBefore executing the tag command below, a human must confirm:\n\n- [ ] Phase 5 report (`docs/PRODUCTION_RELEASE_REPORT.md`) reviewed and accepted\n- [ ] All 22/22 checks verified\n- [ ] Manual QA 27/27 confirmed\n- [ ] Unity WebGL 4/4 confirmed\n- [ ] Monitoring stack confirmed stable ≥ 1 hour\n- [ ] Rollback path tested or accepted as-is\n- [ ] No protocol or iron-law violations\n- [ ] All blocking conditions resolved (0/15)"
+        },
+        {
+          "path": "agents/model-router/SOUL.md",
+          "score": 0.5574753924478031,
+          "matchedTokens": [],
+          "snippet": "Model Router Agent — SOUL\nBlocking Rules\n\nTasks containing these patterns are BLOCKED (not routed):\n- \"modify server.js\"\n- \"change protocol\"\n- \"modify Five Iron Laws\"\n- \"delete release tag\"\n\nResponse: `BLOCKED: Five Iron Laws prohibit this operation. Reroute to governance review.`"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 2
+      }
+    },
+    {
+      "id": "Q005",
+      "query": "Agent Dashboard Next.js shadcn/ui",
+      "category": "dashboard",
+      "expected_files": [
+        "agent-dashboard/README.md",
+        "docs/V1_1_4_STATE_SNAPSHOT.md"
+      ],
+      "results": [
+        {
+          "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+          "score": 0.6442082790005446,
+          "matchedTokens": [],
+          "snippet": "V1.2.0 RAG Memory Phase A Report\n3. Implementation Details\n3.3 `test_rag_memory.js` — 测试\nSuite 4: Output Format (2 个)\n\n14. ✅ `Should return top-5 results (max)`\n15. ✅ `Should return scored results (score > 0)`\n\n**测试运行：**\n```bash\nnode agents/rag-memory/test_rag_memory.js"
+        },
+        {
+          "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
+          "score": 0.3779461005308798,
+          "matchedTokens": [],
+          "snippet": "Build index\n\nnode agents/rag-memory/build_index.js"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 2
+      }
+    },
+    {
+      "id": "Q006",
+      "query": "RAG memory retrieval policy",
+      "category": "rag_memory",
+      "expected_files": [
+        "agents/rag-memory/RAG_RETRIEVAL_POLICY.md"
+      ],
+      "results": [],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 1
+      }
+    },
+    {
+      "id": "Q007",
+      "query": "token cost analysis Agent Intelligence",
+      "category": "token_cost",
+      "expected_files": [
+        "docs/V1_1_4_STATE_SNAPSHOT.md"
+      ],
+      "results": [
+        {
+          "path": "docs/STASH_VALIDATION_REPORT.md",
+          "score": 0.5064062199004926,
+          "matchedTokens": [],
+          "snippet": "STASH VALIDATION REPORT\nRecommendations\nFor File 2 (JumpJumpGameManager.cs)\n\n⚠️ **Load player colors from ScriptableObject**\n- Create `PlayerColors.asset` (ScriptableObject)\n- Support >8 players (dynamic color generation)"
+        },
+        {
+          "path": "docs/EMBEDDING_SECURITY_CONSTRAINTS.md",
+          "score": 0.2994478595706519,
+          "matchedTokens": [],
+          "snippet": ".env (NOT tracked by Git)\n\nOPENAI_API_KEY=<set-in-shell-only>"
+        },
+        {
+          "path": "docs/V1_2_0_PHASE_B_DEPENDENCY_PLAN.md",
+          "score": 0.26919918667700204,
+          "matchedTokens": [],
+          "snippet": "Fix .env.example\n\necho \"OPENAI_API_KEY=\" > .env.example"
+        },
+        {
+          "path": "docs/V1_2_0_PHASE_B_ENV_SETUP.md",
+          "score": 0.26845327410448694,
+          "matchedTokens": [],
+          "snippet": "macOS/Linux\n\necho $OPENAI_API_KEY"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 1
+      }
+    },
+    {
+      "id": "Q008",
+      "query": "canary deployment pipeline v0.4.0",
+      "category": "canary_pipeline",
+      "expected_files": [
+        "docs/V1_1_4_STATE_SNAPSHOT.md",
+        "docs/V1_1_4_RUNTIME_SANITY_REPORT.md"
+      ],
+      "results": [
+        {
+          "path": "docs/GOVERNANCE_LAYER_REPORT.md",
+          "score": 0.749714358262313,
+          "matchedTokens": [],
+          "snippet": "Governance Layer Report — PartyGameSDK v1.0.1-governance\n1. What We Imported from CCGS\n1.7 Gate System (CCGS §Phase Gates)\n\n**CCGS model:** 7 phase gates with PASS/CONCERNS/FAIL verdicts.  \n**Our adaptation:** 5 canary phases (1%, 10%, 50%, 100%) — already existed in PartyGameSDK. Governance layer adds the `/run-release-gate` command and template standardization.\n\n---"
+        },
+        {
+          "path": "docs/DEPLOYMENT_CHECKLIST.md",
+          "score": 0.6565791723524754,
+          "matchedTokens": [],
+          "snippet": "PartyGameSDK v0.4.2 — Deployment Checklist\n2. TLS 证书\n\n| # | 检查项 | ✅ |\n|---|---|---|\n| 2.1 | SSL 私钥 `docker/nginx/ssl/key.pem` 存在 | ⬜ |\n| 2.2 | SSL 证书 `docker/nginx/ssl/cert.pem` 存在 | ⬜ |\n| 2.3 | 证书指向正确域名 (SERVER_HOST) | ⬜ |\n| 2.4 | 证书未过期 (`openssl x509 -enddate -noout -in cert.pem`) | ⬜ |\n| 2.5 | Let's Encrypt auto-renew cron 已配置 | ⬜ |"
+        },
+        {
+          "path": "UnityExamples/WEBGL_RUNTIME_PIPELINE.md",
+          "score": 0.6431711003828237,
+          "matchedTokens": [],
+          "snippet": "WEBGL_RUNTIME_PIPELINE — v1.0.1-governance\nF. Runtime Automation (v1.1.0)\nCI Pipeline\n\n**Workflow:** `.github/workflows/runtime-e2e.yml`\n\n```\nUnity batchmode Build → check-unity-webgl-build.js →\nnginx serve → Playwright runtime tests → artifact upload\n```"
+        },
+        {
+          "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+          "score": 0.6321937303461508,
+          "matchedTokens": [],
+          "snippet": "V1.1.4 State Snapshot\nAppendix A: Quick Reference\n\n**Key paths:**\n```\nPartyGameSDK-MVP/\n├── server/server.js              # ❌ Do NOT modify\n├── RELEASE_STATE.json            # ❌ Do NOT modify (release phase only)\n├── agents/                      # Agent implementations\n│   ├── release-manager/\n│   ├── rag-memory/\n│   ├── token-cost/\n│   ├── runtime-triage/\n│   ├── model-router/\n│   └── dashboard-runtime/       # ❌ Not implemented (Phase D)\n├── agent-dashboard/             # Next.js 14 dashboard\n├── docker/                      # Docker compose stack\n│   ├── docker-compose.prod.yml\n│   └── prometheus/prometheus.yml\n├── docs/                        # Documentation (32 .md files)\n├── .qclaw_handoff/             # Cross-device handoff package\n└── UnityExamples/               # Unity WebGL templates\n    ├── JumpJumpTemplateDemo/\n    ├── _RuntimeVerifiedTemplate/  # Gold template (114MB)\n    └── UNITY_WEBGL_MATERIAL_POLICY.md\n```\n\n**Key commands:**\n```bash"
+        },
+        {
+          "path": "docs/QA_PHASE1_LOG.md",
+          "score": 0.5756097081922298,
+          "matchedTokens": [],
+          "snippet": "v0.4.2 Phase 1 — 内部 QA 执行记录\n详细测试结果\nT1-T8: Controller Mobile Adaptation\n\n```\n✅ viewport-fit=cover\n✅ safe-area CSS 变量 (--safe-top, --safe-bottom)\n✅ WSS auto-detection (location.protocol)\n✅ PWA meta tags (apple-mobile-web-app-capable, theme-color)\n✅ touch-action: none on charge button\n✅ -webkit-user-select: none\n✅ AudioContext resume handler (first touch)\n✅ orientationchange handler\n```"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0.5,
+        "precisionAt5": 0.2,
+        "mrr": 0.25,
+        "ndcgAt5": 0.2640681225725909,
+        "violations": [],
+        "numRelevantRetrieved": 1,
+        "totalRelevant": 2
+      }
+    },
+    {
+      "id": "Q009",
+      "query": "Unity WebGL build verification 26 checks",
+      "category": "unity_webgl",
+      "expected_files": [
+        "scripts/check-unity-webgl-build.js",
+        "docs/STASH_VALIDATION_REPORT.md"
+      ],
+      "results": [
+        {
+          "path": "UnityExamples/RUNTIME_VERIFIED_TEMPLATE_REPORT.md",
+          "score": 0.9866964528386969,
+          "matchedTokens": [],
+          "snippet": "Runtime Verified Template Report\n1. Golden Template\n\n| Attribute | Value |\n|---|---|\n| **Path** | `UnityExamples/_RuntimeVerifiedTemplate/` |\n| **Source** | `UnityExamples/JumpJumpTemplateDemo/` |\n| **Frozen at** | CurrentScene ALL GATES CLEAR |\n| **Size** | 115 MB |\n| **Contents** | Assets/ (WebGL-safe), ProjectSettings/, Packages/, UserSettings/, verified build output |\n| **Excluded** | Library/ (2.6GB), Temp/, Logs/, AmplifyShaderEditor/, build cache |"
+        },
+        {
+          "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+          "score": 0.8733818677865283,
+          "matchedTokens": [],
+          "snippet": "Agent Dashboard Phase Report — v1.1.2\n3. Page Details\n/builds — Build Queue\n\n- 6 game builds in cards (JumpJump, CurrentScene, Snake, 2048, Breakout, Flappy Bird)\n- Checks (26/26), Duration, Last Build per game\n- Release gates checklist (7 gates)\n- Blocker detection + rollback readiness"
+        },
+        {
+          "path": "UnityExamples/UNITY_AI_OPTIONAL_WORKFLOW.md",
+          "score": 0.7123359296493436,
+          "matchedTokens": [],
+          "snippet": "Unity AI Optional Workflow — v0.4.2\n5. 当前最高优先级\n\n| 优先级 | 任务 | 状态 |\n|---|---|---|\n| 🔴 P0 | Unity WebGL Real Build Validation | 进行中 |\n| 🔴 P0 | screen/Build 真实产物验证 | ⚠️ Emscripten bug |\n| 🟡 P1 | Game Template Factory 稳定产出新游戏 | ✅ v0.2.7 |\n| 🟢 P2 | Muse Sprite/Texture 素材生成实验 | 待探索 |\n| 🟢 P2 | NavMesh NPC 寻路 Demo | 待探索 |\n| 🔵 P3 | Sentis 语音控制原型 | 远期 |\n| 🔵 P4 | ML-Agents AI 对手 | 远期 |\n\n---"
+        },
+        {
+          "path": "docs/PRODUCTION_RELEASE_REPORT.md",
+          "score": 0.6600195436990594,
+          "matchedTokens": [],
+          "snippet": "Phase 5: 100% Full Rollout — Production Release Candidate Report\nDecision\n✅ PHASE 5 PASSED — PRODUCTION RELEASE CANDIDATE\n\n## Phase 5: 100% Full Rollout — Production Release Candidate Report\n### Decision\n\nThe system has passed all 22 Phase 5 checks with zero blocking conditions.  \nIt is now a **Production Release Candidate** ready for v1.0.0 tagging.\n\n---"
+        },
+        {
+          "path": "docs/MANUAL_DEVICE_QA_CHECKLIST.md",
+          "score": 0.5781220400945183,
+          "matchedTokens": [],
+          "snippet": "iOS Safari 测试清单\n\n**设备要求:** iOS 16+, Safari 浏览器\n**优先级:** 🔴 高 (5 项) + 🟡 中 (2 项)\n\n| # | 测试项 | 优先级 | 操作步骤 | Pass/Fail |\n|---|---|---|---|---|\n| I1 | Safe Area 渲染 | 🔴 高 | 打开 `/controller`，确认内容不被刘海屏/底部横条遮挡。检查顶部导航栏和底部按钮是否在安全区域内 | ⬜ |\n| I2 | WSS 连接 | 🔴 高 | 在 HTTPS 环境下打开 `/controller`，确认 WebSocket 连接成功（Console 无 ws:// blocked 错误） | ⬜ |\n| I3 | 横竖屏切换 | 🔴 高 | 竖屏打开 → 旋转横屏 → 旋转回竖屏。每步确认布局自动适配，按钮/面板位置正确，无溢出或空白。刷新后也验证 | ⬜ |\n| I4 | QR 扫码加入 | 🔴 高 | Desktop 打开 `/screen` 创建房间 → iOS Safari 打开 `/controller` → 扫码加入。确认加入成功，playerIndex 显示正确 | ⬜ |\n| I5 | 触摸按钮区域 | 🟡 中 | 点击关闭按钮、复制按钮等，确认轻松点中（44px+ 触控区）。尝试手指偏移点击，确认宽容度 | ⬜ |\n| I6 | AudioContext 恢复 | 🟡 中 | 打开 `/controller` → 首次触摸屏幕 → 确认 Console 无 AudioContext suspended 警告。触发游戏音效确认有声音 | ⬜ |\n| I7 | Game 操作完整流程 | 🔴 高 | 扫码加入 → 操作游戏（tap/move 等） → 确认分数更新 → 确认 screen 端实时显示 → 刷新页面 → reconnect 成功 | ⬜ |\n\n---"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 2
+      }
+    },
+    {
+      "id": "Q010",
+      "query": "Five Iron Laws PartyGameSDK",
+      "category": "hard_constraints",
+      "expected_files": [
+        "docs/V1_1_4_STATE_SNAPSHOT.md",
+        "docs/BASELINE.md"
+      ],
+      "results": [
+        {
+          "path": "UnityExamples/_RuntimeVerifiedTemplate/BUILD_GUIDE.md",
+          "score": 0.6430486160174833,
+          "matchedTokens": [],
+          "snippet": "将 UnityExamples/JumpJumpTemplateDemo/ 拷贝到你的 Unity 项目\n方式 B: 仅导入模板（已有游戏）\n\n```bash\ncp -r UnityWebGLTemplate/WebGLTemplates/PartyGameTemplate   YourGameProject/Assets/WebGLTemplates/\ncp -r UnityWebGLTemplate/Assets/Scripts/Platform/            YourGameProject/Assets/Scripts/\ncp -r UnityWebGLTemplate/Assets/Plugins/WebGL/               YourGameProject/Assets/Plugins/\n```\n\n---"
+        },
+        {
+          "path": "UnityExamples/JumpJumpTemplateDemo/BUILD_GUIDE.md",
+          "score": 0.6430486160174833,
+          "matchedTokens": [],
+          "snippet": "将 UnityExamples/JumpJumpTemplateDemo/ 拷贝到你的 Unity 项目\n方式 B: 仅导入模板（已有游戏）\n\n```bash\ncp -r UnityWebGLTemplate/WebGLTemplates/PartyGameTemplate   YourGameProject/Assets/WebGLTemplates/\ncp -r UnityWebGLTemplate/Assets/Scripts/Platform/            YourGameProject/Assets/Scripts/\ncp -r UnityWebGLTemplate/Assets/Plugins/WebGL/               YourGameProject/Assets/Plugins/\n```\n\n---"
+        },
+        {
+          "path": "UnityExamples/_GameTemplateSkeleton/GAME_SPEC.md",
+          "score": 0.5604498509537285,
+          "matchedTokens": [],
+          "snippet": "{GameName} — GAME_SPEC\n组件列表\n\n| 脚本 | 职责 |\n|---|---|\n| `{GameName}GameManager.cs` | 核心逻辑 |\n| `{Component}.cs` | <!-- 职责 --> |"
+        },
+        {
+          "path": "UnityExamples/_GameTemplateSkeleton/BUILD_GUIDE.md",
+          "score": 0.5307099986349489,
+          "matchedTokens": [],
+          "snippet": "{GameName} Template Demo — BUILD_GUIDE\n2. 导入模板\n\n```bash\ncp -r _GameTemplateSkeleton/Assets/*  YourProject/Assets/\n```"
+        },
+        {
+          "path": "UnityExamples/SnakeTemplateDemo/BUILD_GUIDE.md",
+          "score": 0.502965891264139,
+          "matchedTokens": [],
+          "snippet": "Snake Template Demo — Build Guide\n导入模板\n\n```bash\ncp -r UnityExamples/SnakeTemplateDemo/Assets/*  YourProject/Assets/\n```"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 2
+      }
+    },
+    {
+      "id": "Q011",
+      "query": "agent runtime architecture v1.1.2",
+      "category": "agent_runtime",
+      "expected_files": [
+        "docs/V1_1_4_STATE_SNAPSHOT.md"
+      ],
+      "results": [
+        {
+          "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+          "score": 0.9909230370845201,
+          "matchedTokens": [],
+          "snippet": "Agent Dashboard Phase Report — v1.1.2\n1. Dashboard Architecture\n\n```\nagent-dashboard/\n├── README.md                         ← Project overview, tech stack, routes\n├── package.json                      ← Next.js 14, React 18, Recharts, TypeScript\n├── next.config.js                    ← Static export config\n├── app/\n│   ├── globals.css                   ← Dark theme, glass panels, PartyGame palette\n│   ├── layout.tsx                    ← Root layout with navbar (7 route links)\n│   ├── page.tsx                      ← Overview dashboard (KPIs + activity)\n│   ├── agents/page.tsx               ← Agent Status (13 agents, types, tasks)\n│   ├── runtime/page.tsx              ← Runtime Failures (RTE codes, trends, recovery)\n│   ├── cost/page.tsx                 ← Token Cost (KPIs, model breakdown, history)\n│   ├── rag/page.tsx                  ← RAG Retrieval (queries, categories, top docs)\n│   ├── builds/page.tsx               ← Build Queue (6 games, checks, release gates)\n│   ├── release/page.tsx              ← Canary (phase, rollout, gate checklist, rollback)\n│   └── artifacts/page.tsx            ← Artifacts (screenshots, logs, traces, snapshots)\n├── lib/api/\n│   ├── agents.ts                     ← Agent status mock adapter (13 agents)\n│   ├── cost.ts                       ← Token cost metrics adapter (6 models)\n│   ├── runtime.ts                    ← Runtime failure mock adapter (6 categories)\n│   ├── rag.ts                        ← RAG retrieval mock adapter (7 queries)\n│   └── builds.ts                     ← Build queue + release state adapter\n└── public/\n```\n\n**Files:** 15 files  \n**Total lines:** ~3,500  \n**Pages:** 8 routes (overview + 7 detail)\n\n---"
+        },
+        {
+          "path": "docs/AGENT_INTELLIGENCE_LAYER_REPORT.md",
+          "score": 0.9262863778194808,
+          "matchedTokens": [],
+          "snippet": "Agent Intelligence Layer Report — v1.1.1\n2. Runtime Triage Agent\n\n| Component | File | Purpose |\n|---|---|---|\n| README.md | `agents/runtime-triage/README.md` | Architecture, failure codes, severity levels |\n| SOUL.md | `agents/runtime-triage/SOUL.md` | Diagnosis protocol, escalation rules |\n| classify-runtime-failure.js | `agents/runtime-triage/classify-runtime-failure.js` | Match evidence against 8 RTE codes |\n| recovery-plans/ | `agents/runtime-triage/recovery-plans/` | Detailed recovery plans per category |"
+        },
+        {
+          "path": "docs/V1_2_0_EMBEDDING_ARCHITECTURE_DECISION.md",
+          "score": 0.8879970284331514,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase B.0.5 — Embedding Architecture Decision\nB. Current Project Constraints Analysis\nB.7 Target is Agent Runtime, Not SaaS RAG\n\n**Constraint:** PartyGameSDK target is Agent Runtime (local agents), NOT SaaS RAG (cloud service).\n\n**Implication:**\n- ✅ **Local embedding is PREFERRED** (agents work locally)\n- ❌ **Cloud embedding is ACCEPTABLE** (for high quality)\n\n**Decision:**\n- Phase B: Use OpenAI (high quality, acceptable for Agent Runtime)\n- Phase C: Use Ollama (local, preferred for Agent Runtime)\n\n---"
+        },
+        {
+          "path": "docs/WORKFLOW_COMMANDS.md",
+          "score": 0.8759580613098987,
+          "matchedTokens": [],
+          "snippet": "Workflow Commands — PartyGameSDK v1.0.0\nWhat We Didn't Import from CCGS\n`/dashboard` — Agent Intelligence Console\n\n**Authority:** Agent Dashboard (v1.1.2)\n\n**Routes:**\n- `/` — Overview: agent landscape, KPIs, recent activity\n- `/agents` — 13 agents with status, type, tasks, failures\n- `/runtime` — RTE codes, severity, recovery plans, trends\n- `/cost` — Token usage, model breakdown, cost history\n- `/rag` — Retrieval queries, categories, top docs\n- `/builds` — Game builds, checks, duration, release gates\n- `/release` — Canary phase, rollout %, gate checklist, rollback\n- `/artifacts` — Screenshots, logs, traces, snapshots\n\n**Access:** `http://localhost:3000` after `cd agent-dashboard && npm run dev`"
+        },
+        {
+          "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+          "score": 0.843437375010046,
+          "matchedTokens": [],
+          "snippet": "V1.1.4 State Snapshot\n7. Next Architecture Phase\nPhase E: AI Ops (Long-term)\n\n**Objective:** Auto-rollback, auto-canary, runtime triage  \n**Components:**\n- `agents/runtime-triage/` (✅ Implemented)\n- Auto-rollback (canary failure → rollback to previous version)\n- Auto-canary (gradual rollout 10% → 50% → 100%)\n- Runtime triage (error classification → action)\n\n**Deliverables:**\n- 📋 Auto-rollback playbook (canary failure → rollback)\n- 📋 Auto-canary playbook (gradual rollout)\n- 📋 Runtime triage playbook (error classification → action)\n\n---"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 1,
+        "precisionAt5": 0.2,
+        "mrr": 0.2,
+        "ndcgAt5": 0.38685280723454163,
+        "violations": [],
+        "numRelevantRetrieved": 1,
+        "totalRelevant": 1
+      }
+    },
+    {
+      "id": "Q012",
+      "query": "Git workflow rebase force push SSH key",
+      "category": "git_governance",
+      "expected_files": [
+        "docs/STASH_VALIDATION_REPORT.md",
+        "memory/2026-05-25.md"
+      ],
+      "results": [
+        {
+          "path": "docs/V1_2_0_EMBEDDING_ARCHITECTURE_DECISION.md",
+          "score": 0.6796097638164028,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase B.0.5 — Embedding Architecture Decision\nB. Current Project Constraints Analysis\nB.4 Docker/WSL Already Blocker\n\n**Constraint:** Docker/WSL setup is already a blocker for some developers.\n\n**Implication:**\n- ❌ **Adding Ollama dependency increases blocker** (needs WSL2 on Windows)\n- ✅ **OpenAI has NO Docker/WSL dependency** (just API key)\n\n**Decision:**\n- Phase B: Use OpenAI (no Docker/WSL dependency)\n- Phase C: Document Ollama installation (WSL2 on Windows)\n\n---"
+        },
+        {
+          "path": "docs/RUNTIME_AUTOMATION_PHASE_REPORT.md",
+          "score": 0.6612206545533323,
+          "matchedTokens": [],
+          "snippet": "Runtime Automation Phase Report — v1.1.0\n9. Final Status\n\n**PASS** ✅\n\nv1.1.0 Runtime Automation Phase delivered:\n\n- ✅ Playwright test skeleton (7 files, ~670 lines)\n- ✅ Runtime Visual automation (Gate 4)\n- ✅ Runtime E2E automation (Gate 5)\n- ✅ Controller input type verification\n- ✅ Unity JS hooks (3 read-only globals)\n- ✅ GitHub Actions CI workflow\n- ✅ Runtime Failure Matrix (8 categories)\n- ✅ Runtime Artifact Policy\n- ✅ 3 files updated (PIPELINE, WORKFLOW, HANDOFF)\n\n**Next step:** Install Playwright deps and run `npx playwright test --config=tests/runtime/playwright.config.ts` to validate the suite.\n\n---\n\n**Report Version:** v1.1.0  \n**Generated:** 2026-05-24"
+        },
+        {
+          "path": "docs/V1_2_0_PHASE_B_DEPENDENCY_PLAN.md",
+          "score": 0.6416825455945089,
+          "matchedTokens": [],
+          "snippet": "OpenAI API keys (pattern)\nStep 4: Server MUST NOT import RAG modules\n\n```javascript\n// server/server.js\n// ❌ WRONG:\n// const { queryIndex } = require('../agents/rag-memory/query_index.js');\n\n// ✅ CORRECT: Server does NOT know about RAG\n// RAG is called via separate process or API\n```\n\n---"
+        },
+        {
+          "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+          "score": 0.5309969741756693,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.1 — RAG Evaluation Harness Report\n1. Why Evaluate First?\n\nBefore introducing OpenAI/Cohere embeddings and PostgreSQL pgvector (Phase B), we must:\n\n1. **Establish baseline metrics** for current keyword-based retrieval\n2. **Create test set** that covers all major categories (9 categories, 20 queries)\n3. **Define evaluation metrics** (Recall@5, Precision@5, MRR, NDCG@5, must_not_suggest violations)\n4. **Set Phase B admission criteria** (embedding must outperform keyword baseline)\n\n**Without evaluation harness, Phase B improvements are unmeasurable.**\n\n---"
+        },
+        {
+          "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+          "score": 0.45972792922589956,
+          "matchedTokens": [],
+          "snippet": "V1.1.4 State Snapshot\n7. Next Architecture Phase\nPhase C: PostgreSQL Persistence + pgvector + Agent Memory Graph (Future)\n\n**Objective:** Persistent storage, vector search, agent memory graph  \n**Components:**\n- PostgreSQL with `pgvector` extension\n- Agent memory graph (nodes = agents, edges = interactions)\n- Persistent session state (replace file-based `agents/*/memory/`)\n\n**Deliverables:**\n- 📋 PostgreSQL + pgvector installation playbook\n- 📋 Agent memory graph schema (nodes, edges, embeddings)\n- 📋 Migration script (file-based → PostgreSQL)\n- 📋 Vector search API (embedding → similar memories)\n\n---"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 2
+      }
+    },
+    {
+      "id": "Q013",
+      "query": "Unity WebGL runtime pipeline WEBGL_RUNTIME_PIPELINE",
+      "category": "unity_webgl",
+      "expected_files": [
+        "UnityExamples/WEBGL_RUNTIME_PIPELINE.md"
+      ],
+      "results": [
+        {
+          "path": "UnityExamples/RUNTIME_VERIFIED_TEMPLATE_REPORT.md",
+          "score": 1.2034357000080282,
+          "matchedTokens": [],
+          "snippet": "Runtime Verified Template Report\n6. Files Created / Updated\nNew Files (4)\n\n## Runtime Verified Template Report\n### 6. Files Created / Updated\n\n| File | Purpose |\n|---|---|\n| `UnityExamples/_RuntimeVerifiedTemplate/` | Frozen golden template |\n| `UnityExamples/WEBGL_RUNTIME_PIPELINE.md` | 5-gate pipeline definition |\n| `docs/WEBGL_RUNTIME_AUTOMATION_PLAN.md` | Playwright + CI automation plan |\n| `UnityExamples/RUNTIME_VERIFIED_TEMPLATE_REPORT.md` | This report |"
+        },
+        {
+          "path": "docs/templates/UNITY_BUILD_REPORT_TEMPLATE.md",
+          "score": 1.1889896436493488,
+          "matchedTokens": [],
+          "snippet": "UNITY_BUILD_REPORT_TEMPLATE.md\n\n> **Purpose:** Document a Unity WebGL build for the PartyGameSDK pipeline.\n> **Agent:** Codex Build Agent → QA Agent\n> **Command:** `/build-webgl` → `/check-webgl-build`\n\n---"
+        },
+        {
+          "path": "docs/WEBGL_RUNTIME_AUTOMATION_PLAN.md",
+          "score": 1.1455415715318193,
+          "matchedTokens": [],
+          "snippet": "WebGL Runtime Automation Plan — v1.0.1-governance\nA. Playwright Runtime Automation\nGoal\n\n## WebGL Runtime Automation Plan — v1.0.1-governance\n### A. Playwright Runtime Automation\n\nAutomate the full Runtime E2E pipeline (Gates 2-5) using Playwright, eliminating manual browser verification."
+        },
+        {
+          "path": "UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md",
+          "score": 0.8926771336015598,
+          "matchedTokens": [],
+          "snippet": "4. Iron law audit\n9.3 Gate Decision\n\n**PASS** — v0.4.2 Unity WebGL Build fully validated. Build pipeline proven on Unity 6000.4.8f1."
+        },
+        {
+          "path": "UnityExamples/_RuntimeVerifiedTemplate/WEBGL_BUILD_VALIDATION_REPORT.md",
+          "score": 0.8926771336015598,
+          "matchedTokens": [],
+          "snippet": "4. Iron law audit\n9.3 Gate Decision\n\n**PASS** — v0.4.2 Unity WebGL Build fully validated. Build pipeline proven on Unity 6000.4.8f1."
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 1
+      }
+    },
+    {
+      "id": "Q014",
+      "query": "Material Policy URP Lit SimpleLit Unlit",
+      "category": "material_policy",
+      "expected_files": [
+        "UnityExamples/UNITY_WEBGL_MATERIAL_POLICY.md"
+      ],
+      "results": [
+        {
+          "path": "UnityExamples/_RuntimeVerifiedTemplate/BUILD_GUIDE.md",
+          "score": 0.6615170090025485,
+          "matchedTokens": [],
+          "snippet": "将 UnityExamples/JumpJumpTemplateDemo/ 拷贝到你的 Unity 项目\n方式 B: 仅导入模板（已有游戏）\n\n```bash\ncp -r UnityWebGLTemplate/WebGLTemplates/PartyGameTemplate   YourGameProject/Assets/WebGLTemplates/\ncp -r UnityWebGLTemplate/Assets/Scripts/Platform/            YourGameProject/Assets/Scripts/\ncp -r UnityWebGLTemplate/Assets/Plugins/WebGL/               YourGameProject/Assets/Plugins/\n```\n\n---"
+        },
+        {
+          "path": "UnityExamples/JumpJumpTemplateDemo/BUILD_GUIDE.md",
+          "score": 0.6615170090025485,
+          "matchedTokens": [],
+          "snippet": "将 UnityExamples/JumpJumpTemplateDemo/ 拷贝到你的 Unity 项目\n方式 B: 仅导入模板（已有游戏）\n\n```bash\ncp -r UnityWebGLTemplate/WebGLTemplates/PartyGameTemplate   YourGameProject/Assets/WebGLTemplates/\ncp -r UnityWebGLTemplate/Assets/Scripts/Platform/            YourGameProject/Assets/Scripts/\ncp -r UnityWebGLTemplate/Assets/Plugins/WebGL/               YourGameProject/Assets/Plugins/\n```\n\n---"
+        },
+        {
+          "path": "UnityExamples/_GameTemplateSkeleton/BUILD_GUIDE.md",
+          "score": 0.6200985030609363,
+          "matchedTokens": [],
+          "snippet": "{GameName} Template Demo — BUILD_GUIDE\n2. 导入模板\n\n```bash\ncp -r _GameTemplateSkeleton/Assets/*  YourProject/Assets/\n```"
+        },
+        {
+          "path": "UnityExamples/SnakeTemplateDemo/BUILD_GUIDE.md",
+          "score": 0.6010793815742059,
+          "matchedTokens": [],
+          "snippet": "Snake Template Demo — Build Guide\n导入模板\n\n```bash\ncp -r UnityExamples/SnakeTemplateDemo/Assets/*  YourProject/Assets/\n```"
+        },
+        {
+          "path": "UnityExamples/_GameTemplateSkeleton/GAME_SPEC.md",
+          "score": 0.566271988381594,
+          "matchedTokens": [],
+          "snippet": "{GameName} — GAME_SPEC\n组件列表\n\n| 脚本 | 职责 |\n|---|---|\n| `{GameName}GameManager.cs` | 核心逻辑 |\n| `{Component}.cs` | <!-- 职责 --> |"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 1
+      }
+    },
+    {
+      "id": "Q015",
+      "query": "QClaw review prompt template",
+      "category": "rag_memory",
+      "expected_files": [
+        "prompts/qclaw_review.prompt.md"
+      ],
+      "results": [
+        {
+          "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
+          "score": 0.5635622906682078,
+          "matchedTokens": [],
+          "snippet": "Should output NOTHING (rag-memory dependencies NOT in root)\n\ngrep -r \"openai\" /Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/package.json\ngrep -r \"pg\" /Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/package.json"
+        },
+        {
+          "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
+          "score": 0.5370348818161247,
+          "matchedTokens": [],
+          "snippet": "If ANY mandatory criterion fails → reject Phase B, improve embedding model\n10. Conclusion\n10.2 Phase A.2 Failures\n\n- ❌ Recall@5 = 0.4500 (target ≥ 0.6000).\n- ❌ MRR = 0.2592 (target ≥ 0.4500).\n- ❌ NDCG@5 = 0.2687 (target > 0.2842).\n- ❌ must_not_suggest violations = 1 (target = 0)."
+        },
+        {
+          "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+          "score": 0.5266724365521226,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.1 — RAG Evaluation Harness Report\n7. File List\n7.2 Modified Files (1 file, 416 bytes changed)\n\n| # | File | Changes |\n|---|------|----------|\n| 1 | `agents/rag-memory/query_index.js` | Added `options` parameter to `queryIndex()`, exported `loadIndex` |\n\n**Diff summary:**\n```diff\n function queryIndex(query, options = {}) {\n-  const index = loadIndex();\n+  const { k = K, silent = false } = options;\n+  const index = loadIndex();\n   const queryTokens = tokenize(query);\n \n   if (queryTokens.length === 0) {\n-    console.warn('[Query Index] ⚠️ Query has no valid tokens after filtering.');\n+    if (!silent) console.warn('[Query Index] ⚠️ Query has no valid tokens after filtering.');\n     return [];\n   }\n \n-  // 返回 top-k\n-  return filteredResults.slice(0, k);\n+  // 返回 top-k\n+  return filteredResults.slice(0, k);\n }\n \n module.exports = { queryIndex, calculateScore, tokenize, extractSnippet, loadIndex };\n```\n\n---"
+        },
+        {
+          "path": "docs/AGENT_DASHBOARD_PHASE_REPORT.md",
+          "score": 0.5245575648608175,
+          "matchedTokens": [],
+          "snippet": "Agent Dashboard Phase Report — v1.1.2\n3. Page Details\n/rag — RAG Retrieval\n\n- Semantic categories with colored indicators\n- Recent queries with match %, top doc, category tag\n- Category distribution bar chart"
+        },
+        {
+          "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+          "score": 0.4809752010806103,
+          "matchedTokens": [],
+          "snippet": "Agent Studio Hierarchy — PartyGameSDK v1.0.0\nv1.1.2: Agent Dashboard (Next.js Runtime Console)\n\n| Component | Purpose |\n|---|---|\n| Dashboard App | `agent-dashboard/` — Next.js 14 TypeScript |\n| 7 Routes | /agents, /runtime, /cost, /rag, /builds, /release, /artifacts |\n| Design System | Dark theme, glass panels, monospace data, PartyGame green |\n| Data Layer | Mock adapters → Prometheus/GitHub API integration (v1.1.3) |\n| Integration | Embeddable in Grafana via iframe widget |\n\n**Tech stack:** Next.js 14 · React 18 · TypeScript · Tailwind CSS · Recharts · shadcn/ui"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 1
+      }
+    },
+    {
+      "id": "Q016",
+      "query": "Codex task decomposition prompt",
+      "category": "rag_memory",
+      "expected_files": [
+        "prompts/codex_task.prompt.md"
+      ],
+      "results": [
+        {
+          "path": "agents/model-router/SOUL.md",
+          "score": 0.6121932531493806,
+          "matchedTokens": [],
+          "snippet": "Model Router Agent — SOUL\n\nYou are the Model Router Agent for PartyGameSDK. You decide which model handles each task."
+        },
+        {
+          "path": "docs/V1_2_0_PHASE_B0_ENV_PREP_REPORT.md",
+          "score": 0.5402420706044256,
+          "matchedTokens": [],
+          "snippet": "Should output dependencies (in rag-memory/)\n7. Post-Completion Actions (Phase B.0)\n7.1 Git Operations\n\n## Should output dependencies (in rag-memory/)\n### 7. Post-Completion Actions (Phase B.0)\n\n```bash"
+        },
+        {
+          "path": "UnityExamples/UNITY_WEBGL_REAL_BUILD_GATE.md",
+          "score": 0.4920988214640887,
+          "matchedTokens": [],
+          "snippet": "Unity WebGL Real Build Gate\n剩余步骤\nStep 1: 打开 Controller\n\n## Unity WebGL Real Build Gate\n### 剩余步骤\n\n复制 screen 上显示的 Room ID，访问：\n`http://localhost:3000/controller?room=<ROOM_ID>`\n\n**预期:** Controller 页面显示 \"Connected\" + \"Joined as P0\""
+        },
+        {
+          "path": "docs/templates/HOTFIX_REPORT_TEMPLATE.md",
+          "score": 0.4823010098706886,
+          "matchedTokens": [],
+          "snippet": "HOTFIX_REPORT_TEMPLATE.md\nFix\nFiles Changed\n\n## HOTFIX_REPORT_TEMPLATE.md\n### Fix\n\n| File | Change | Reason |\n|---|---|---|\n| `{path}` | `{description}` | `{why this fixes it}` |\n| `{path}` | `{description}` | `{why this fixes it}` |"
+        },
+        {
+          "path": "docs/RUNTIME_AUTOMATION_PHASE_REPORT.md",
+          "score": 0.471284331480776,
+          "matchedTokens": [],
+          "snippet": "Runtime Automation Phase Report — v1.1.0\n3. Unity Runtime JS Hooks\nHook Definitions\n\n## Runtime Automation Phase Report — v1.1.0\n### 3. Unity Runtime JS Hooks\n\n| Hook | Type | Set By | When |\n|---|---|---|---|\n| `window.__PARTYGAME_RUNTIME_READY__` | `boolean` | `Application.ExternalEval()` | After Unity `Start()` |\n| `window.__PARTYGAME_LAST_STATE__` | `{ type, data, timestamp }` | `PartyGameBridge.SendToController()` | Every state broadcast |\n| `window.__PARTYGAME_LAST_INPUT__` | `{ type, playerIndex, ... }` | `PartyGameBridge.OnGameMessage()` | Every input received |"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 1
+      }
+    },
+    {
+      "id": "Q017",
+      "query": "Prometheus metrics Grafana dashboard Agent Dashboard",
+      "category": "dashboard",
+      "expected_files": [
+        "docker/prometheus/prometheus.yml"
+      ],
+      "results": [
+        {
+          "path": "docs/AGENT_STUDIO_HIERARCHY.md",
+          "score": 1.2676040440750254,
+          "matchedTokens": [],
+          "snippet": "Agent Studio Hierarchy — PartyGameSDK v1.0.0\nSpecialist Agents (Tier 3)\nPerformance Agent\n\n| Field | Value |\n|---|---|\n| Domain | Metrics monitoring, Grafana dashboard, alert rules |\n| Reads | Prometheus metrics, container health |\n| Authority | Can recommend phase blocks based on metric thresholds |\n| Forbidden | Modifying production configs |"
+        },
+        {
+          "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md",
+          "score": 0.8278718988687248,
+          "matchedTokens": [],
+          "snippet": "V1.2.0 RAG Memory Phase A Report\n3. Implementation Details\n3.1 `build_index.js` — 索引构建\n\n## V1.2.0 RAG Memory Phase A Report\n### 3. Implementation Details\n\n**功能：**\n- 扫描 `docs/`、`agents/`、`UnityExamples/*.md`、根目录重要 md\n- 输出本地 JSON 索引：`agents/rag-memory/index.json`\n- 暂时不用真实 embedding，先实现 keyword + simple scoring\n\n**索引结构：**\n```json\n{\n  \"version\": \"1.0.0\",\n  \"builtAt\": \"2026-05-25T13:54:00.000Z\",\n  \"stats\": {\n    \"totalFiles\": 45,\n    \"docsFiles\": 32,\n    \"agentFiles\": 8,\n    \"unityMdFiles\": 3,\n    \"rootMdFiles\": 2\n  },\n  \"files\": [\n    {\n      \"path\": \"docs/V1_1_4_STATE_SNAPSHOT.md\",\n      \"absolutePath\": \"/Users/applemima1111/.qclaw/workspace/PartyGameSDK-MVP/docs/V1_1_4_STATE_SNAPSHOT.md\",\n      \"size\": 17388,\n      \"mtime\": \"2026-05-25T13:46:00.000Z\",\n      \"keywords\": [\"v1\", \"1\", \"4\", \"state\", \"snapshot\", ...],\n      \"keywordCount\": 100\n    }\n  ]\n}\n```\n\n**关键词提取策略：**\n1. 文件内容 toLowerCase()\n2. 替换非字母数字为空格\n3. 按空格分割为 tokens\n4. 过滤长度 ≤2 的 token\n5. 过滤停用词（the, a, an, and, or, but, in, on, at, to, for, of, with, by, from, up, about, into, over, after）\n6. 去重（Set）\n7. 保留前 100 个关键词（避免 index.json 过大）\n\n**排除模式：**\n- `node_modules/`\n- `.git/`\n- `UnityExamples/**/Library/`\n- `agent-dashboard/node_modules/`\n- `*.log`\n- `*.tmp`\n- `.qclaw_handoff/`\n\n**根目录白名单：**\n- `README.md`\n- `CHANGELOG.md`\n- `LICENSE.md`\n- `BASELINE.md`\n- `PARTY_GAME_SDK_FINAL_HANDOFF.md`"
+        },
+        {
+          "path": "docs/AGENT_DASHBOARD_PLAN.md",
+          "score": 0.7954580102597727,
+          "matchedTokens": [],
+          "snippet": "Agent Dashboard Plan — v1.1.1\n2. Dashboard Panels\nPanel 4: Build Queue\n\n| Metric | Source | Visualization |\n|---|---|---|\n| Pending builds | GitHub Actions queue | Badge |\n| Last build status | GH API | Card (🟢/🔴) |\n| Last build time | GH API | Time since |\n| check-unity-webgl-build.js result | Artifact | 26/26 badge |"
+        },
+        {
+          "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+          "score": 0.7585966766724759,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.1 — RAG Evaluation Harness Report\n2. Test Set Structure\n\n**File:** `agents/rag-memory/test_queries.json` (6,975 bytes)\n\n**Statistics:**\n- Total queries: **20**\n- Categories: **9** (hard_constraints, unity_webgl, material_policy, release_gate, dashboard, agent_runtime, git_governance, rag_memory, token_cost, canary_pipeline)\n- Avg expected_files per query: **1.75**\n- Avg must_not_suggest phrases per query: **2.25**\n\n**Category Distribution:**\n| Category | Count |\n|----------|-------|\n| hard_constraints | 3 |\n| unity_webgl | 4 |\n| material_policy | 2 |\n| release_gate | 1 |\n| dashboard | 2 |\n| agent_runtime | 1 |\n| git_governance | 2 |\n| rag_memory | 4 |\n| token_cost | 1 |\n| canary_pipeline | 1 |\n\n---"
+        },
+        {
+          "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
+          "score": 0.5952598445012713,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.2 Final Summary\n3. Regression Analysis\n3.1 Metrics Regression\n\n## v1.2.0 Phase A.2 Final Summary\n### 3. Regression Analysis\n\n| Metric | A.1 → A.2 | Regression? | Severity |\n|--------|---------------|--------------|-----------|\n| Recall@5 | 0.3750 → 0.4500 | ✅ Improved (+0.0750) | Low |\n| Precision@5 | 0.1000 → 0.1300 | ✅ Improved (+0.0300) | Low |\n| **MRR** | **0.2767 → 0.2592** | ❌ **REGRESSED (-0.0175)** | **High** |\n| **NDCG@5** | **0.2842 → 0.2687** | ❌ **REGRESSED (-0.0155)** | **High** |\n| **must_not_suggest** | **0 → 1** | ❌ **REGRESSED (+1 violation)** | **Critical** |"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 1
+      }
+    },
+    {
+      "id": "Q018",
+      "query": "PostgreSQL pgvector RAG Memory v1.2.0 Phase B",
+      "category": "rag_memory",
+      "expected_files": [
+        "docs/V1_2_0_RAG_MEMORY_PHASE_A_REPORT.md"
+      ],
+      "results": [
+        {
+          "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+          "score": 1.3504213192550032,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.2 — Keyword Retrieval Improvement Report\n9. Next Steps\n9.2 Phase B (Embedding + pgvector)\n\n**Dependencies:**\n- ✅ OpenAI API key (or Cohere API key)\n- ✅ PostgreSQL + pgvector installed (local or Supabase/RDS)\n- ✅ Node.js `pg` package (`npm install pg`)\n- ✅ Node.js `openai` package (`npm install openai`)\n\n**Implementation Steps:**\n1. Create `agents/rag-memory/generate_embeddings.js` (generate embeddings for all 76 files)\n2. Create `agents/rag-memory/store_embeddings.js` (store embeddings in PostgreSQL)\n3. Modify `agents/rag-memory/query_index.js` to support embedding-based retrieval (cosine similarity)\n4. Run `evaluate_retrieval.js` to get Phase B metrics\n5. Compare against A.2 baseline (this report)\n6. If ALL mandatory criteria met → admit Phase B, commit + push\n7. If ANY mandatory criterion fails → reject Phase B, improve embedding model\n\n---"
+        },
+        {
+          "path": "docs/V1_2_0_PHASE_B_ENV_SETUP.md",
+          "score": 1.1563889613813674,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase B — Environment Setup Guide\n1. PostgreSQL + pgvector Installation\nmacOS (Homebrew)\n\n## v1.2.0 Phase B — Environment Setup Guide\n### 1. PostgreSQL + pgvector Installation\n\n```bash"
+        },
+        {
+          "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+          "score": 1.1470336630022253,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.1 — RAG Evaluation Harness Report\n10. Summary\n\n**v1.2.0 Phase A.1 — RAG Evaluation Harness is COMPLETE.**\n\n**Achievements:**\n1. ✅ Created test set (20 queries, 9 categories)\n2. ✅ Implemented evaluation script (`evaluate_retrieval.js`)\n3. ✅ Implemented test script (`test_evaluation.js`)\n4. ✅ Refactored `query_index.js` (export `queryIndex()` with `options`)\n5. ✅ Established baseline metrics (Recall@5=0.3750, MRR=0.2767, violations=0)\n6. ✅ Identified weaknesses (keyword mismatch, no semantic understanding)\n7. ✅ Defined Phase B admission criteria (Recall@5 >= baseline, MRR > baseline, violations=0)\n\n**Next Steps:**\n1. **Phase B:** Implement embedding + pgvector\n2. **Phase B:** Use same `test_queries.json` to evaluate embedding retrieval\n3. **Phase B:** Compare metrics against baseline (this report)\n4. **Phase B:** If ALL mandatory criteria met → admit Phase B\n5. **Phase B:** If ANY mandatory criterion fails → reject Phase B, improve embedding model\n\n**Phase B Dependencies:**\n- ✅ OpenAI API key (or Cohere API key)\n- ✅ PostgreSQL + pgvector installed (local or Supabase/RDS)\n- ✅ Node.js `pg` package (`npm install pg`)\n- ✅ Node.js `openai` package (`npm install openai`)\n\n---\n\n**End of Report**"
+        },
+        {
+          "path": "docs/V1_2_0_EMBEDDING_ARCHITECTURE_DECISION.md",
+          "score": 1.0856825744020402,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase B.0.5 — Embedding Architecture Decision\nC. Recommended Solution (Multi-Phase Approach)\nC.1 Phase B: OpenAI Embedding (Quick Validation)\n\n## v1.2.0 Phase B.0.5 — Embedding Architecture Decision\n### C. Recommended Solution (Multi-Phase Approach)\n\n**Objective:** Quickly validate retrieval quality using OpenAI `text-embedding-3-small`.\n\n**Embedding Provider:** OpenAI `text-embedding-3-small`\n\n**Why:**\n1. ✅ High retrieval quality (MTEB #1)\n2. ✅ Low latency (~50ms)\n3. ✅ Simple integration (just `openai` package)\n4. ✅ Low cost for ~76 files (~$0.01)\n\n**Tasks:**\n1. Install `openai` package\n2. Create `agents/rag-memory/embedder.js`\n3. Generate embeddings for ~76 files\n4. Store embeddings in PostgreSQL (pgvector)\n5. Run evaluation (`evaluate_retrieval.js`)\n6. Check if metrics meet Phase B.1 success criteria\n\n**Success Criteria:**\n- Recall@5 ≥ 0.6000\n- MRR ≥ 0.4500\n- must_not_suggest violations = 0\n\n**If FAILED:** Proceed to Phase C (local embedding fallback)\n\n**If PASSED:** Proceed to Phase C (local embedding fallback) + Phase D (hybrid routing)\n\n---"
+        },
+        {
+          "path": "docs/V1_1_4_STATE_SNAPSHOT.md",
+          "score": 1.0369676872231097,
+          "matchedTokens": [],
+          "snippet": "V1.1.4 State Snapshot\n9. Final Snapshot\nCurrent Risks\n\n| Risk | Severity | Mitigation |\n|------|----------|------------|\n| **Docker stack not started** | Medium | Use `node server/server.js` directly for dev |\n| **PostgreSQL not integrated** | High | Phase C (pgvector) |\n| **Prometheus real metrics pending** | Medium | Phase D (Grafana dashboards) |\n| **Token accounting not real** | Medium | Phase B (OpenAI/Anthropic API) |\n| **Agent memory is file-based** | Medium | Phase C (PostgreSQL + pgvector) |\n| **CI/CD not configured** | Medium | GitHub Actions (build → test → deploy) |\n\n---"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 1
+      }
+    },
+    {
+      "id": "Q019",
+      "query": "Unity WebGL baseline v0.1.0 PartyGameSDK",
+      "category": "unity_webgl",
+      "expected_files": [
+        "docs/BASELINE.md",
+        "PartyGameSDK-MVP/BASELINE.md"
+      ],
+      "results": [
+        {
+          "path": "CHANGELOG.md",
+          "score": 0.9173476772262145,
+          "matchedTokens": [],
+          "snippet": "PartyGameSDK — 变更日志\nv0.1.0 (2026-05-22)\n首次发布 — JumpJump Demo MVP\n新增\n\n## PartyGameSDK — 变更日志\n### v0.1.0 (2026-05-22)\n#### 首次发布 — JumpJump Demo MVP\n\n**服务器 (server/)**\n- WebSocket 服务器（Express + ws）\n- 房间管理：create_room / join_room / room_joined / player_joined / player_left\n- game_message 转发：controller → server → screen，server 强制注入 playerIndex\n- broadcast 广播：screen → server → 所有 controllers，校验发送者 role\n- 6位随机 roomId 生成\n- screen 断开自动销毁房间\n- controller 断开自动通知 screen\n\n**屏幕端 (screen/)**\n- Unity WebGL 加载与实例化\n- create_room 调用与 roomId 展示\n- 控制器链接复制\n- 玩家列表实时更新\n- game_message 转发至 Unity（unityInstance.SendMessage）\n- window.PartyGameBroadcast 接收 Unity 广播并转发至 server\n- 加载遮罩与状态栏\n\n**控制器端 (controller/)**\n- URL 参数读取 roomId\n- join_room 调用（不发送 playerIndex）\n- playerIndex 显示\n- 蓄力按钮（touchstart/touchend + mousedown/mouseup）\n- input.charge_start / input.charge_end 发送\n- broadcast 接收与分数 UI 更新\n- 兼容数字/字符串 key 的分数解析\n\n**Unity 脚本 (Assets/)**\n- PartyGameBridge.cs：Unity ↔ JS 双向通信桥（WebGL 走 jslib，Editor 走 Mock）\n- PartyGameBridge.jslib：WebGL 通信插件（PG_Broadcast / PG_SendMessage）\n- PartyGameMessage.cs：消息类型常量定义\n- GameManager.cs：游戏管理器（输入处理 + 分数计算 + 广播发起）\n- PlayerJump.cs：玩家跳跃控制器（物理跳跃 + 落地检测）\n- PlatformSpawner.cs：平台生成器\n- CameraFollow.cs：相机跟随\n- UIManager.cs：UI 管理器\n- CreateJumpJumpScene.cs：Editor 一键生成跳一跳场景"
+        },
+        {
+          "path": "UnityExamples/MULTI_GAME_WEBGL_BUILD_REPORT.md",
+          "score": 0.7623698199358498,
+          "matchedTokens": [],
+          "snippet": "Multi-Game WebGL Build Queue Report\n2. Game Matrix\n2.1 JumpJump (Baseline)\n\n## Multi-Game WebGL Build Queue Report\n### 2. Game Matrix\n\n| Field | Value |\n|---|---|\n| Build status | ✅ PASS |\n| Build output | `screen/Build/` |\n| Check result | 22/22 |\n| Builder script | `JumpJumpWebGLBuilder.BuildWebGL` |\n| Validation report | `UnityExamples/JumpJumpTemplateDemo/WEBGL_BUILD_VALIDATION_REPORT.md` |\n| Attempts | 6 (attempts 1–5: Emscripten JSONDecodeError; attempt 6: EMSDK_PYTHON fix) |\n| Fixes applied | EMSDK_PYTHON=python3.11, debugSymbols→debugSymbolMode, Arial→LegacyRuntime, outputSize→totalSize, uGUI added to manifest |\n| Notes | This is the reference build that proved the pipeline works |"
+        },
+        {
+          "path": "docs/V1_2_0_EMBEDDING_ARCHITECTURE_DECISION.md",
+          "score": 0.7109013480273465,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase B.0.5 — Embedding Architecture Decision\nExecutive Summary\n\n**Decision:** NOT single choice. Multi-phase approach:\n\n| Phase | Embedding Provider | Purpose |\n|-------|-------------------|----------|\n| Phase B | OpenAI `text-embedding-3-small` | Quick validation of retrieval quality |\n| Phase C | Local embedding fallback (Ollama) | Offline capability, cost reduction |\n| Phase D | Hybrid routing | Local first, cloud fallback, cache priority |\n\n**Rationale:**\n1. PartyGameSDK is **local development first**\n2. QClaw/Codex **often offline**\n3. Windows + macOS **dual environment**\n4. Docker/WSL **already blocker**\n5. Token Cost Agent **not implemented yet**\n6. Current retrieval docs **only ~76 files**\n7. Target is **Agent Runtime**, not SaaS RAG\n\n---"
+        },
+        {
+          "path": "docs/PATH_SCOPED_RULES.md",
+          "score": 0.6593074486342286,
+          "matchedTokens": [],
+          "snippet": "Path-Scoped Rules — PartyGameSDK v1.0.0\n`screen/**`\nSCRN-003: QR Code\n\nQR code generated with CDN fallback. Must work when QR library CDN is unavailable (plain text URL fallback)."
+        },
+        {
+          "path": "docs/RUNTIME_ARTIFACT_POLICY.md",
+          "score": 0.6529317526944179,
+          "matchedTokens": [],
+          "snippet": "Runtime Artifact Policy — v1.1.0\n\n**Version:** v1.1.0  \n**Scope:** All WebGL runtime automation artifacts  \n**Storage:** `tests/runtime/artifacts/` + `.github/artifacts/`\n\n---"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 2
+      }
+    },
+    {
+      "id": "Q020",
+      "query": "server.js injection playerIndex PartyGameSDK protocol",
+      "category": "hard_constraints",
+      "expected_files": [
+        "docs/V1_1_4_STATE_SNAPSHOT.md",
+        "docs/PROTOCOL_GENERALIZATION_REPORT.md"
+      ],
+      "results": [
+        {
+          "path": "docs/PATH_SCOPED_RULES.md",
+          "score": 0.9336722205180544,
+          "matchedTokens": [],
+          "snippet": "Path-Scoped Rules — PartyGameSDK v1.0.0\n`server/**`\nSRV-002: PlayerIndex Assignment\n\n`playerIndex` is assigned by `server.js` only. Controller MUST NOT send it. Server injects it before routing."
+        },
+        {
+          "path": "agents/rag-memory/RAG_RETRIEVAL_POLICY.md",
+          "score": 0.9088425020084152,
+          "matchedTokens": [],
+          "snippet": "RAG Retrieval Policy (v1.2.0 Phase A)\n7. 不允许 RAG 建议修改 server.js / 协议 / RELEASE_STATE.json\n7.3 允许的查询类型\n\n| Query Type | RAG 响应 |\n|------------|-----------|\n| \"server.js 的当前实现是什么？\" | ✅ 返回 `server/server.js` 的只读描述 |\n| \"PartyGameSDK 协议的设计理念是什么？\" | ✅ 返回 `BASELINE.md` + `PROTOCOL_GENERALIZATION_REPORT.md` |\n| \"RELEASE_STATE.json 的当前状态是什么？\" | ✅ 返回 `RELEASE_STATE.json` 的只读内容 |\n| \"为什么 server.js 不能修改？\" | ✅ 返回 Hard Constraints 文档 |\n\n---"
+        },
+        {
+          "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A2_KEYWORD_IMPROVEMENT_REPORT.md",
+          "score": 0.8282892930578621,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.2 — Keyword Retrieval Improvement Report\n3. Improvements Implemented\n3.3 Added 6 Boost Factors (`query_index.js`)\n\n**Boost 1: Exact Phrase Match Boost** (0..0.3)\n- If query has multi-word phrases that appear in document content → boost 0.3\n- Implementation: `exactPhraseMatchBoost(query, content)`\n\n**Boost 2: Filename/Path Match Boost** (0..0.2)\n- If query tokens appear in filename/path → boost up to 0.2\n- Implementation: `filenameMatchBoost(queryTokens, filePath)`\n\n**Boost 3: Heading Match Boost** (0..0.2)\n- If query tokens appear in Markdown headings → boost up to 0.2\n- Implementation: `headingMatchBoost(queryTokens, content)`\n\n**Boost 4: Domain Terms Synonym Boost** (0..0.3)\n- If query matches `domain_terms.json` synonyms → boost up to 0.3\n- Implementation: `domainTermsBoost(queryTokens, docKeywords)`\n\n**Boost 5: Recency/Freshness Boost** (0..0.2)\n- Prioritize v1.1.4 / v1.2.0 docs → boost 0.2\n- Implementation: `recencyBoost(filePath, mtime)`\n\n**Boost 6: Hard Constraints Boost** (0..0.3)\n- If query involves `server.js`/`protocol`/`RELEASE_STATE`/`tag`/`playerIndex` → boost hard constraint docs by 0.3\n- Implementation: `hardConstraintsBoost(queryTokens, filePath, content)`\n\n**File:** `agents/rag-memory/query_index.js` (11,378 bytes, up from ~8,000 bytes)\n\n---"
+        },
+        {
+          "path": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
+          "score": 0.7041460463014619,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.2 Final Summary\n6. Why Embedding Retrieval is Necessary\n6.3 Embedding Retrieval Can Fix must_not_suggest False Positives\n\nUse embedding similarity to check `must_not_suggest` violations:\n\n- **Current (substring):** `\"modify server.js\"` in snippet → violation (false positive).\n- **Proposed (embedding):** Embedding similarity between snippet and `\"modify server.js\"` > 0.8 → check context (is it discussing the constraint or violating it?)."
+        },
+        {
+          "path": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+          "score": 0.7032746560646922,
+          "matchedTokens": [],
+          "snippet": "v1.2.0 Phase A.1 — RAG Evaluation Harness Report\n5. Current Weaknesses\n5.4 must_not_suggest Uses Substring Check\n\n**Problem:** `must_not_suggest` violation detection uses simple substring check, which may have false positives.\n\n**Example:**\n- Query Q001: `must_not_suggest = [\"modify server.js\"]`\n- Retrieved snippet: \"We should NOT modify server.js because of hard constraints\"\n- Substring \"modify server.js\" is present → **false positive violation**\n- **Current behavior:** `calculateMetrics()` in `evaluate_retrieval.js` does NOT check for negation (e.g., \"NOT modify\"). It simply checks if phrase is substring of snippet.\n- **Risk:** False positives may block valid retrieval results.\n\n**Mitigation (Phase B):** Use embedding-based semantic check for `must_not_suggest` (detect conceptual violation, not just substring).\n\n---"
+        }
+      ],
+      "metrics": {
+        "recallAt5": 0,
+        "precisionAt5": 0,
+        "mrr": 0,
+        "ndcgAt5": 0,
+        "violations": [
+          {
+            "query": "server.js injection playerIndex PartyGameSDK protocol",
+            "phrase": "modify server.js",
+            "file": "docs/V1_2_0_PHASE_A2_FINAL_SUMMARY.md",
+            "snippet": "v1.2.0 Phase A.2 Final Summary\n6. Why Embedding Retrieval is Necessary\n6.3 Embedding Retrieval Can Fix must_not_suggest False Positives\n\nUse embedding similarity to check `must_not_suggest` violations:\n\n- **Current (substring):** `\"modify server.js\"` in snippet → violation (false positive).\n- **Proposed (embedding):** Embedding similarity between snippet and `\"modify server.js\"` > 0.8 → check context (is it discussing the constraint or violating it?)."
+          },
+          {
+            "query": "server.js injection playerIndex PartyGameSDK protocol",
+            "phrase": "modify server.js",
+            "file": "docs/V1_2_0_RAG_MEMORY_PHASE_A1_EVAL_REPORT.md",
+            "snippet": "v1.2.0 Phase A.1 — RAG Evaluation Harness Report\n5. Current Weaknesses\n5.4 must_not_suggest Uses Substring Check\n\n**Problem:** `must_not_suggest` violation detection uses simple substring check, which may have false positives.\n\n**Example:**\n- Query Q001: `must_not_suggest = [\"modify server.js\"]`\n- Retrieved snippet: \"We should NOT modify server.js because of hard constraints\"\n- Substring \"modify server.js\" is present → **false positive violation**\n- **Current behavior:** `calculateMetrics()` in `evaluate_retrieval.js` does NOT check for negation (e.g., \"NOT modify\"). It simply checks if phrase is substring of snippet.\n- **Risk:** False positives may block valid retrieval results.\n\n**Mitigation (Phase B):** Use embedding-based semantic check for `must_not_suggest` (detect conceptual violation, not just substring).\n\n---"
+          }
+        ],
+        "numRelevantRetrieved": 0,
+        "totalRelevant": 2
+      }
+    }
+  ]
+}
