@@ -271,11 +271,10 @@ jobs:
             echo "❌ gate_secrets FAILED"
             FAILED=1
           fi
-          # Memory store tests require postgres; soft gate (warn but don't block)
+          # RAG runtime tests use live API; soft gate in CI (may fail due to network/API)
           if [ "${{ needs.gate_unit_tests.result }}" != "success" ]; then
-            echo "⚠️  gate_unit_tests had issues (likely postgres-dependent tests)"
-            echo "    Metrics and non-DB tests are expected to pass."
-            # Don't set FAILED=1 — memory store tests are a soft gate in CI
+            echo "⚠️  gate_unit_tests had issues (postgres-dependent or RAG API tests)"
+            echo "    Metrics, memory store non-DB tests are expected to pass."
           fi
           if [ "${{ needs.gate_retrieval_eval.result }}" != "success" ]; then
             echo "❌ gate_retrieval_eval FAILED"
