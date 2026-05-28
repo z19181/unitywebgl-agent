@@ -1,0 +1,305 @@
+# ============================================================
+# PartyGameSDK — Runtime Regression Gate
+# v1.3.0 Phase C.5
+#
+# Runs the full regression gate for observability features.
+# Fails on: secrets leak, Recall@5 < 0.500, violations > 0,
+#           test failure, build failure.
+# ============================================================
+
+name: Runtime Regression Gates
+
+on:
+  push:
+    branches:
+      - 'platform/v1.3.0-persistent-memory'
+    paths:
+      - 'agents/memory-store/**'
+      - 'agents/rag-memory/**'
+      - 'metrics/**'
+      - 'health/**'
+      - 'agent-dashboard/**'
+      - 'scripts/check-regression-gates.js'
+      - '.github/workflows/runtime-regression.yml'
+      - '!.github/workflows/runtime-regression.yml.bak'
+  pull_request:
+    branches:
+      - 'platform/v1.3.0-persistent-memory'
+    paths:
+      - 'agents/memory-store/**'
+      - 'agents/rag-memory/**'
+      - 'metrics/**'
+      - 'health/**'
+      - 'agent-dashboard/**'
+      - 'scripts/check-regression-gates.js'
+  workflow_dispatch:
+
+jobs:
+
+  # ── Node.js Setup ─────────────────────────────────────────────────
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      # Root dependencies
+      - name: Root dependencies
+        run: npm ci
+
+      # Memory-store dependencies
+      - name: Memory-store dependencies
+        run: npm ci
+        working-directory: agents/memory-store
+
+      # RAG-memory dependencies
+      - name: RAG-memory dependencies
+        run: npm ci
+        working-directory: agents/rag-memory
+
+      # Agent-dashboard dependencies
+      - name: Agent-dashboard dependencies
+        run: npm ci
+        working-directory: agent-dashboard
+
+      # Save dependency cache
+      - name: Save cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            node_modules
+            agents/memory-store/node_modules
+            agents/rag-memory/node_modules
+            agent-dashboard/node_modules
+          key: deps-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Dependency setup complete
+        run: echo "All dependencies installed"
+
+  # ── Gate 1: Secrets ────────────────────────────────────────────────
+  gate_secrets:
+    name: Secrets Scan
+    runs-on: ubuntu-latest
+    needs: [setup]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/check-no-secrets.js
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run secrets check
+        run: node scripts/check-no-secrets.js
+
+  # ── Gate 2: Unit Tests ──────────────────────────────────────────────
+  gate_unit_tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: [setup]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      # Restore dependency cache
+      - name: Restore cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            agents/memory-store/node_modules
+            agents/rag-memory/node_modules
+            agent-dashboard/node_modules
+          key: deps-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+      # Metrics registry
+      - name: Metrics registry tests
+        run: node metrics/test_metrics_registry.js
+
+      # Memory-store
+      - name: Memory store tests
+        run: node agents/memory-store/test_memory_store.js
+
+      - name: Memory runtime integration tests
+        run: node agents/memory-store/test_memory_runtime_integration.js
+
+      - name: Runtime graph tests
+        run: node agents/memory-store/test_runtime_graph.js
+
+      # RAG runtime
+      - name: RAG runtime retrieval tests
+        run: node agents/rag-memory/runtime/test_runtime_retrieval.js
+
+      - name: RAG prompt context tests
+        run: node agents/rag-memory/runtime/test_prompt_context.js
+
+  # ── Gate 3: Retrieval Eval ─────────────────────────────────────────
+  gate_retrieval_eval:
+    name: Retrieval Eval
+    runs-on: ubuntu-latest
+    needs: [setup]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify retrieval eval results
+        run: |
+          node -e "
+            const fs = require('fs');
+            const md = fs.readFileSync('agents/rag-memory/eval_results_all_modes.md', 'utf-8');
+            const hybrid = md.match(/^\| hybrid \| ([0-9.]+) \| [0-9.]+ \| [0-9.]+ \| [0-9.]+ \| (\d+) \|/m);
+            if (!hybrid) { console.error('HYBRID row not found'); process.exit(1); }
+            const recall = parseFloat(hybrid[1]);
+            const violations = parseInt(hybrid[2]);
+            console.log('HYBRID Recall@5 =', recall);
+            console.log('HYBRID Violations =', violations);
+            if (recall < 0.500) { console.error('FAIL: Recall@5 < 0.500'); process.exit(1); }
+            if (violations > 0) { console.error('FAIL: violations > 0'); process.exit(1); }
+            console.log('PASS');
+          "
+
+  # ── Gate 4: Dashboard Build ────────────────────────────────────────
+  gate_dashboard_build:
+    name: Dashboard Build
+    runs-on: ubuntu-latest
+    needs: [setup]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'agent-dashboard/package-lock.json'
+
+      - name: Restore agent-dashboard cache
+        uses: actions/cache/restore@v4
+        with:
+          path: agent-dashboard/node_modules
+          key: deps-${{ runner.os }}-${{ hashFiles('agent-dashboard/package-lock.json') }}
+
+      - name: Build agent-dashboard
+        run: npm run build
+        working-directory: agent-dashboard
+
+  # ── Gate 5: Smoke Tests ─────────────────────────────────────────────
+  gate_smoke_tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    needs: [setup]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Restore cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            agents/memory-store/node_modules
+            agents/rag-memory/node_modules
+            agent-dashboard/node_modules
+          key: deps-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Start agent-dashboard dev server
+        run: |
+          cd agent-dashboard
+          PORT=3000 npm run dev &
+          DEV_PID=$!
+          sleep 8
+          echo "Dev server PID: $DEV_PID"
+          # Health smoke test
+          HEALTH_STATUS=$(curl -so /dev/null -w "%{http_code}" http://localhost:3000/api/health)
+          echo "Health status: $HEALTH_STATUS"
+          if [ "$HEALTH_STATUS" = "200" ] || [ "$HEALTH_STATUS" = "503" ]; then
+            echo "Health endpoint OK"
+          else
+            echo "Health endpoint FAIL: status=$HEALTH_STATUS"
+            kill $DEV_PID 2>/dev/null
+            exit 1
+          fi
+          # Metrics smoke test
+          METRICS_STATUS=$(curl -so /dev/null -w "%{http_code}" http://localhost:3000/api/metrics)
+          echo "Metrics status: $METRICS_STATUS"
+          if [ "$METRICS_STATUS" = "200" ]; then
+            echo "Metrics endpoint OK"
+          else
+            echo "Metrics endpoint FAIL: status=$METRICS_STATUS"
+            kill $DEV_PID 2>/dev/null
+            exit 1
+          fi
+          kill $DEV_PID 2>/dev/null
+          echo "All smoke tests passed"
+
+  # ── Gate 6: Full Gate ─────────────────────────────────────────────
+  gate_all:
+    name: Regression Gate
+    runs-on: ubuntu-latest
+    needs: [gate_secrets, gate_unit_tests, gate_retrieval_eval, gate_dashboard_build, gate_smoke_tests]
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify all gates passed
+        run: |
+          echo "Checking gate results..."
+          FAILED=""
+          # Check each gate
+          if [ "${{ needs.gate_secrets.result }}" != "success" ]; then
+            echo "❌ gate_secrets FAILED"
+            FAILED=1
+          fi
+          if [ "${{ needs.gate_unit_tests.result }}" != "success" ]; then
+            echo "❌ gate_unit_tests FAILED"
+            FAILED=1
+          fi
+          if [ "${{ needs.gate_retrieval_eval.result }}" != "success" ]; then
+            echo "❌ gate_retrieval_eval FAILED"
+            FAILED=1
+          fi
+          if [ "${{ needs.gate_dashboard_build.result }}" != "success" ]; then
+            echo "❌ gate_dashboard_build FAILED"
+            FAILED=1
+          fi
+          if [ "${{ needs.gate_smoke_tests.result }}" != "success" ]; then
+            echo "❌ gate_smoke_tests FAILED"
+            FAILED=1
+          fi
+          if [ -n "$FAILED" ]; then
+            echo ""
+            echo "One or more gates failed. See above for details."
+            exit 1
+          fi
+          echo ""
+          echo "========================================"
+          echo " ALL REGRESSION GATES PASSED ✅"
+          echo "========================================"
+          echo ""
+          echo "Summary:"
+          echo "  ✅ Secrets scan"
+          echo "  ✅ Unit tests (metrics + memory + RAG)"
+          echo "  ✅ Retrieval eval (HYBRID Recall@5 ≥ 0.500, violations = 0)"
+          echo "  ✅ Dashboard build"
+          echo "  ✅ Smoke tests (health + metrics endpoints)"

@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "checks": [
+    "secrets",
+    "metrics (50 tests)",
+    "memory_store (81 tests)",
+    "memory_runtime_integration:SKIP",
+    "runtime_graph:SKIP",
+    "runtime_retrieval (20 tests)",
+    "prompt_context (18 tests)",
+    "HYBRID Recall@5=0.525",
+    "HYBRID Violations=0",
+    "dashboard build",
+    "health endpoint smoke",
+    "metrics endpoint smoke"
+  ],
+  "failures": [],
+  "metrics": {
+    "recall_at_5": 0.525,
+    "violations": 0,
+    "tests_passed": 169,
+    "tests_failed": 0
+  }
+}

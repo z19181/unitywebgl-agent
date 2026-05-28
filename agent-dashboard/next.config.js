@@ -1,12 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  distDir: 'out',
+  // v1.3.0 Phase C.1: switched to standard Next.js server with standalone output
+  output: 'standalone',
+  distDir: '.next',
   images: {
     unoptimized: true,
   },
-  // Disable ESLint during build — v1.1.3 uses TypeScript for type safety.
-  // Re-enable with a v9 flat config in v1.1.4.
   eslint: {
     ignoreDuringBuilds: true,
   },
