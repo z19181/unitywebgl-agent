@@ -1,0 +1,49 @@
+name: CI Debug
+on:
+  push:
+    branches: [platform/v1.3.0-persistent-memory]
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      
+      - name: Debug secrets check
+        run: |
+          echo "=== Node version ==="
+          node --version
+          echo "=== Tracked file count ==="
+          git ls-files | wc -l
+          echo "=== Files with 'sk-' ==="
+          git ls-files | while read f; do
+            if grep -l 'sk-' "$f" 2>/dev/null; then
+              true
+            fi
+          done | head -20
+          echo "=== Running check-no-secrets ==="
+          node scripts/check-no-secrets.js 2>&1 || true
+          echo "=== Exit code: $? ==="
+      
+      - name: Debug memory store tests
+        run: |
+          echo "=== Installing deps ==="
+          cd agents/memory-store && npm ci 2>&1 | tail -5
+          echo "=== Running test ==="
+          node test_memory_store.js 2>&1 | tail -20
+          echo "=== Exit code: $? ==="
+      
+      - name: Debug dashboard build
+        run: |
+          echo "=== Installing deps ==="
+          cd agent-dashboard && npm ci 2>&1 | tail -5
+          echo "=== next.config.js ==="
+          cat next.config.js
+          echo "=== Running build ==="
+          npm run build 2>&1 | tail -30
+          echo "=== Exit code: $? ==="
