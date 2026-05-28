@@ -85,6 +85,8 @@ jobs:
 
       - name: Run secrets check
         run: node scripts/check-no-secrets.js
+        env:
+          CI: true
 
   # ── Gate 2: Unit Tests ──────────────────────────────────────────────
   gate_unit_tests:

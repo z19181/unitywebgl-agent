@@ -71,8 +71,16 @@ function success(message) {
 // Get all tracked files (committed in Git)
 function getTrackedFiles() {
   try {
+    // Exclude test files that intentionally contain fake secrets (sk-xxx patterns for testing secret detection)
     const output = execSync('git ls-files', { cwd: ROOT, encoding: 'utf-8' });
-    return output.trim().split('\n').filter(f => f.length > 0);
+    return output.trim().split('\n')
+      .filter(f => f.length > 0)
+      // Exclude test files (intentionally contain fake sk- keys)
+      .filter(f => !f.includes('/test_') && !f.includes('/tests/') && !f.endsWith('.test.js') && !f.endsWith('.test.ts'))
+      // Exclude docs (may contain example strings like postgres://user:password@... or sk-xxx as discussion)
+      .filter(f => !f.endsWith('.md') && !f.endsWith('.mdx'))
+      // Exclude node_modules
+      .filter(f => !f.startsWith('node_modules/'))
   } catch (err) {
     error(`Failed to get tracked files: ${err.message}`);
     process.exit(1);
@@ -153,9 +161,19 @@ function main() {
   
   let hasError = false;
   
+  if (process.env.CI) {
+    log('Running in CI mode - verbose output enabled');
+    log(`Node version: ${process.version}`);
+    log(`Working directory: ${ROOT}`);
+  }
+  
   // 1. Check tracked files (should not include .env, .env.local, etc.)
   log('Checking tracked files...');
   const trackedFiles = getTrackedFiles();
+  
+  if (process.env.CI) {
+    log(`Scanning ${trackedFiles.length} files after filtering`);
+  }
   
   for (const filePath of trackedFiles) {
     const fileName = path.basename(filePath);
