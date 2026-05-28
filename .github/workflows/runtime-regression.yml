@@ -68,17 +68,6 @@ jobs:
         run: npm ci
         working-directory: agent-dashboard
 
-      # Save dependency cache
-      - name: Save cache
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            node_modules
-            agents/memory-store/node_modules
-            agents/rag-memory/node_modules
-            agent-dashboard/node_modules
-          key: deps-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-
       - name: Dependency setup complete
         run: echo "All dependencies installed"
 
@@ -112,23 +101,11 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
-      # Restore dependency cache
-      - name: Restore cache
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            node_modules
-            agents/memory-store/node_modules
-            agents/rag-memory/node_modules
-            agent-dashboard/node_modules
-          key: deps-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Install dependencies (fallback)
+      - name: Install all dependencies
         run: |
-          npm ci --ignore-scripts
-          cd agents/memory-store && npm ci --ignore-scripts
-          cd ../rag-memory && npm ci --ignore-scripts
-        continue-on-error: true
+          npm ci
+          cd agents/memory-store && npm ci
+          cd ../rag-memory && npm ci
 
       # Metrics registry
       - name: Metrics registry tests
@@ -193,12 +170,6 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'agent-dashboard/package-lock.json'
 
-      - name: Restore agent-dashboard cache
-        uses: actions/cache/restore@v4
-        with:
-          path: agent-dashboard/node_modules
-          key: deps-${{ runner.os }}-${{ hashFiles('agent-dashboard/package-lock.json') }}
-
       - name: Install dependencies
         run: npm ci
         working-directory: agent-dashboard
@@ -222,21 +193,10 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
-      - name: Restore cache
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            node_modules
-            agents/memory-store/node_modules
-            agents/rag-memory/node_modules
-            agent-dashboard/node_modules
-          key: deps-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Install dependencies (fallback)
+      - name: Install all dependencies
         run: |
-          npm ci --ignore-scripts
-          cd agent-dashboard && npm ci --ignore-scripts
-        continue-on-error: true
+          npm ci
+          cd agent-dashboard && npm ci
 
       - name: Start agent-dashboard dev server
         run: |
