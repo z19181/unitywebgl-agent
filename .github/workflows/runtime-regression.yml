@@ -133,19 +133,19 @@ jobs:
           cd agents/memory-store
           node test_memory_store.js
         env:
-          DATABASE_URL: postgres://raguser:ragpass@localhost:5432/ragmemory
+          DATABASE_URL: postgres://raguser:ragpass@postgres:5432/ragmemory
 
       - name: Memory runtime integration tests
         run: cd agents/memory-store && node test_memory_runtime_integration.js
         continue-on-error: true
         env:
-          DATABASE_URL: postgres://raguser:ragpass@localhost:5432/ragmemory
+          DATABASE_URL: postgres://raguser:ragpass@postgres:5432/ragmemory
 
       - name: Runtime graph tests
         run: cd agents/memory-store && node test_runtime_graph.js
         continue-on-error: true
         env:
-          DATABASE_URL: postgres://raguser:ragpass@localhost:5432/ragmemory
+          DATABASE_URL: postgres://raguser:ragpass@postgres:5432/ragmemory
 
       # RAG runtime
       - name: RAG runtime retrieval tests
