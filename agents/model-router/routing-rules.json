@@ -1,0 +1,49 @@
+{
+  "version": "v1.1.1",
+  "description": "Model routing rules for PartyGameSDK Agent Intelligence Layer",
+  "tiers": {
+    "cheap": {
+      "models": ["deepseek-v4-pro"],
+      "reasoning_levels": ["off", "low"],
+      "max_tokens": 8000,
+      "keywords": [
+        "report", "doc", "docs", "format", "lint", "style",
+        "rename", "move", "copy", "commit", "bump", "changelog",
+        "artifact", "screenshot", "generate template"
+      ]
+    },
+    "strong": {
+      "models": ["deepseek-v4-pro", "claude-sonnet-4-20250514"],
+      "reasoning_levels": ["high", "stream"],
+      "max_tokens": 32000,
+      "keywords": [
+        "black screen", "shader", "HDRP", "crash", "wasm",
+        "timeout", "architecture", "governance", "protocol",
+        "release gate", "canary", "rollback", "new game",
+        "feature", "WebGL", "runtime failure", "desync",
+        "disconnect", "websocket fail"
+      ]
+    },
+    "fallback": {
+      "model": "gpt-4o",
+      "reasoning_level": "high",
+      "max_tokens": 32000
+    }
+  },
+  "blocked_keywords": [
+    "modify server.js",
+    "change protocol",
+    "modify Five Iron Laws",
+    "delete release tag",
+    "modify core protocol",
+    "overwrite server.js"
+  ],
+  "timeout": {
+    "strong": 120000,
+    "cheap": 60000,
+    "retry_delay_ms": 5000,
+    "max_retries": 1,
+    "fallback_after_errors": 3
+  },
+  "default_tier": "strong"
+}

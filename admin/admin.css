@@ -1,0 +1,24 @@
+/* admin/admin.css — v0.3.4 */
+:root { --bg: #1a1a2e; --card: #16213e; --accent: #0f3460; --text: #eaeaea; --green: #51cf66; --red: #ff6b6b; --yellow: #ffd43b; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+h1 { font-size: 24px; } h2 { font-size: 18px; margin: 20px 0 10px; } h3 { font-size: 14px; }
+#healthBadge { font-size: 13px; } #healthBadge.ok { color: var(--green); } #healthBadge.err { color: var(--red); }
+
+#metricsRow { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.card { background: var(--card); border-radius: 8px; padding: 16px; min-width: 110px; text-align: center; }
+.card .val { display: block; font-size: 28px; font-weight: bold; color: var(--green); }
+.card .lbl { font-size: 11px; opacity: 0.7; margin-top: 4px; display: block; }
+
+table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 8px; overflow: hidden; }
+th, td { padding: 10px 14px; text-align: left; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+th { background: var(--accent); font-weight: 600; } td code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+
+.btn { background: var(--accent); color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+.btn:hover { opacity: 0.85; } .btn.sm { padding: 3px 10px; font-size: 11px; }
+.btn.danger { background: var(--red); }
+
+#roomDetail { background: var(--card); border-radius: 8px; padding: 20px; margin-top: 12px; }
+#detailInfo { font-size: 13px; margin: 10px 0; }

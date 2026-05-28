@@ -2,258 +2,362 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
   <title>Party Game - Screen</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="PartyGame">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#000000">
+  <!-- v0.4.2: Mobile safe-area + theme-color + PWA meta -->
+  <!-- QR code: inline fallback if CDN unavailable -->
+  <script>
+    // v0.4.2: QR code self-hosted fallback
+    window.__QR_READY = false;
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"
+    onload="window.__QR_READY=true"
+    onerror="console.warn('QR CDN unavailable, using plain text link')"></script>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#000; width:100vw; height:100vh; overflow:hidden; font-family:Arial,sans-serif; color:white; }
+    /* v0.4.2: Mobile safe-area CSS variables */
+    :root {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
 
-    /* 房间信息 */
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+    
+    body {
+      background: #000;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+    
+    /* ========= 房间信息 UI ========= */
     #roomInfo {
-      position:fixed; top:10px; left:10px;
-      background:rgba(0,0,0,0.85); padding:15px; border-radius:10px;
-      font-size:13px; z-index:1000; max-width:350px;
-      border: 1px solid rgba(255,255,255,0.1);
+      position: fixed;
+      top: calc(10px + var(--safe-top));
+      left: calc(10px + var(--safe-left));
+      background: rgba(0,0,0,0.8);
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 13px;
+      z-index: 1000;
+      max-width: 350px;
     }
-    #roomInfo h3 { margin-bottom:8px; color:#7395ff; }
-    #roomId { font-size:28px; font-weight:bold; color:#51cf66; margin:8px 0; letter-spacing:3px; }
-    #qrCode { margin:10px auto; display:flex; justify-content:center; }
-    #qrCode img { border-radius:8px; background:#fff; padding:4px; }
-    #controllerUrl {
-      font-size:10px; word-break:break-all; color:#aaa;
-      margin-top:8px; background:rgba(255,255,255,0.05); padding:6px; border-radius:5px;
+    
+    #roomInfo h3 {
+      margin-bottom: 8px;
+      color: #7395ff;
     }
-    .room-btn {
-      background:#7395ff; color:white; border:none; padding:6px 12px;
-      border-radius:5px; cursor:pointer; margin-top:6px; font-size:12px; margin-right:4px;
+    
+    #roomId {
+      font-size: 24px;
+      font-weight: bold;
+      color: #51cf66;
+      margin: 8px 0;
+      letter-spacing: 2px;
     }
-    .room-btn:hover { background:#5a7de0; }
-    .room-btn.danger { background:#ff6b6b; }
-    .room-btn.danger:hover { background:#e05a5a; }
-
-    /* 玩家列表 */
+    
+    #qrUrl {
+      font-size: 11px;
+      word-break: break-all;
+      color: #ffd43b;
+      margin-top: 8px;
+    }
+    
+    #copyBtn {
+      background: #7395ff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 8px;
+      font-size: 13px;
+      min-height: 44px;
+      min-width: 120px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    
+    #copyBtn:hover {
+      background: #5a7de0;
+    }
+    
+    /* ========= 玩家列表 UI ========= */
     #playerList {
-      position:fixed; top:10px; right:10px;
-      background:rgba(0,0,0,0.85); padding:15px; border-radius:10px;
-      font-size:13px; z-index:1000; min-width:180px;
-      border: 1px solid rgba(255,255,255,0.1);
+      position: fixed;
+      top: calc(10px + var(--safe-top));
+      right: calc(10px + var(--safe-right));
+      background: rgba(0,0,0,0.8);
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 13px;
+      z-index: 1000;
+      min-width: 150px;
     }
-    #playerList h3 { margin-bottom:8px; color:#ff6b6b; }
+    
+    #playerList h3 {
+      margin-bottom: 8px;
+      color: #ff6b6b;
+    }
+    
     .player-item {
-      padding:6px 8px; margin:3px 0;
-      background:rgba(255,255,255,0.08); border-radius:6px;
-      display:flex; justify-content:space-between; align-items:center;
+      padding: 5px;
+      margin: 3px 0;
+      background: rgba(255,255,255,0.1);
+      border-radius: 5px;
     }
-    .player-item .score { color:#ffd43b; font-weight:bold; }
-    .player-count { font-size:11px; color:#aaa; margin-top:6px; }
-
-    /* 房间销毁倒计时 */
-    #destroyCountdown {
-      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-      background:rgba(0,0,0,0.95); padding:30px 50px; border-radius:15px;
-      text-align:center; z-index:5000; display:none;
-      border: 2px solid #ff6b6b;
+    
+    /* ========= Unity 容器 ========= */
+    #unityContainer {
+      width: 100%;
+      height: 100%;
     }
-    #destroyCountdown.show { display:block; }
-    #destroyCountdown h2 { color:#ff6b6b; margin-bottom:10px; }
-    #destroyCountdown .timer { font-size:48px; font-weight:bold; color:#ffd43b; }
-    #cancelDestroyBtn {
-      background:#51cf66; color:white; border:none; padding:10px 25px;
-      border-radius:8px; cursor:pointer; font-size:14px; margin-top:15px;
+    
+    #unityCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
 
-    /* Unity 容器 */
-    #unityContainer { width:100%; height:100%; }
-    #unityCanvas { width:100%; height:100%; display:block; }
-
-    /* 加载遮罩 */
+    /* v0.4.2: SDK-only mode overlay */
+    #sdkOnlyOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      z-index: 500;
+      text-align: center;
+      padding: 40px;
+    }
+    #sdkOnlyOverlay.visible { display: flex; }
+    #sdkOnlyIcon { font-size: 64px; margin-bottom: 20px; }
+    #sdkOnlyTitle { font-size: 28px; font-weight: bold; margin-bottom: 12px; color: #7395ff; }
+    #sdkOnlySubtitle { font-size: 16px; color: #aaa; margin-bottom: 24px; max-width: 500px; line-height: 1.5; }
+    
+    /* ========= 加载遮罩 ========= */
     #loadingOverlay {
-      position:fixed; top:0; left:0; right:0; bottom:0;
-      background:rgba(0,0,0,0.9); display:flex; flex-direction:column;
-      justify-content:center; align-items:center; color:white; z-index:2000;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      z-index: 2000;
     }
-    #loadingOverlay.hidden { display:none; }
+    
+    #loadingOverlay.hidden {
+      display: none;
+    }
+    
     .spinner {
-      border:4px solid rgba(255,255,255,0.1); border-top:4px solid #7395ff;
-      border-radius:50%; width:50px; height:50px;
-      animation:spin 1s linear infinite; margin-bottom:20px;
+      border: 4px solid rgba(255,255,255,0.1);
+      border-top: 4px solid #7395ff;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
     }
-    @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
-
-    /* 状态栏 */
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* ========= 状态栏 ========= */
     #statusBar {
-      position:fixed; bottom:10px; left:10px;
-      background:rgba(0,0,0,0.6); padding:8px 15px;
-      border-radius:5px; font-size:12px; z-index:1000;
+      position: fixed;
+      bottom: calc(10px + var(--safe-bottom));
+      left: calc(10px + var(--safe-left));
+      background: rgba(0,0,0,0.6);
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 1000;
     }
-
-    /* screen 断线重连 */
-    #screenReconnect {
-      position:fixed; top:0; left:0; right:0; bottom:0;
-      background:rgba(0,0,0,0.9); display:none;
-      flex-direction:column; justify-content:center; align-items:center;
-      z-index:6000;
-    }
-    #screenReconnect.show { display:flex; }
   </style>
 </head>
 <body>
-
+  
   <!-- 房间信息 -->
   <div id="roomInfo">
     <h3>🎮 房间信息</h3>
     <div>房间 ID:</div>
     <div id="roomId">等待创建...</div>
-    <div id="qrCode"></div>
-    <div id="controllerUrl"></div>
-    <div style="margin-top:8px;">
-      <button class="room-btn" onclick="copyRoomUrl()">📋 复制链接</button>
-      <button class="room-btn danger" onclick="destroyRoom()">💣 关闭房间</button>
-    </div>
+    <button id="copyBtn" onclick="copyRoomUrl()">复制控制器链接</button>
+    <button id="closeRoomBtn" onclick="closeRoom()" style="display:none;background:#e94560;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;margin-left:8px;font-weight:bold;min-height:44px;min-width:80px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;">关闭房间</button>
+    <div id="qrUrl" style="margin-top:8px;"></div>
   </div>
-
+  
   <!-- 玩家列表 -->
   <div id="playerList">
-    <h3>👥 玩家 (<span id="playerCountText">0</span>/<span id="maxPlayersText">8</span>)</h3>
-    <div id="players"><div style="opacity:0.5;">等待玩家加入...</div></div>
+    <h3>👥 玩家列表</h3>
+    <div id="players"><div style="opacity:0.5;">暂无玩家</div></div>
   </div>
-
-  <!-- 房间销毁倒计时 -->
-  <div id="destroyCountdown">
-    <h2>⚠️ 房间即将关闭</h2>
-    <div class="timer" id="destroyTimer">10</div>
-    <div style="color:#aaa;margin-top:5px;">所有玩家将被移出</div>
-    <button id="cancelDestroyBtn" onclick="cancelDestroy()">取消关闭</button>
-  </div>
-
+  
   <!-- Unity 容器 -->
   <div id="unityContainer">
     <canvas id="unityCanvas"></canvas>
   </div>
 
+  <!-- v0.4.2: SDK-only mode (when Unity canvas unavailable) -->
+  <div id="sdkOnlyOverlay" class="visible">
+    <div id="sdkOnlyIcon">🎮</div>
+    <div id="sdkOnlyTitle">SDK-Only Mode</div>
+    <div id="sdkOnlySubtitle">检测中…</div>
+    <div id="sdkOnlyStatus" style="font-size:13px;color:#51cf66;margin-top:16px;"></div>
+  </div>
+  
   <!-- 加载遮罩 -->
   <div id="loadingOverlay">
     <div class="spinner"></div>
     <div>正在加载游戏...</div>
   </div>
-
+  
   <!-- 状态栏 -->
   <div id="statusBar">正在连接服务器...</div>
-
-  <!-- Screen 断线重连 -->
-  <div id="screenReconnect">
-    <div class="spinner"></div>
-    <div style="margin-top:15px;">屏幕端连接断开，正在重连...</div>
-  </div>
-
+  
   <script>
+    // ========================================
+    // 配置
+    // ========================================
     const CONFIG = {
-      serverUrl: `ws://${window.location.host}`,
-      unityBuildUrl: 'Build',
-      unityLoaderUrl: 'Build/Build.loader.js',
+      // v0.4.2: Auto-detect WS protocol
+      serverUrl: `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}`,
+      unityBuildUrl: 'Build/Build',
+      unityLoaderUrl: 'Build/Build/WebGLBuild.loader.js',
       enableDebugLog: true,
     };
-
+    
+    // ========================================
+    // 状态
+    // ========================================
     let ws = null;
     let unityInstance = null;
     let currentRoomId = null;
-    let players = [];
-    let maxPlayers = 8;
-    let destroyTimer = null;
-    let screenReconnectAttempts = 0;
-
+    let players = []; // 玩家列表
+    let isSdkOnlyMode = true;  // v0.4.2: true until Unity Build loads successfully
+    
+    // DOM 元素
     const roomIdEl = document.getElementById('roomId');
-    const qrCodeEl = document.getElementById('qrCode');
-    const controllerUrlEl = document.getElementById('controllerUrl');
+    const qrUrlEl = document.getElementById('qrUrl');
     const playersEl = document.getElementById('players');
     const statusBarEl = document.getElementById('statusBar');
     const loadingOverlay = document.getElementById('loadingOverlay');
-    const destroyCountdownEl = document.getElementById('destroyCountdown');
-    const destroyTimerEl = document.getElementById('destroyTimer');
-    const playerCountText = document.getElementById('playerCountText');
-    const maxPlayersText = document.getElementById('maxPlayersText');
-    const screenReconnectEl = document.getElementById('screenReconnect');
-
-    function log(msg) {
+    const sdkOnlyOverlay = document.getElementById('sdkOnlyOverlay');
+    const sdkOnlyStatus = document.getElementById('sdkOnlyStatus');
+    
+    // ========================================
+    // 日志
+    // ========================================
+    function log(message) {
       if (!CONFIG.enableDebugLog) return;
-      console.log(`[Screen] ${msg}`);
-      statusBarEl.textContent = msg;
+      console.log(`[Screen] ${message}`);
+      statusBarEl.textContent = message;
     }
 
+    // ========================================
+    // v0.4.2: QR Code renderer with CDN fallback
+    // ========================================
+    function renderQRCode(url, maxPlayers) {
+      let qrPart = '';
+      if (window.__QR_READY && typeof qrcode === 'function') {
+        try {
+          const qr = qrcode(0, 'M');
+          qr.addData(url);
+          qr.make();
+          qrPart = `<div id="qrcode">${qr.createSvgTag(4, 4)}</div>`;
+        } catch (e) {
+          qrPart = `<div style="font-size:10px;color:#f00;">QR生成失败: ${e.message}</div>`;
+        }
+      } else {
+        // v0.4.2: QR CDN unavailable — show large plain text link as fallback
+        qrPart = `<div style="background:#fff;color:#000;padding:12px;border-radius:8px;text-align:center;">
+          <div style="font-size:11px;color:#666;margin-bottom:4px;">QR库未加载</div>
+          <div style="font-size:18px;font-weight:bold;letter-spacing:1px;word-break:break-all;">${url}</div>
+          <div style="font-size:10px;color:#999;margin-top:4px;">请复制上方链接</div>
+        </div>`;
+      }
+      return `
+        <div style="font-size:11px;color:#aaa;">扫码加入（最多${maxPlayers}人）：</div>
+        ${qrPart}
+        <div style="margin-top:8px;font-size:11px;color:#aaa;">或复制链接：</div>
+        <div style="word-break:break-all;font-size:10px;color:#ffd43b;margin-bottom:4px;">${url}</div>
+      `;
+    }
+    
+    // ========================================
+    // 复制房间链接
+    // ========================================
     function copyRoomUrl() {
       if (!currentRoomId) return;
+      
       const url = `${window.location.origin}/controller?room=${currentRoomId}`;
-      navigator.clipboard.writeText(url).then(() => {
-        statusBarEl.textContent = '✅ 链接已复制！';
-        setTimeout(() => { statusBarEl.textContent = ''; }, 2000);
-      }).catch(() => {
-        prompt('复制此链接：', url);
-      });
+      
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => {
+          alert('✅ 控制器链接已复制！\n\n发送给朋友，让他们加入游戏：\n\n' + url);
+        });
+      } else {
+        // 降级方案
+        prompt('复制此链接发给朋友：', url);
+      }
     }
-
+    
     // ========================================
-    // 二维码
-    // ========================================
-    function loadQRCode(url) {
-      // 使用 qrserver.com API 生成二维码
-      const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=333333`;
-      qrCodeEl.innerHTML = `<img src="${qrImgUrl}" width="180" height="180" alt="QR Code" onerror="this.parentElement.innerHTML='<div style=\\'color:#aaa\\'>二维码加载失败</div>'">`;
-    }
-
-    // ========================================
-    // 房间销毁
-    // ========================================
-    function destroyRoom() {
-      if (!ws || ws.readyState !== WebSocket.OPEN) return;
-      ws.send(JSON.stringify({ event: 'destroy_room' }));
-    }
-
-    function cancelDestroy() {
-      // Screen 重新连接即取消销毁（server 端逻辑）
-      // 这里我们只需要重新发送 create_room 来保持房间
-      if (!ws || ws.readyState !== WebSocket.OPEN) return;
-      destroyCountdownEl.classList.remove('show');
-      log('Room destroy cancelled');
-    }
-
-    // ========================================
-    // WebSocket
+    // WebSocket 连接
     // ========================================
     function connectWebSocket() {
       log(`Connecting to ${CONFIG.serverUrl}...`);
+      
       ws = new WebSocket(CONFIG.serverUrl);
-
+      
       ws.onopen = () => {
-        log('✅ Connected');
-        screenReconnectEl.classList.remove('show');
-        screenReconnectAttempts = 0;
-
-        if (currentRoomId) {
-          // 重连后重新创建房间（简化：新 roomId）
-          // TODO: v0.3 screen 重连恢复 roomId
-        }
-
-        ws.send(JSON.stringify({ event: 'create_room' }));
+        log('✅ Connected to server');
+        
+        // 发送 create_room（第 A 条要求）
+        const message = { event: 'create_room' };
+        ws.send(JSON.stringify(message));
         log('Sent: create_room');
       };
-
-      ws.onmessage = (event) => handleMessage(event.data);
-
-      ws.onclose = () => {
-        log('❌ Disconnected');
-        screenReconnectEl.classList.add('show');
-
-        if (screenReconnectAttempts < 5) {
-          screenReconnectAttempts++;
-          setTimeout(connectWebSocket, 3000);
-        } else {
-          statusBarEl.textContent = '❌ 连接失败，请刷新页面';
-        }
+      
+      ws.onmessage = (event) => {
+        handleMessage(event.data);
       };
-
-      ws.onerror = () => {};
+      
+      ws.onclose = () => {
+        log('❌ Disconnected from server');
+        
+        // 3秒后重连
+        setTimeout(connectWebSocket, 3000);
+      };
+      
+      ws.onerror = (error) => {
+        log(`WebSocket error: ${error}`);
+      };
     }
-
+    
     // ========================================
     // 消息处理
     // ========================================
@@ -261,201 +365,352 @@
       try {
         const message = JSON.parse(data);
         const eventType = message.event || message.type;
+        
         log(`Received: ${eventType}`);
-
+        
         switch (eventType) {
           case 'room_created':
             handleRoomCreated(message);
             break;
+            
           case 'player_joined':
             handlePlayerJoined(message);
             break;
+
           case 'player_left':
             handlePlayerLeft(message);
             break;
-          case 'room_destroy_countdown':
-            handleDestroyCountdown(message);
+
+          case 'players.changed':   // v0.2.2
+            handlePlayersChanged(message);
             break;
-          case 'room_destroyed':
-            handleRoomDestroyed(message);
+
+          case 'room_closed':
+            handleRoomClosed(message);
             break;
+            
           case 'game_message':
+            // 转发给 Unity
             forwardToUnity(data);
             break;
+            
           default:
+            // 其他消息也转发给 Unity（例如 broadcast）
             forwardToUnity(data);
+            break;
         }
+        
       } catch (error) {
-        log(`Error: ${error.message}`);
+        log(`Error handling message: ${error.message}`);
       }
     }
-
+    
+    // ========================================
+    // 房间创建处理
+    // ========================================
     function handleRoomCreated(message) {
       currentRoomId = message.roomId;
-      maxPlayers = message.maxPlayers || 8;
-
+      
+      // 显示 roomId
       roomIdEl.textContent = currentRoomId;
-
+      
+      // 显示 qrUrl / controller 加入链接 + QR Code
       const controllerUrl = `${window.location.origin}/controller?room=${currentRoomId}`;
-      controllerUrlEl.textContent = controllerUrl;
+      const maxPlayers = message.maxPlayers || 4;
+      window.currentMaxPlayers = maxPlayers;
 
-      // 加载二维码
-      loadQRCode(controllerUrl);
+      // v0.4.2: QR code with CDN fallback
+      const qrHTML = renderQRCode(controllerUrl, maxPlayers);
+      qrUrlEl.innerHTML = qrHTML;
 
-      maxPlayersText.textContent = maxPlayers;
-      log(`Room created: ${currentRoomId} (max ${maxPlayers} players)`);
-      loadUnity();
-    }
+      document.getElementById('closeRoomBtn').style.display = 'inline-block';
+      log(`Room created: ${currentRoomId}`);
 
-    function handlePlayerJoined(message) {
-      const { playerIndex, playerName, playerCount, rejoined } = message;
-
-      if (!players.includes(playerIndex)) {
-        players.push(playerIndex);
+      // v0.3.2: Update URL for Nginx sticky session
+      // Without reload → WebSocket stays alive
+      // With roomId in URL → future connections hash to same upstream
+      if (!new URLSearchParams(location.search).has('roomId')) {
+        history.replaceState(null, '', '?roomId=' + currentRoomId);
       }
 
-      playerCountText.textContent = playerCount;
-      renderPlayerList();
-      log(`${rejoined ? 'Reconnected' : 'Joined'}: ${playerName} (total: ${playerCount})`);
+      // 加载 Unity（房间创建成功后）
+      loadUnity();
     }
+    
+    // ========================================
+    // 玩家加入处理（第 A 条要求）
+    // ========================================
+    function handlePlayerJoined(message) {
+      const { playerIndex, playerName, playerCount, players: newPlayers } = message;
 
+      // v0.2.2: 如果有完整列表则使用
+      if (Array.isArray(newPlayers)) {
+        players = newPlayers;
+      } else if (!players.find(p => p.playerIndex === playerIndex)) {
+        players.push({ playerIndex, playerName });
+      }
+
+      log(`Player joined: ${playerName} (index: ${playerIndex}, total: ${playerCount})`);
+      renderPlayerList();
+    }
+    
     function handlePlayerLeft(message) {
-      const { playerIndex, playerCount } = message;
-      players = players.filter(p => p !== playerIndex);
-      playerCountText.textContent = playerCount;
+      const { playerIndex, playerCount, players: newPlayers } = message;
+
+      // v0.2.2: 如果有完整列表则使用
+      if (Array.isArray(newPlayers)) {
+        players = newPlayers;
+      } else {
+        players = players.filter(p => p.playerIndex !== playerIndex);
+      }
+
+      log(`Player left: index ${playerIndex}, total: ${playerCount}`);
       renderPlayerList();
-      log(`Player ${playerIndex} left (total: ${playerCount})`);
     }
-
-    function handleDestroyCountdown(message) {
-      destroyCountdownEl.classList.add('show');
-      destroyTimerEl.textContent = message.seconds;
-
-      if (destroyTimer) clearInterval(destroyTimer);
-      const startTime = Date.now();
-      const totalMs = message.seconds * 1000;
-
-      destroyTimer = setInterval(() => {
-        const remaining = Math.max(0, totalMs - (Date.now() - startTime));
-        destroyTimerEl.textContent = Math.ceil(remaining / 1000);
-        if (remaining <= 0) clearInterval(destroyTimer);
-      }, 100);
-    }
-
-    function handleRoomDestroyed(message) {
-      destroyCountdownEl.classList.remove('show');
-      if (destroyTimer) clearInterval(destroyTimer);
-
-      currentRoomId = null;
-      players = [];
+    
+    // v0.2.2: 处理 players.changed
+    function handlePlayersChanged(message) {
+      const { players: newPlayers } = message;
+      if (Array.isArray(newPlayers)) {
+        players = newPlayers;
+      }
+      log(`Players changed: ${players.map(p => `P${p.playerIndex}(${p.playerName})`).join(', ')}`);
       renderPlayerList();
-      roomIdEl.textContent = '已关闭';
-      qrCodeEl.innerHTML = '';
-      log(`Room destroyed: ${message.reason}`);
-
-      // 3秒后自动重新创建
-      setTimeout(() => {
-        if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ event: 'create_room' }));
-          log('Auto-recreating room...');
-        }
-      }, 3000);
     }
 
     function renderPlayerList() {
+      const currentCount = players.length;
+      const max = window.currentMaxPlayers || '?';
       if (players.length === 0) {
-        playersEl.innerHTML = '<div style="opacity:0.5;">等待玩家加入...</div>';
+        playersEl.innerHTML = '<div style="opacity:0.5;">暂无玩家</div>';
         return;
       }
-      const colors = ['#ff6b6b','#51cf66','#339af0','#ffd43b','#cc5de8','#ff922b','#20c997','#f06595'];
-      let html = '';
-      players.forEach((p, i) => {
-        const color = colors[p % colors.length];
-        html += `<div class="player-item" style="border-left:3px solid ${color}">
-          <span>🎮 ${'P' + p}</span>
-          <span class="score" id="score-${p}">0</span>
-        </div>`;
+
+      let html = `<div style="margin-bottom:8px;font-size:11px;color:#aaa;">${currentCount}/${max} 人</div>`;
+      players.forEach(p => {
+        const isMe = p.playerIndex === window.myPlayerIndex ? ' (我)' : '';
+        html += `<div class="player-item">P${p.playerIndex} ${p.playerName}${isMe}</div>`;
       });
       playersEl.innerHTML = html;
     }
-
+    
     // ========================================
-    // 转发到 Unity
+    // 转发消息到 Unity
     // ========================================
     function forwardToUnity(jsonMessage) {
-      if (!unityInstance) return;
+      // v0.4.2: In SDK-only mode, skip Unity forwarding (room/connection still works)
+      if (isSdkOnlyMode) {
+        log(`SDK-only: skipped forward → ${jsonMessage.substring(0, 60)}...`);
+        sdkOnlyStatus.textContent = `📩 ${new Date().toLocaleTimeString()} — 收到消息（SDK 转发模式）`;
+        return;
+      }
+      if (!unityInstance) {
+        log('Unity not ready, cannot forward');
+        return;
+      }
+      
       try {
+        log(`Forwarding to Unity: ${jsonMessage.substring(0, 100)}...`);
+        
+        // 调用 Unity 的 PartyGameBridge.OnMessageReceived 方法
         unityInstance.SendMessage('PartyGameBridge', 'OnMessageReceived', jsonMessage);
-      } catch (e) {
-        log(`Forward error: ${e.message}`);
+      } catch (error) {
+        log(`Error forwarding to Unity: ${error.message}`);
       }
     }
-
+    
     // ========================================
-    // Unity 加载
+    // Unity WebGL 加载
     // ========================================
     function loadUnity() {
+      // v0.4.2: First check if Build exists before attempting to load
+      fetch(CONFIG.unityLoaderUrl, { method: 'HEAD' })
+        .then(res => {
+          if (!res.ok) throw new Error('Build not found');
+          return loadUnityReal();
+        })
+        .catch(() => {
+          log('Unity Build not found — entering SDK-only mode');
+          isSdkOnlyMode = true;
+          if (sdkOnlyOverlay) sdkOnlyOverlay.classList.add('visible');
+          if (sdkOnlyTitle) sdkOnlyTitle.textContent = 'SDK-Only Mode (Build Missing)';
+          if (sdkOnlySubtitle) sdkOnlySubtitle.innerHTML = 'Unity WebGL Build 未检测到。<br>请先运行 <code>scripts/build-jumpjump-webgl.sh</code> 生成 Build。<br><br>房间创建、Controller 加入、消息转发功能正常。';
+          if (sdkOnlyStatus) sdkOnlyStatus.textContent = '✅ 房间已创建 — SDK 转发模式已启用';
+          if (loadingOverlay) loadingOverlay.classList.add('hidden');
+        });
+    }
+
+    function loadUnityReal() {
       log('Loading Unity WebGL...');
+      
+      // 创建 Unity loader script
       const script = document.createElement('script');
       script.src = CONFIG.unityLoaderUrl;
       script.onload = () => {
-        log('Unity loader loaded');
+        log('Unity loader script loaded');
+        
+        // Unity 配置
         const config = {
-          dataUrl: `${CONFIG.unityBuildUrl}/Build.data`,
-          frameworkUrl: `${CONFIG.unityBuildUrl}/Build.framework.js`,
-          codeUrl: `${CONFIG.unityBuildUrl}/Build.wasm`,
+          dataUrl: `${CONFIG.unityBuildUrl}/WebGLBuild.data`,
+          frameworkUrl: `${CONFIG.unityBuildUrl}/WebGLBuild.framework.js`,
+          codeUrl: `${CONFIG.unityBuildUrl}/WebGLBuild.wasm`,
           streamingAssetsUrl: 'StreamingAssets',
           companyName: 'PartyGame',
           productName: 'Jump Demo',
-          productVersion: '2.0.0',
+          productVersion: '1.0.0',
         };
+        
+        // 创建 Unity 实例
         createUnityInstance(document.querySelector('#unityCanvas'), config, (progress) => {
-          log(`Unity: ${(progress * 100).toFixed(1)}%`);
+          log(`Unity loading: ${(progress * 100).toFixed(1)}%`);
         }).then((instance) => {
-          log('✅ Unity ready');
+          log('✅ Unity instance created');
           unityInstance = instance;
+          isSdkOnlyMode = false;
+          
+          // 设置全局引用（供 jslib 使用）
           window.unityInstance = instance;
+          
+          // Hide the SDK-only overlay if it was showing
+          if (sdkOnlyOverlay) sdkOnlyOverlay.classList.remove('visible');
+          
+          // 隐藏加载界面
           loadingOverlay.classList.add('hidden');
-        }).catch((e) => {
-          log(`Unity failed: ${e.message}`);
-          loadingOverlay.innerHTML = `<div style="text-align:center"><h3>⚠️ Unity 加载失败</h3><p style="margin-top:10px;color:#aaa;font-size:12px;">${e.message}</p><p style="margin-top:10px;color:#aaa;font-size:12px;">请先构建 Unity WebGL 项目到 screen/Build/</p><p style="margin-top:15px;"><button class="room-btn" onclick="document.getElementById('loadingOverlay').classList.add('hidden')">继续（无 Unity）</button></p></div>`;
+          
+        }).catch((error) => {
+          const reason = (typeof error === 'string') ? error : (error.message || error.reason || 'Unknown error');
+          log(`Unity creation failed: ${reason}`);
+          isSdkOnlyMode = true;
+          if (sdkOnlyOverlay) sdkOnlyOverlay.classList.add('visible');
+          if (sdkOnlyTitle) sdkOnlyTitle.textContent = 'SDK-Only Mode (WebGL Init Failed)';
+          if (sdkOnlySubtitle) {
+            const webglSupported = (() => {
+              try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); }
+              catch(e) { return false; }
+            })();
+            let msg = `Unity 初始化失败: <code>${reason}</code><br>`;
+            if (!webglSupported) {
+              msg += '<br>⚠️ <b>此浏览器不支持 WebGL</b>。<br>请使用 Chrome / Edge / Safari 15+。<br>或检查硬件加速是否已启用。';
+            } else {
+              msg += '<br>Build 文件已找到但 Unity canvas 未能初始化。<br>请打开 DevTools Console 查看详细错误。<br>可尝试重新构建: <code>scripts/build-jumpjump-webgl.sh</code>';
+            }
+            msg += '<br><br>房间创建、Controller 加入、消息转发功能正常。';
+            sdkOnlySubtitle.innerHTML = msg;
+          }
+          if (sdkOnlyStatus) sdkOnlyStatus.textContent = '✅ 房间已创建 — SDK 转发模式已启用';
+          if (loadingOverlay) loadingOverlay.classList.add('hidden');
         });
       };
+      
       script.onerror = () => {
-        log('Unity loader not found');
-        loadingOverlay.innerHTML = `<div style="text-align:center"><h3>🎮 无 Unity 构建</h3><p style="margin-top:10px;color:#aaa;font-size:12px;">纯 Web 模式运行（无 Unity 游戏画面）</p><p style="margin-top:15px;"><button class="room-btn" onclick="document.getElementById('loadingOverlay').classList.add('hidden')">继续</button></p></div>`;
+        log('Failed to load Unity loader script');
+        isSdkOnlyMode = true;
+        if (sdkOnlyOverlay) sdkOnlyOverlay.classList.add('visible');
+        if (loadingOverlay) loadingOverlay.classList.add('hidden');
       };
+      
       document.body.appendChild(script);
     }
-
+    
     // ========================================
-    // 全局函数（供 Unity jslib 调用）
+    // 供 Unity jslib 调用的全局函数
     // ========================================
+    
+    /**
+     * Unity 调用此函数发送消息到服务器
+     * 由 PartyGameBridge.jslib 调用
+     */
     window.PartyGameSendToServer = function(jsonMessage) {
-      if (ws && ws.readyState === WebSocket.OPEN) ws.send(jsonMessage);
-    };
-
-    window.PartyGameBroadcast = function(jsonMessage) {
-      if (!ws || ws.readyState !== WebSocket.OPEN) return;
-      try {
-        const message = JSON.parse(jsonMessage);
-        log(`Broadcast: ${message.type}`);
-      } catch (e) {}
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        log('WebSocket not connected, cannot send');
+        return;
+      }
+      
+      log(`Unity → Server: ${jsonMessage.substring(0, 100)}...`);
       ws.send(jsonMessage);
     };
-
+    
+    /**
+     * Unity 广播消息（由 PartyGameBridge.jslib 调用）
+     * 日志埋点：[Screen] Broadcast to server
+     */
+    window.PartyGameBroadcast = function(jsonMessage) {
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        log('WebSocket not connected, cannot broadcast');
+        return;
+      }
+      
+      // 日志埋点：[Screen] Broadcast to server
+      log(`[Screen] Broadcast to server: ${jsonMessage.substring(0, 100)}...`);
+      
+      // 验证消息格式
+      try {
+        const message = JSON.parse(jsonMessage);
+        
+        // 验证：消息内容是否是 { event: "broadcast", type: "state.score_update", scores: { "0": 1 } }
+        if (message.event === 'broadcast' && message.type === 'state.score_update') {
+          log(`[Screen] ✓ Valid broadcast message: event=${message.event}, type=${message.type}`);
+          log(`[Screen] ✓ Scores: ${message.data}`);
+        } else {
+          log(`[Screen] ⚠ Invalid broadcast message: ${jsonMessage}`);
+        }
+      } catch (e) {
+        log(`[Screen] Error parsing broadcast message: ${e.message}`);
+      }
+      
+      // 发送消息到服务器
+      ws.send(jsonMessage);
+    };
+    
+    /**
+     * 设置 Unity 实例（供 jslib 使用）
+     */
+    window.PartyGameSetUnityInstance = function(instance) {
+      log('Unity instance set');
+      window.unityInstance = instance;
+    };
+    
     // ========================================
     // 初始化
     // ========================================
     document.addEventListener('DOMContentLoaded', () => {
-      log('Starting...');
+      log('DOM loaded, starting...');
+
+      // v0.4.2: Handle orientation / resize (screen is on big displays but may be tablet)
+      window.addEventListener('orientationchange', () => {
+        setTimeout(() => log(`Orientation: ${window.orientation}, ${window.innerWidth}x${window.innerHeight}`), 300);
+      });
+
       connectWebSocket();
     });
+    
+    // ========================================
+    // 关闭房间 (v0.2.1)
+    // ========================================
+    function closeRoom() {
+      if (ws && ws.readyState === WebSocket.OPEN && currentRoomId) {
+        ws.send(JSON.stringify({ event: 'close_room' }));
+        log('Sent close_room request');
+      }
+    }
 
+    function handleRoomClosed(message) {
+      const { reason, roomId } = message;
+      const reasonText = reason === 'host_closed' ? '主持人关闭了房间' : '主机断开连接';
+      log(`Room closed: ${reasonText} (${roomId})`);
+      document.getElementById('closeRoomBtn').style.display = 'none';
+      // Disable input forwarding since room is closed
+      if (unityInstance) {
+        forwardToUnity(JSON.stringify({ event: 'room_closed', reason }));
+      }
+    }
+
+    // 页面关闭时清理
     window.addEventListener('beforeunload', () => {
       if (ws) ws.close();
       if (unityInstance) unityInstance.Quit();
     });
+    
   </script>
 </body>
 </html>

@@ -4,550 +4,360 @@ const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
 const crypto = require('crypto');
 
+// v0.3.0: Structured logging + metrics + error codes
+const log = require('./logger');
+const metrics = require('./metrics');
+const { ErrorCode, sendErrorCode } = require('./errors');
+
+// v0.3.1: Store abstraction (MemoryStore or RedisStore)
+let store;
+const storeModule = require('./store');
+
+// v0.3.4: Admin API
+const { createAdminRouter } = require('./admin');
+
 const app = express();
+// v0.4.2: Trust X-Forwarded-Proto from reverse proxy (nginx/ALB) for correct scheme detection
+app.set('trust proxy', 1);
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-// ========== 配置 ==========
-const CONFIG = {
-  MAX_PLAYERS: 8,            // 每个房间最大玩家数
-  RECONNECT_TIMEOUT: 30000,   // 重连令牌有效时间 30s
-  ROOM_DESTROY_DELAY: 10000,  // screen 断开后房间销毁延迟 10s
-  HEARTBEAT_INTERVAL: 30000, // 心跳间隔 30s
-  PLAYER_INACTIVE_TIMEOUT: 120000, // 玩家无操作超时 120s
-};
+// ========== v0.3.0: Observability endpoints ==========
+app.get('/__metrics', (req, res) => {
+  res.type('text/plain');
+  res.send(metrics.prometheusText());
+});
 
-// ========== 静态文件服务 ==========
+// ========== Version (v0.4.1: read from package.json, fallback to env) ==========
+const VERSION = process.env.APP_VERSION || require('../package.json').version || 'dev';
+
+app.get('/__health', (req, res) => {
+  res.json({ status: 'ok', version: VERSION, uptime: process.uptime(), ...metrics.jsonSummary() });
+});
+
+// ========== Static file serving ==========
 app.use('/screen', express.static(__dirname + '/../screen'));
 app.use('/controller', express.static(__dirname + '/../controller'));
-app.use('/templates/quiz', express.static(__dirname + '/../templates/quiz-game'));
-app.use('/templates/unity', express.static(__dirname + '/../templates/unity-webgl'));
 
-// ========== 数据模型 ==========
-const rooms = new Map();         // roomId -> roomObject
-const reconnectTokens = new Map(); // token -> { roomId, playerIndex, playerName, expiresAt }
+// ========== Constants ==========
+const RECONNECT_TIMEOUT = 10 * 1000;
 
-// ========== 消息类型常量 ==========
 const MSG_TYPE = {
-  CREATE_ROOM: 'create_room',
-  ROOM_CREATED: 'room_created',
-  JOIN_ROOM: 'join_room',
-  REJOIN_ROOM: 'rejoin_room',
-  ROOM_JOINED: 'room_joined',
-  ROOM_NOT_FOUND: 'room_not_FOUND',
-  ROOM_DESTROYED: 'room_destroyed',
-  ROOM_DESTROY_COUNTDOWN: 'room_destroy_countdown',
-  ROOM_DESTROY_CANCELLED: 'room_destroy_cancelled',
-  PLAYER_JOINED: 'player_joined',
-  PLAYER_LEFT: 'player_left',
-  PLAYER_REJECTED: 'player_rejected',
-  GAME_MESSAGE: 'game_message',
-  BROADCAST: 'broadcast',
+  CREATE_ROOM: 'create_room', ROOM_CREATED: 'room_created',
+  JOIN_ROOM: 'join_room', ROOM_JOINED: 'room_joined',
+  ROOM_NOT_FOUND: 'room_not_found', ROOM_FULL: 'room_full',
+  PLAYER_JOINED: 'player_joined', PLAYER_LEFT: 'player_left',
+  PLAYERS_CHANGED: 'players.changed',
+  RECONNECT: 'reconnect', RECONNECTED: 'reconnected', RECONNECT_FAILED: 'reconnect_failed',
+  GAME_MESSAGE: 'game_message', BROADCAST: 'broadcast',
   SCREEN_READY: 'screen_ready',
-  DESTROY_ROOM: 'destroy_room',
-  PING: 'ping',
-  PONG: 'pong',
+  CLOSE_ROOM: 'close_room', ROOM_CLOSED: 'room_closed',
 };
 
-// ========== WebSocket 连接处理 ==========
-wss.on('connection', (ws, req) => {
+// ========== v0.3.1: Active WS connections (for broadcast to room controllers) ==========
+// Map: ws.id → ws (only active controllers in this process)
+const activeSockets = new Map();
+
+// ========== WebSocket connection ==========
+wss.on('connection', (ws) => {
   ws.id = uuidv4();
   ws.data = {};
-  ws.isAlive = true;
-  ws.lastActivity = Date.now();
-
-  console.log(`[${ts()}] Client connected: ${ws.id}`);
+  activeSockets.set(ws.id, ws);
+  metrics.increment('wsConnections', 1);
+  log.info('connected', { wsId: ws.id });
 
   ws.on('message', (data) => {
-    ws.lastActivity = Date.now();
-    try {
-      const message = JSON.parse(data);
-      handleMessage(ws, message);
-    } catch (error) {
-      console.error(`[${ws.id}] Invalid message:`, error);
-      sendError(ws, 'Invalid JSON');
+    metrics.trackMessage();
+    try { handleMessage(ws, JSON.parse(data)); }
+    catch (e) {
+      metrics.trackError(ErrorCode.CONN_INVALID_JSON.code);
+      log.error('Invalid JSON', { wsId: ws.id, error: e.message });
+      sendErrorCode(ws, ErrorCode.CONN_INVALID_JSON);
     }
   });
 
-  ws.on('close', () => {
-    handleDisconnect(ws);
-  });
-
-  ws.on('pong', () => {
-    ws.isAlive = true;
+  ws.on('close', async () => {
+    metrics.increment('wsDisconnections', 1);
+    activeSockets.delete(ws.id);
+    // v0.4.1: Catch disconnect errors to prevent unhandled rejections (BUG-002)
+    try { await handleDisconnect(ws); }
+    catch (e) { log.error('handleDisconnect failed', { wsId: ws.id, error: e.message }); }
   });
 });
 
-// ========== 心跳检测 ==========
-const heartbeat = setInterval(() => {
-  wss.clients.forEach(ws => {
-    if (!ws.isAlive) return ws.terminate();
-    ws.isAlive = false;
-    ws.ping();
-  });
-}, CONFIG.HEARTBEAT_INTERVAL);
-
-server.on('close', () => clearInterval(heartbeat));
-
-// ========== 消息路由 ==========
+// ========== Message routing ==========
 function handleMessage(ws, message) {
+  const t0 = Date.now();  // v0.3.3
   const eventType = message.event || message.type;
-  console.log(`[${ws.id}] ${eventType}:`, JSON.stringify(message).substring(0, 200));
+  log.info(eventType, { wsId: ws.id, roomId: ws.data.roomId, playerIndex: ws.data.playerIndex, type: message.type });
 
   switch (eventType) {
-    case MSG_TYPE.CREATE_ROOM:
-      handleCreateRoom(ws, message);
-      break;
-    case MSG_TYPE.JOIN_ROOM:
-      handleJoinRoom(ws, message);
-      break;
-    case MSG_TYPE.REJOIN_ROOM:
-      handleRejoinRoom(ws, message);
-      break;
-    case MSG_TYPE.GAME_MESSAGE:
-      handleGameMessage(ws, message);
-      break;
-    case MSG_TYPE.BROADCAST:
-      handleBroadcast(ws, message);
-      break;
-    case MSG_TYPE.DESTROY_ROOM:
-      handleDestroyRoom(ws, message);
-      break;
-    case MSG_TYPE.SCREEN_READY:
-      handleScreenReady(ws);
-      break;
-    case MSG_TYPE.PING:
-      ws.send(JSON.stringify({ event: MSG_TYPE.PONG }));
-      break;
-    default:
-      console.warn(`[${ws.id}] Unknown message type: ${eventType}`);
+    case MSG_TYPE.CREATE_ROOM:  handleCreateRoom(ws, message); break;
+    case MSG_TYPE.JOIN_ROOM:    handleJoinRoom(ws, message); break;
+    case MSG_TYPE.CLOSE_ROOM:   handleCloseRoom(ws); break;
+    case MSG_TYPE.GAME_MESSAGE: handleGameMessage(ws, message); break;
+    case MSG_TYPE.BROADCAST:    handleBroadcast(ws, message); break;
+    case MSG_TYPE.SCREEN_READY: handleScreenReady(ws); break;
+    case MSG_TYPE.RECONNECT:    handleReconnect(ws, message); break;
+    default: log.warn('unknown_msg', { wsId: ws.id, eventType });
   }
+
+  // v0.3.3: track event processing duration
+  metrics.trackEventDuration(eventType, Date.now() - t0);
 }
 
-// ========== 房间管理 ==========
-
-function handleCreateRoom(ws, message) {
-  if (ws.data.role === 'screen') {
-    sendError(ws, 'Screen already in a room');
-    return;
+// ========== Helpers ==========
+function broadcastToControllers(roomId, message) {
+  let count = 0;
+  for (const [wsId, ws] of activeSockets) {
+    if (ws.data.role === 'controller' && ws.data.roomId === roomId && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(message));
+      count++;
+    }
   }
+  if (count > 0) metrics.increment('messagesSent', count);
+  return count;
+}
+
+async function sendToScreen(roomId, message) {
+  for (const [wsId, ws] of activeSockets) {
+    if (ws.data.role === 'screen' && ws.data.roomId === roomId && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(message));
+      return true;
+    }
+  }
+  return false;
+}
+
+async function sendToSocketById(socketId, message) {
+  const ws = activeSockets.get(socketId);
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(message));
+    return true;
+  }
+  return false;
+}
+
+// ========== Room management ==========
+async function handleCreateRoom(ws, message) {
+  if (ws.data.role === 'screen') { sendErrorCode(ws, ErrorCode.ROLE_ALREADY_SCREEN); return; }
 
   const roomId = crypto.randomBytes(3).toString('hex').toUpperCase();
-  const room = {
-    roomId,
-    screenSocket: ws,
-    controllers: new Map(),
-    nextPlayerIndex: 0,
-    maxPlayers: message.maxPlayers || CONFIG.MAX_PLAYERS,
-    createdAt: Date.now(),
-    destroyTimer: null,
-  };
+  const maxPlayers = Math.max(1, Math.min(parseInt(message.maxPlayers) || 4, 16));
+  const reconnectSecret = crypto.randomBytes(16).toString('hex');
 
-  rooms.set(roomId, room);
+  await store.createRoom({
+    roomId, screenSocketId: ws.id, maxPlayers, reconnectSecret,
+  });
+
+  metrics.increment('roomsCreated', 1);
   ws.data = { role: 'screen', roomId };
 
-  const host = getServerHost();
-  const controllerUrl = `http://${host}/controller?room=${roomId}`;
-  const qrUrl = `/api/qr?data=${encodeURIComponent(controllerUrl)}&size=200`;
+  const qrUrl = `http://${getServerHost()}/controller?room=${roomId}`;
+  ws.send(JSON.stringify({ event: MSG_TYPE.ROOM_CREATED, roomId, qrUrl, maxPlayers, reconnectSecret }));
 
-  ws.send(JSON.stringify({
-    event: MSG_TYPE.ROOM_CREATED,
-    roomId,
-    controllerUrl,
-    qrUrl,
-    maxPlayers: room.maxPlayers,
-  }));
-
-  console.log(`[${ws.id}] Room created: ${roomId} (max ${room.maxPlayers} players)`);
+  log.info('room_created', { wsId: ws.id, roomId, maxPlayers });
 }
 
-function getServerHost() {
-  return process.env.HOST || `localhost:${PORT}`;
-}
-
-// ========== 加入房间 ==========
-
-function handleJoinRoom(ws, message) {
-  const { roomId, playerName } = message;
-
-  if (!roomId || !rooms.has(roomId)) {
+async function handleJoinRoom(ws, message) {
+  const { roomId } = message;
+  if (!roomId || !(await store.roomExists(roomId))) {
     ws.send(JSON.stringify({ event: MSG_TYPE.ROOM_NOT_FOUND, roomId }));
     return;
   }
 
-  const room = rooms.get(roomId);
-
-  // 最大人数检查
-  if (room.controllers.size >= room.maxPlayers) {
-    ws.send(JSON.stringify({
-      event: MSG_TYPE.PLAYER_REJECTED,
-      reason: `Room is full (${room.maxPlayers} players max)`,
-    }));
+  const room = await store.getRoom(roomId);
+  if (ws.data.role === 'controller' && ws.data.roomId === roomId) {
+    sendErrorCode(ws, ErrorCode.ROOM_ALREADY_JOINED);
     return;
   }
 
-  // 分配 playerIndex
-  const playerIndex = room.nextPlayerIndex++;
-  const name = playerName || `Player ${playerIndex}`;
+  const playerCount = await store.getPlayerCount(roomId);
+  if (playerCount >= room.maxPlayers) {
+    ws.send(JSON.stringify({ event: MSG_TYPE.ROOM_FULL, roomId, maxPlayers: room.maxPlayers }));
+    return;
+  }
 
-  ws.data = { role: 'controller', roomId, playerIndex, playerName: name };
-  room.controllers.set(ws, { playerIndex, playerName: name });
+  const playerIndex = await store.allocatePlayerIndex(roomId, room.maxPlayers);
+  if (playerIndex === null) {
+    ws.send(JSON.stringify({ event: MSG_TYPE.ROOM_FULL, roomId, maxPlayers: room.maxPlayers }));
+    return;
+  }
 
-  // 生成重连令牌
-  const reconnectToken = crypto.randomBytes(16).toString('hex');
-  reconnectTokens.set(reconnectToken, {
-    roomId,
-    playerIndex,
-    playerName: name,
-    expiresAt: Date.now() + CONFIG.RECONNECT_TIMEOUT,
-  });
+  const playerName = message.playerName || `Player ${playerIndex}`;
 
-  // 通知 controller
-  ws.send(JSON.stringify({
-    event: MSG_TYPE.ROOM_JOINED,
-    roomId,
-    playerIndex,
-    playerName: name,
-    playerCount: room.controllers.size,
-    reconnectToken,
-    maxPlayers: room.maxPlayers,
-  }));
+  ws.data = { role: 'controller', roomId, playerIndex };
+  metrics.increment('controllersActive', 1);  // v0.3.3
+  await store.setPlayerSocket(roomId, playerIndex, ws.id);
+  await store.addPlayer(roomId, playerIndex, { playerName, socketId: ws.id });
 
-  // 通知 screen
-  notifyScreen(room, {
-    event: MSG_TYPE.PLAYER_JOINED,
-    playerIndex,
-    playerName: name,
-    playerCount: room.controllers.size,
-    maxPlayers: room.maxPlayers,
-  });
+  // v0.3.1: store.setReconnectToken generates and returns the token
+  const reconnectToken = await store.setReconnectToken(roomId, playerIndex, { playerName, socketId: ws.id }, 10);
 
-  // 取消房间销毁计时器（如果有的话）
-  cancelRoomDestroyTimer(room);
+  const players = await store.getPlayers(roomId);
 
-  console.log(`[${ws.id}] Player ${playerIndex} ("${name}") joined room ${roomId}`);
+  ws.send(JSON.stringify({ event: MSG_TYPE.ROOM_JOINED, roomId, playerIndex, playerName, maxPlayers: room.maxPlayers, players, reconnectToken }));
+  await sendToScreen(roomId, { event: MSG_TYPE.PLAYER_JOINED, playerIndex, playerName, playerCount: playerCount + 1, players });
+  broadcastToControllers(roomId, { event: MSG_TYPE.PLAYERS_CHANGED, players });
+
+  log.info('player_joined', { wsId: ws.id, roomId, playerIndex, playerName, count: playerCount + 1, max: room.maxPlayers });
 }
 
-// ========== 断线重连 ==========
-
-function handleRejoinRoom(ws, message) {
-  const { reconnectToken } = message;
-
-  if (!reconnectToken || !reconnectTokens.has(reconnectToken)) {
-    ws.send(JSON.stringify({
-      event: MSG_TYPE.PLAYER_REJECTED,
-      reason: 'Invalid or expired reconnect token',
-    }));
-    return;
-  }
-
-  const token = reconnectTokens.get(reconnectToken);
-
-  // 检查令牌是否过期
-  if (Date.now() > token.expiresAt) {
-    reconnectTokens.delete(reconnectToken);
-    ws.send(JSON.stringify({
-      event: MSG_TYPE.PLAYER_REJECTED,
-      reason: 'Reconnect token expired',
-    }));
-    return;
-  }
-
-  // 检查房间是否还存在
-  if (!rooms.has(token.roomId)) {
-    reconnectTokens.delete(reconnectToken);
-    ws.send(JSON.stringify({
-      event: MSG_TYPE.PLAYER_REJECTED,
-      reason: 'Room no longer exists',
-    }));
-    return;
-  }
-
-  const room = rooms.get(token.roomId);
-
-  // 删除旧令牌，生成新令牌
-  reconnectTokens.delete(reconnectToken);
-  const newToken = crypto.randomBytes(16).toString('hex');
-  reconnectTokens.set(newToken, {
-    roomId: token.roomId,
-    playerIndex: token.playerIndex,
-    playerName: token.playerName,
-    expiresAt: Date.now() + CONFIG.RECONNECT_TIMEOUT,
-  });
-
-  // 恢复连接
-  ws.data = {
-    role: 'controller',
-    roomId: token.roomId,
-    playerIndex: token.playerIndex,
-    playerName: token.playerName,
-  };
-  room.controllers.set(ws, {
-    playerIndex: token.playerIndex,
-    playerName: token.playerName,
-  });
-
-  ws.send(JSON.stringify({
-    event: MSG_TYPE.ROOM_JOINED,
-    roomId: token.roomId,
-    playerIndex: token.playerIndex,
-    playerName: token.playerName,
-    playerCount: room.controllers.size,
-    reconnectToken: newToken,
-    maxPlayers: room.maxPlayers,
-    rejoined: true,
-  }));
-
-  // 通知 screen
-  notifyScreen(room, {
-    event: MSG_TYPE.PLAYER_JOINED,
-    playerIndex: token.playerIndex,
-    playerName: token.playerName,
-    playerCount: room.controllers.size,
-    maxPlayers: room.maxPlayers,
-    rejoined: true,
-  });
-
-  // 取消房间销毁计时器
-  cancelRoomDestroyTimer(room);
-
-  console.log(`[${ws.id}] Player ${token.playerIndex} rejoined room ${token.roomId}`);
-}
-
-// ========== 游戏消息处理 ==========
-
-function handleGameMessage(ws, message) {
-  if (ws.data.role !== 'controller') {
-    sendError(ws, 'Only controllers can send game_message');
-    return;
-  }
-
+// ========== Game message ==========
+async function handleGameMessage(ws, message) {
+  if (ws.data.role !== 'controller') { sendErrorCode(ws, ErrorCode.ROLE_NOT_CONTROLLER); return; }
   const { roomId, playerIndex } = ws.data;
-  if (!roomId || !rooms.has(roomId)) {
-    sendError(ws, 'Not in a room');
-    return;
-  }
+  if (!roomId) { sendErrorCode(ws, ErrorCode.ROLE_NO_ROOM); return; }
+  if (!(await store.roomExists(roomId))) { sendErrorCode(ws, ErrorCode.ROOM_NOT_FOUND); return; }
 
-  const room = rooms.get(roomId);
-
-  // 安全：删除客户端伪造的 playerIndex
+  // ⚠️ Iron law: strip fake playerIndex from controller body
   if (message.playerIndex !== undefined) {
-    console.warn(`[${ws.id}] Controller tried to send playerIndex:${message.playerIndex}, ignoring`);
+    log.warn('fake_playerIndex', { wsId: ws.id, fake: message.playerIndex });
+    metrics.trackError(ErrorCode.INPUT_FAKE_PLAYERINDEX.code);
     delete message.playerIndex;
   }
-
-  // 注入真实的 playerIndex
+  // ⚠️ Iron law: inject real playerIndex from session
   message.playerIndex = playerIndex;
 
-  // 转发给 screen/Unity
-  notifyScreen(room, message);
-  console.log(`[${ws.id}] Forwarded game_message to screen: ${message.type}`);
-}
-
-// ========== 广播消息处理 ==========
-
-function handleBroadcast(ws, message) {
-  if (ws.data.role !== 'screen') {
-    sendError(ws, 'Only screen can send broadcasts');
-    return;
-  }
-
-  const { roomId } = ws.data;
-  if (!roomId || !rooms.has(roomId)) {
-    sendError(ws, 'Room not found');
-    return;
-  }
-
-  const room = rooms.get(roomId);
-  let count = 0;
-
-  room.controllers.forEach((info, controllerWs) => {
-    if (controllerWs.readyState === WebSocket.OPEN) {
-      controllerWs.send(JSON.stringify(message));
-      count++;
-    }
-  });
-
-  console.log(`[Server] Broadcast to ${count} controllers in room ${roomId}: ${message.type}`);
-}
-
-// ========== 房间销毁 ==========
-
-function handleDestroyRoom(ws, message) {
-  const { roomId } = ws.data;
-  if (ws.data.role !== 'screen' || !roomId || !rooms.has(roomId)) {
-    sendError(ws, 'Only screen can destroy room');
-    return;
-  }
-
-  destroyRoom(roomId, 'screen requested');
-}
-
-function scheduleRoomDestroy(room) {
-  if (room.destroyTimer) return;
-
-  const delay = CONFIG.ROOM_DESTROY_DELAY;
-  const remaining = delay / 1000;
-
-  // 通知所有客户端倒计时
-  notifyScreen(room, {
-    event: MSG_TYPE.ROOM_DESTROY_COUNTDOWN,
-    roomId: room.roomId,
-    seconds: remaining,
-  });
-
-  broadcastToControllers(room, {
-    event: MSG_TYPE.ROOM_DESTROY_COUNTDOWN,
-    roomId: room.roomId,
-    seconds: remaining,
-  });
-
-  // 5秒时再提醒一次
-  setTimeout(() => {
-    if (rooms.has(room.roomId) && room.screenSocket !== ws_placeholder()) {
-      notifyScreen(room, {
-        event: MSG_TYPE.ROOM_DESTROY_COUNTDOWN,
-        roomId: room.roomId,
-        seconds: 5,
-      });
-      broadcastToControllers(room, {
-        event: MSG_TYPE.ROOM_DESTROY_COUNTDOWN,
-        roomId: room.roomId,
-        seconds: 5,
-      });
-    }
-  }, delay - 5000);
-
-  room.destroyTimer = setTimeout(() => {
-    destroyRoom(room.roomId, 'screen disconnected timeout');
-  }, delay);
-
-  console.log(`Room ${room.roomId} will be destroyed in ${remaining}s`);
-}
-
-function cancelRoomDestroyTimer(room) {
-  if (room.destroyTimer) {
-    clearTimeout(room.destroyTimer);
-    room.destroyTimer = null;
-    console.log(`Room ${room.roomId} destroy timer cancelled`);
-  }
-}
-
-function destroyRoom(roomId, reason) {
-  const room = rooms.get(roomId);
+  // v0.3.1: Screen socket might be on another instance.
+  // We broadcast locally; cross-instance needs Redis Pub/Sub (not in v0.3.1).
+  const room = await store.getRoom(roomId);
   if (!room) return;
-
-  rooms.delete(roomId);
-
-  // 清理重连令牌
-  for (const [token, data] of reconnectTokens) {
-    if (data.roomId === roomId) reconnectTokens.delete(token);
-  }
-
-  // 通知所有 controllers
-  broadcastToControllers(room, {
-    event: MSG_TYPE.ROOM_DESTROYED,
-    roomId,
-    reason,
-  });
-
-  console.log(`[${ts()}] Room ${roomId} destroyed: ${reason}`);
+  await sendToSocketById(room.screenSocketId, message);
 }
 
-// ========== 断开连接处理 ==========
+// ========== Broadcast ==========
+async function handleBroadcast(ws, message) {
+  if (ws.data.role !== 'screen') { sendErrorCode(ws, ErrorCode.ROLE_NOT_SCREEN); return; }
+  const { roomId } = ws.data;
+  if (!roomId || !(await store.roomExists(roomId))) { sendErrorCode(ws, ErrorCode.ROLE_NO_ROOM); return; }
+  const count = broadcastToControllers(roomId, message);
+  log.info('broadcast', { roomId, type: message.type, count });
+}
 
-function handleDisconnect(ws) {
+// ========== Screen ready ==========
+function handleScreenReady(ws) { if (!ws.data.roomId) handleCreateRoom(ws, {}); }
+
+// ========== Close room ==========
+async function handleCloseRoom(ws) {
+  if (ws.data.role !== 'screen') { sendErrorCode(ws, ErrorCode.ROLE_NOT_SCREEN_CLOSE); return; }
+  const { roomId } = ws.data;
+  if (!roomId || !(await store.roomExists(roomId))) { sendErrorCode(ws, ErrorCode.ROLE_NO_ROOM); return; }
+  broadcastToControllers(roomId, { event: MSG_TYPE.ROOM_CLOSED, roomId, reason: 'host_closed' });
+  await store.deleteRoom(roomId);
+  metrics.increment('roomsDestroyed', 1);
+  log.info('room_closed', { wsId: ws.id, roomId, reason: 'host_closed' });
+}
+
+// ========== Disconnect ==========
+// v0.4.1: Reconnect TTL — player removed from room after expiry (BUG-001)
+const RECONNECT_TTL = parseInt(process.env.RECONNECT_TTL || '10', 10);
+
+async function handleDisconnect(ws) {
   const { role, roomId, playerIndex } = ws.data;
-  console.log(`[${ws.id}] Client disconnected (role: ${role}, room: ${roomId})`);
+  if (!roomId) return;
+  if (!(await store.roomExists(roomId))) return;
 
-  if (!roomId || !rooms.has(roomId)) return;
-
-  const room = rooms.get(roomId);
+  log.info('disconnected', { wsId: ws.id, role, roomId, playerIndex });
 
   if (role === 'screen') {
-    room.screenSocket = null;
+    broadcastToControllers(roomId, { event: MSG_TYPE.ROOM_CLOSED, roomId, reason: 'host_disconnected' });
+    await store.deleteRoom(roomId);
+    metrics.increment('roomsDestroyed', 1);
+    log.info('room_destroyed', { wsId: ws.id, roomId, reason: 'host_disconnected' });
+  } else if (role === 'controller' && playerIndex !== undefined) {
+    // v0.3.3: decrement controller count
+    metrics.increment('controllersActive', -1);
 
-    // 如果还有玩家，延迟销毁；否则立即销毁
-    if (room.controllers.size > 0) {
-      scheduleRoomDestroy(room);
-    } else {
-      destroyRoom(roomId, 'screen disconnected');
-    }
+    // v0.3.1: Don't remove player from store — keep for reconnect window.
+    // Broadcast player_left + players.changed immediately for game logic.
+    const oldSocketId = ws.id;
+    await store.deletePlayerSocket(ws.id);
+    const players = await store.getPlayers(roomId);
+    await sendToScreen(roomId, { event: MSG_TYPE.PLAYER_LEFT, playerIndex, playerCount: players.length, players });
+    broadcastToControllers(roomId, { event: MSG_TYPE.PLAYERS_CHANGED, players });
+    log.info('player_disconnected', { wsId: ws.id, roomId, playerIndex });
 
-  } else if (role === 'controller') {
-    room.controllers.delete(ws);
-
-    notifyScreen(room, {
-      event: MSG_TYPE.PLAYER_LEFT,
-      playerIndex,
-      playerCount: room.controllers.size,
-    });
-
-    // 如果没有玩家了，检查是否需要销毁
-    if (room.controllers.size === 0 && !room.screenSocket) {
-      destroyRoom(roomId, 'no players left');
-    }
-
-    console.log(`[${ws.id}] Player ${playerIndex} left room ${roomId}`);
+    // v0.4.1: Ghost player cleanup (BUG-001). After RECONNECT_TTL, if
+    // the player hasn't reconnected (socketId unchanged), remove them from room.
+    setTimeout(async () => {
+      try {
+        const cur = await store.getPlayers(roomId);
+        const p = cur.find(p => p.playerIndex === playerIndex);
+        if (p && p.socketId === oldSocketId) {
+          await store.removePlayer(roomId, playerIndex);
+          const remaining = await store.getPlayers(roomId);
+          broadcastToControllers(roomId, { event: MSG_TYPE.PLAYERS_CHANGED, players: remaining });
+          log.info('ghost_cleaned', { roomId, playerIndex, reason: 'reconnect_ttl_expired' });
+        }
+      } catch (e) { log.error('ghost_cleanup_failed', { roomId, playerIndex, error: e.message }); }
+    }, RECONNECT_TTL * 1000);
   }
 }
 
-// ========== 工具函数 ==========
+// ========== Reconnect ==========
+async function handleReconnect(ws, message) {
+  const { reconnectToken, roomId } = message;
+  if (!reconnectToken || !roomId) { ws.send(JSON.stringify({ event: MSG_TYPE.RECONNECT_FAILED, reason: 'missing token or roomId' })); return; }
+  if (!(await store.roomExists(roomId))) { ws.send(JSON.stringify({ event: MSG_TYPE.RECONNECT_FAILED, reason: 'room not found' })); return; }
 
-function notifyScreen(room, message) {
-  if (room.screenSocket && room.screenSocket.readyState === WebSocket.OPEN) {
-    room.screenSocket.send(JSON.stringify(message));
+  const tokenInfo = await store.getReconnectToken(roomId, reconnectToken);
+  if (!tokenInfo) {
+    ws.send(JSON.stringify({ event: MSG_TYPE.RECONNECT_FAILED, reason: 'invalid or expired token' }));
+    metrics.trackReconnect(false);
+    return;
   }
+
+  const { playerIndex, playerName } = tokenInfo;
+  ws.data = { role: 'controller', roomId, playerIndex };
+  await store.setPlayerSocket(roomId, playerIndex, ws.id);
+
+  // Update player's socketId in store
+  await store.addPlayer(roomId, playerIndex, { playerName, socketId: ws.id });
+  await store.deleteReconnectToken(roomId, reconnectToken);
+  const players = await store.getPlayers(roomId);
+  metrics.trackReconnect(true);
+
+  ws.send(JSON.stringify({ event: MSG_TYPE.RECONNECTED, playerIndex, playerName, roomId, players }));
+  await sendToScreen(roomId, { event: 'player_reconnected', playerIndex, playerName, playerCount: players.length });
+  log.info('reconnected', { wsId: ws.id, roomId, playerIndex, playerName });
 }
 
-function broadcastToControllers(room, message) {
-  room.controllers.forEach((info, ws) => {
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify(message));
-    }
-  });
-}
+// ========== Utilities ==========
+function sendError(ws, msg) { if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ event: 'error', message: msg })); }
+function getServerHost() { return process.env.SERVER_HOST || 'localhost:3000'; }
 
-function sendError(ws, errorMsg) {
-  if (ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ event: 'error', message: errorMsg }));
-  }
-}
-
-function ts() {
-  return new Date().toISOString().split('T')[1].split('.')[0];
-}
-
-function ws_placeholder() { return null; }
-
-// ========== 清理过期重连令牌 ==========
-setInterval(() => {
-  const now = Date.now();
-  for (const [token, data] of reconnectTokens) {
-    if (now > data.expiresAt) {
-      reconnectTokens.delete(token);
-    }
-  }
-}, 60000);
-
-// ========== 二维码 API ==========
-app.get('/api/qr', (req, res) => {
-  const { data, size = 200 } = req.query;
-  if (!data) {
-    return res.status(400).json({ error: 'missing data param' });
-  }
-  // 使用 Google Charts QR API（无需额外依赖）
-  res.redirect(`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(data)}&bgcolor=ffffff&color=333333`);
-});
-
-// ========== 启动服务器 ==========
+// ========== Startup ==========
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`\n🎮 Party Game SDK v0.2 Server`);
-  console.log(`📡 Running on http://localhost:${PORT}`);
-  console.log(`📺 Screen:  http://localhost:${PORT}/screen`);
-  console.log(`🎮 Controller: http://localhost:${PORT}/controller`);
-  console.log(`👥 Max players per room: ${CONFIG.MAX_PLAYERS}`);
-  console.log(`🔄 Reconnect timeout: ${CONFIG.RECONNECT_TIMEOUT / 1000}s`);
-  console.log(`💣 Room destroy delay: ${CONFIG.ROOM_DESTROY_DELAY / 1000}s\n`);
-});
+
+(async () => {
+  store = await storeModule.createStore();
+  // v0.3.3: Sync room count for metrics (MemoryStore getRoomCount is sync, Redis is async)
+  if (store.constructor.name === 'MemoryStore') {
+    metrics.setRoomCountFn(() => store.rooms.size);
+  } else {
+    metrics.setRoomCountFn(() => store.getRoomCount().then(n => n, () => 0));
+  }
+
+  // v0.3.4: Admin API (mounted BEFORE static to take priority over index.html)
+  const admin = createAdminRouter({ store, metrics, activeSockets, broadcastToControllers });
+  app.use('/admin', admin.router);
+  // Admin UI static files (catch-all for non-API /admin/* paths)
+  app.use('/admin', express.static(__dirname + '/../admin'));
+
+  server.listen(PORT, () => {
+    log.info('startup', { port: PORT, version: VERSION, store: process.env.STORE_TYPE || 'memory' });
+    // v0.4.1: console.log → logger for JSON compatibility (POLISH-001)
+    // v0.4.2: Add WSS/HTTPS deployment hint
+    log.info('banner', {
+      port: PORT,
+      metrics: `/__metrics`,
+      health: `/__health`,
+      screen: `/screen`,
+      controller: `/controller`,
+      admin: `/admin`,
+      protocol: process.env.USE_TLS === 'true' ? 'wss' : 'ws',
+      hint: process.env.USE_TLS === 'true' ? 'TLS enabled' : 'Use nginx/caddy for HTTPS/WSS in production',
+    });
+  });
+})();
