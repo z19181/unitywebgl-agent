@@ -84,7 +84,40 @@ jobs:
           node-version: '22'
 
       - name: Run secrets check
-        run: node scripts/check-no-secrets.js
+        run: |
+          node scripts/check-no-secrets.js || {
+            echo "=== DEBUG: Secrets check failed, dumping info ==="
+          node -e "
+          const {execSync} = require('child_process');
+          const fs = require('fs');
+          const files = execSync('git ls-files', {encoding:'utf-8'}).trim().split('\n');
+          console.log('Tracked files count:', files.length);
+          const patterns = [
+            /\bsk-[A-Za-z0-9]{20,}\b/,
+            /\bsk-ant-[A-Za-z0-9]{20,}\b/,
+            /API_KEY\s*=\s*[\"']?[A-Za-z0-9_\-]{30,}/,
+            /RAG_DATABASE_URL\s*=\s*postgres:\/\/[^\/]*:[^\/]+@[^\/]+\/[^\/]+/,
+          ];
+          let found = 0;
+          for (const f of files) {
+            try {
+              const c = fs.readFileSync(f, 'utf-8');
+              for (const p of patterns) {
+                const m = c.match(p);
+                if (m) { console.log(f + ': ' + m[0].slice(0,100)); found++; }
+              }
+            } catch(e) {}
+          }
+          if (!found) console.log('No pattern matches found - check FORBIDDEN_TRACKED_FILES logic');
+          // Check forbidden files
+          for (const f of files) {
+            if (/^\.env$|^\.env\.local$|\.env\..+\.local$/.test(f.split('/').pop())) {
+              console.log('FORBIDDEN file tracked:', f);
+            }
+          }
+          "
+            exit 1
+          }
 
   # ── Gate 2: Unit Tests ──────────────────────────────────────────────
   gate_unit_tests:
@@ -113,7 +146,14 @@ jobs:
 
       # Memory-store
       - name: Memory store tests
-        run: node agents/memory-store/test_memory_store.js
+        run: |
+          cd agents/memory-store
+          node test_memory_store.js || {
+            echo "=== DEBUG: Memory store test failed ==="
+            ls -la node_modules/ 2>/dev/null | head -5
+            echo "DATABASE_URL: ${DATABASE_URL:-not set}"
+            exit 1
+          }
 
       - name: Memory runtime integration tests
         run: node agents/memory-store/test_memory_runtime_integration.js
@@ -175,8 +215,15 @@ jobs:
         working-directory: agent-dashboard
 
       - name: Build agent-dashboard
-        run: npm run build
-        working-directory: agent-dashboard
+        run: |
+          cd agent-dashboard
+          npm run build 2>&1 || {
+            echo "=== DEBUG: Dashboard build failed ==="
+            ls -la node_modules/ 2>/dev/null | head -5
+            echo "next.config.js:"
+            cat next.config.js
+            exit 1
+          }
 
   # ── Gate 5: Smoke Tests ─────────────────────────────────────────────
   gate_smoke_tests:
