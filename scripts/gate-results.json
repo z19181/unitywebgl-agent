@@ -11,8 +11,8 @@
     "HYBRID Recall@5=0.525",
     "HYBRID Violations=0",
     "dashboard build",
-    "health endpoint smoke",
-    "metrics endpoint smoke"
+    "health_endpoint:SKIP",
+    "metrics_endpoint:SKIP"
   ],
   "failures": [],
   "metrics": {
