@@ -18,17 +18,8 @@ jobs:
         run: |
           echo "=== Node version ==="
           node --version
-          echo "=== Tracked file count ==="
-          git ls-files | wc -l
-          echo "=== Files with 'sk-' ==="
-          git ls-files | while read f; do
-            if grep -l 'sk-' "$f" 2>/dev/null; then
-              true
-            fi
-          done | head -20
           echo "=== Running check-no-secrets ==="
-          node scripts/check-no-secrets.js 2>&1 || true
-          echo "=== Exit code: $? ==="
+          node scripts/check-no-secrets.js 2>&1
       
       - name: Debug memory store tests
         run: |
@@ -36,7 +27,6 @@ jobs:
           cd agents/memory-store && npm ci 2>&1 | tail -5
           echo "=== Running test ==="
           node test_memory_store.js 2>&1 | tail -20
-          echo "=== Exit code: $? ==="
       
       - name: Debug dashboard build
         run: |
@@ -46,4 +36,3 @@ jobs:
           cat next.config.js
           echo "=== Running build ==="
           npm run build 2>&1 | tail -30
-          echo "=== Exit code: $? ==="
