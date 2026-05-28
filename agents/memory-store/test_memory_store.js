@@ -36,7 +36,7 @@ let passed = 0, failed = 0;
 function assert(c, m) { if (c) { console.log('  ✅ ' + m); passed++; } else { console.log('  ❌ ' + m); failed++; } }
 
 async function initSchema() {
-  try { await pool.query('SELECT 1 FROM agents LIMIT 1'); return; } catch(_) {}
+  try { await pool.query('SELECT 1 FROM agents LIMIT 1'); console.log('  [db] Schema already exists'); return; } catch(e) { console.log('  [db] Schema not found, initializing...', e.message.slice(0,80)); }
   const sql = readFileSync(resolve(process.cwd(), '../../docker/postgres/init-agent-memory.sql'), 'utf8');
   const stmts = []; let depth = 0, buf = '';
   for (let i = 0; i < sql.length; ) {
@@ -346,18 +346,25 @@ async function main() {
   console.log('╔══════════════════════════════════════════════════════╗');
   console.log('║  Memory Store Tests — v1.3.0 Phase B.0             ║');
   console.log('╚══════════════════════════════════════════════════════╝');
+  console.log('  DATABASE_URL:', process.env.DATABASE_URL || '(default)');
 
-  for (const [id, name] of TEST_SCRIPTS) {
-    console.log('\n━━━ ' + pad(id + ': ' + name));
-    const result = await runTest(id, name);
-    if (result.passed) totalPassed += result.passed;
-    if (result.failed) totalFailed += result.failed;
+  try {
+    for (const [id, name] of TEST_SCRIPTS) {
+      console.log('\n━━━ ' + pad(id + ': ' + name));
+      const result = await runTest(id, name);
+      if (result.passed) totalPassed += result.passed;
+      if (result.failed) totalFailed += result.failed;
+    }
+
+    console.log('\n' + '━'.repeat(56));
+    console.log('TOTAL: ' + totalPassed + ' passed / ' + totalFailed + ' failed');
+    console.log(totalFailed === 0 ? '✅ All tests passed!' : '❌ ' + totalFailed + ' test(s) failed');
+    process.exit(totalFailed > 0 ? 1 : 0);
+  } catch (e) {
+    console.error('FATAL:', e.message);
+    console.error(e.stack);
+    process.exit(1);
   }
-
-  console.log('\n' + '━'.repeat(56));
-  console.log('TOTAL: ' + totalPassed + ' passed / ' + totalFailed + ' failed');
-  console.log(totalFailed === 0 ? '✅ All tests passed!' : '❌ ' + totalFailed + ' test(s) failed');
-  process.exit(totalFailed > 0 ? 1 : 0);
 }
 
 await main();
