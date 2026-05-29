@@ -31,8 +31,12 @@ UnityExamples/*/obj/
 [Oo]bj/
 [Bb]uild/
 [Bb]uilds/
+[Bb]uild_*/
 [Ll]ogs/
 MemoryCaptures/
+UnityExamples/*/WebGLBuild/
+UnityExamples/*/Build/
+UnityExamples/*/Build_*/
 # VS / Rider
 *.csproj
 *.sln
