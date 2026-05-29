@@ -196,6 +196,42 @@
       font-size: 12px;
       z-index: 1000;
     }
+
+    #unityAckBar {
+      position: fixed;
+      bottom: calc(40px + var(--safe-bottom));
+      right: calc(10px + var(--safe-right));
+      background: rgba(0,0,0,0.75);
+      color: #51cf66;
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 1000;
+      max-width: min(520px, 40vw);
+      word-break: break-word;
+      border: 1px solid rgba(81, 207, 102, 0.35);
+    }
+
+    #gameStateBanner {
+      position: fixed;
+      top: calc(16px + var(--safe-top));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: none;
+      min-width: 320px;
+      max-width: min(70vw, 640px);
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      color: #d3ffd8;
+      background: rgba(20, 90, 30, 0.92);
+      border: 1px solid rgba(81, 207, 102, 0.55);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      word-break: break-word;
+    }
   </style>
 </head>
 <body>
@@ -237,6 +273,8 @@
   
   <!-- 状态栏 -->
   <div id="statusBar">正在连接服务器...</div>
+  <div id="unityAckBar">Unity ACK: waiting for input...</div>
+  <div id="gameStateBanner">Waiting for players...</div>
   
   <script>
     // ========================================
@@ -267,6 +305,66 @@
     const loadingOverlay = document.getElementById('loadingOverlay');
     const sdkOnlyOverlay = document.getElementById('sdkOnlyOverlay');
     const sdkOnlyStatus = document.getElementById('sdkOnlyStatus');
+    const unityAckBar = document.getElementById('unityAckBar');
+    const gameStateBanner = document.getElementById('gameStateBanner');
+
+    window.__lastUnityAck = null;
+
+    function renderUnityAck(payload) {
+      if (!unityAckBar) return;
+      if (!payload) {
+        unityAckBar.textContent = 'Unity ACK: waiting for input...';
+        return;
+      }
+
+      const type = payload.type || 'unknown';
+      const playerIndex = payload.playerIndex ?? '-';
+      const playerCount = payload.playerCount ?? '-';
+      const state = payload.state || 'unknown';
+      const prefix = payload.received === false ? 'Unity ACK: ERROR' : 'Unity ACK';
+      unityAckBar.textContent = `${prefix}: ${type} player=${playerIndex} players=${playerCount} state=${state}`;
+    }
+
+    function showGameStateBanner(text, kind = 'running') {
+      if (!gameStateBanner) return;
+      gameStateBanner.textContent = text;
+      gameStateBanner.style.display = 'block';
+      if (kind === 'running') {
+        gameStateBanner.style.background = 'rgba(20, 90, 30, 0.92)';
+        gameStateBanner.style.borderColor = 'rgba(81, 207, 102, 0.55)';
+        gameStateBanner.style.color = '#d3ffd8';
+      } else if (kind === 'warn') {
+        gameStateBanner.style.background = 'rgba(120, 80, 20, 0.92)';
+        gameStateBanner.style.borderColor = 'rgba(255, 193, 7, 0.55)';
+        gameStateBanner.style.color = '#fff1c2';
+      } else {
+        gameStateBanner.style.background = 'rgba(20, 20, 20, 0.88)';
+        gameStateBanner.style.borderColor = 'rgba(255,255,255,0.25)';
+        gameStateBanner.style.color = '#f3f3f3';
+      }
+    }
+
+    window.__partyGameUnityAck = function(payload) {
+      let ack = payload;
+      if (typeof payload === 'string') {
+        try {
+          ack = JSON.parse(payload);
+        } catch (error) {
+          ack = {
+            received: false,
+            type: 'parse_error',
+            error: error.message,
+            rawPayload: payload,
+          };
+        }
+      }
+
+      window.__lastUnityAck = ack;
+      document.body.setAttribute('data-unity-ack', 'true');
+      renderUnityAck(ack);
+      console.log('[UnityACK]', ack);
+      log(`Unity ACK: ${ack.type || 'unknown'} player=${ack.playerIndex ?? '-'} players=${ack.playerCount ?? '-'}`);
+    };
     
     // ========================================
     // 日志
@@ -510,10 +608,21 @@
       }
       
       try {
-        log(`Forwarding to Unity: ${jsonMessage.substring(0, 100)}...`);
-        
-        // 调用 Unity 的 PartyGameBridge.OnMessageReceived 方法
-        unityInstance.SendMessage('PartyGameBridge', 'OnMessageReceived', jsonMessage);
+        const targetObject = 'PartyGameBridge';
+        const targetMethod = 'OnPlatformMessage';
+        log(`[Screen] Forwarding to Unity target=${targetObject}.${targetMethod} payload=${jsonMessage.substring(0, 140)}...`);
+
+        try {
+          const parsed = JSON.parse(jsonMessage);
+          const messageType = parsed.type || parsed.event || 'unknown';
+          const playerIndex = parsed.playerIndex ?? '-';
+          showGameStateBanner(`Unity received ${messageType} • P${playerIndex}`, 'running');
+        } catch (parseError) {
+          showGameStateBanner('Unity received input', 'warn');
+        }
+
+        // 调用 Unity 的 PartyGameBridge.OnPlatformMessage 方法
+        unityInstance.SendMessage(targetObject, targetMethod, jsonMessage);
       } catch (error) {
         log(`Error forwarding to Unity: ${error.message}`);
       }
@@ -573,6 +682,7 @@
           
           // Hide the SDK-only overlay if it was showing
           if (sdkOnlyOverlay) sdkOnlyOverlay.classList.remove('visible');
+          renderUnityAck(null);
           
           // 隐藏加载界面
           loadingOverlay.classList.add('hidden');
@@ -606,6 +716,7 @@
         log('Failed to load Unity loader script');
         isSdkOnlyMode = true;
         if (sdkOnlyOverlay) sdkOnlyOverlay.classList.add('visible');
+        renderUnityAck({ received: false, type: 'loader_missing', playerIndex: '-', playerCount: '-', state: 'SDK_ONLY' });
         if (loadingOverlay) loadingOverlay.classList.add('hidden');
       };
       
