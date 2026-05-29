@@ -47,3 +47,10 @@ MemoryCaptures/
 .next/
 out/
 next-env.d.ts
+
+# Local secrets
+agents/rag-memory/.env
+agents/rag-memory/.env.local
+.env
+.env.local
+.env.*.local
