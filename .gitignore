@@ -52,9 +52,10 @@ UnityExamples/*/Build_*/
 out/
 next-env.d.ts
 
-# Local secrets
+# RAG Memory generated files
+agents/rag-memory/eval_results.json
+agents/rag-memory/eval_results.md
+agents/rag-memory/index.json
+
+# RAG Memory secrets
 agents/rag-memory/.env
-agents/rag-memory/.env.local
-.env
-.env.local
-.env.*.local

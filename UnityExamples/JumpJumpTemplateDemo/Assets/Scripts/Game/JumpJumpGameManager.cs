@@ -20,9 +20,12 @@ public class JumpJumpGameManager : MonoBehaviour
 {
     public static JumpJumpGameManager Instance { get; private set; }
 
-    private const string STATE_WAITING_FOR_PLAYERS = "WAITING_FOR_PLAYERS";
-    private const string STATE_GAME_RUNNING = "GAME_RUNNING";
-    private const string STATE_GAME_OVER = "GAME_OVER";
+    private enum GameState
+    {
+        Waiting,
+        Running,
+        GameOver,
+    }
 
     [Header("玩家")]
     public GameObject playerPrefab;
@@ -39,6 +42,7 @@ public class JumpJumpGameManager : MonoBehaviour
 
     [Header("相机")]
     public CameraFollow cameraFollow;
+    public SplitScreenCameraRig splitScreenRig;
 
     [Header("场景")]
     public Transform spawnPointRoot;
@@ -48,23 +52,15 @@ public class JumpJumpGameManager : MonoBehaviour
     private Dictionary<int, int> scores = new Dictionary<int, int>();
     private Dictionary<int, Color> playerColors = new Dictionary<int, Color>();
     private bool isGameOver = false;
-    private string currentState = STATE_WAITING_FOR_PLAYERS;
-    private bool receivedAnyMessage = false;
+    private GameState gameState = GameState.Waiting;
     private bool receiverHit = false;
     private string lastMessageType = "none";
-    private int lastMessagePlayerIndex = -1;
-    private string lastMessageSummary = "Waiting for players...";
+    private int lastPlayerIndex = -1;
     private int visibleTick = 0;
-    private string pendingUnityAckJson = null;
-    private GameObject debugReactionMarker = null;
-    private GUIStyle debugBoxStyle;
-    private GUIStyle debugLabelStyle;
-    private Text sceneStatusText = null;
-    private Text sceneScoreText = null;
-    private Text scenePowerText = null;
-    private GameObject runtimeOverlayRoot = null;
-    private Text runtimeOverlayText = null;
-    private Image runtimeOverlayPanel = null;
+    private Canvas runtimeOverlayCanvas;
+    private Image runtimePlayerSwatch;
+    private Text runtimePlayerLabel;
+    private Text runtimeStateLabel;
 
     // 预定义颜色
     private static readonly Color[] Colors = {
@@ -87,23 +83,17 @@ public class JumpJumpGameManager : MonoBehaviour
     void Start()
     {
         Debug.Log("[JumpJumpGameManager] Initialized — v0.2.6");
-        currentState = STATE_WAITING_FOR_PLAYERS;
-        receiverHit = false;
-        visibleTick = 0;
-        CacheSceneUIText();
-        EnsureRuntimeOverlay();
-        EnsureDebugReactionMarker(Color.white);
 
+        EnsureSplitScreenRig();
+        UpdateGameState(GameState.Waiting);
         if (uiManager != null)
         {
             uiManager.UpdateScore(0);
             uiManager.UpdatePower(0f);
             uiManager.HideGameOver();
         }
-        SetVisibleStatus("Waiting for players...");
-        SetVisibleScore(0);
-        SetVisiblePower(0f);
-        UpdateRuntimeOverlay("Waiting for players...");
+        EnsureRuntimeOverlay();
+        UpdateRuntimeOverlay();
 
         // Listen to PartyGameBridge
         if (PartyGameBridge.Instance != null)
@@ -129,27 +119,16 @@ public class JumpJumpGameManager : MonoBehaviour
     /// </summary>
     public void OnPlatformMessage(PartyGameMessage msg)
     {
-        if (msg == null)
-        {
-            Debug.LogWarning("[UnityReceive] null message received");
-            pendingUnityAckJson = PartyGameBridge.BuildUnityAckJson(false, "unknown", -1, PlayerCount, CurrentState, "NULL_MESSAGE", 0);
-            return;
-        }
-
         int pi = msg.playerIndex;
 
         Debug.Log($"[JumpJump] ← msg: type={msg.type}, PI={pi}");
-        Debug.Log($"[UnityReceive] raw={msg} type={msg.type} playerIndex={pi}");
-
-        receivedAnyMessage = true;
         receiverHit = true;
-        visibleTick++;
-        lastMessageType = msg.type ?? "unknown";
-        lastMessagePlayerIndex = pi;
-        lastMessageSummary = $"Last message: {lastMessageType}";
+        lastMessageType = msg.type ?? "null";
+        lastPlayerIndex = pi;
+        UpdateRuntimeOverlay();
 
-        SetVisibleStatus($"{lastMessageSummary} (P{pi})");
-        UpdateRuntimeOverlay($"{lastMessageSummary} (P{pi})");
+        if (gameState == GameState.GameOver && msg.type != "input.tap")
+            return;
 
         switch (msg.type)
         {
@@ -165,14 +144,7 @@ public class JumpJumpGameManager : MonoBehaviour
             case "input.tap":
                 HandleTap(pi);
                 break;
-
-            default:
-                Debug.LogWarning($"[UnityReceive] unknown type: {msg.type}");
-                break;
         }
-
-        pendingUnityAckJson = PartyGameBridge.BuildUnityAckJson(true, msg.type, msg.playerIndex, PlayerCount, CurrentState, null, 0);
-
     }
 
     // ─────────────────────────────────────
@@ -181,56 +153,39 @@ public class JumpJumpGameManager : MonoBehaviour
 
     void HandleChargeStart(int playerIndex)
     {
-        if (isGameOver) return;
+        if (!StartGameIfNeeded()) return;
 
         // Spawn player if not exists
         if (!players.ContainsKey(playerIndex))
             SpawnPlayer(playerIndex);
 
-        currentState = STATE_GAME_RUNNING;
-        var player = players[playerIndex];
-        ForceVisibleGameplay(playerIndex, player, Color.yellow, 1.6f);
-        EnsureDebugReactionMarker(Color.yellow);
-        player.StartCharge();
-        lastMessageSummary = $"Game running • charge_start P{playerIndex}";
-        SetVisibleStatus(lastMessageSummary);
-        UpdateRuntimeOverlay(lastMessageSummary);
-        if (uiManager != null) uiManager.HideGameOver();
+        players[playerIndex].StartCharge();
         Debug.Log($"[JumpJump] P{playerIndex} charge_start");
     }
 
     void HandleChargeEnd(int playerIndex, float power)
     {
-        if (isGameOver) return;
+        if (!StartGameIfNeeded()) return;
         if (!players.ContainsKey(playerIndex)) SpawnPlayer(playerIndex);
 
-        currentState = STATE_GAME_RUNNING;
-        var player = players[playerIndex];
-        ForceVisibleGameplay(playerIndex, player, Color.cyan, 1.75f);
-        EnsureDebugReactionMarker(Color.cyan);
-        player.EndCharge();
-        lastMessageSummary = $"Game running • charge_end P{playerIndex}";
-        SetVisibleStatus(lastMessageSummary);
-        UpdateRuntimeOverlay(lastMessageSummary);
-        if (uiManager != null) uiManager.HideGameOver();
+        players[playerIndex].EndCharge();
         Debug.Log($"[JumpJump] P{playerIndex} charge_end power={power:F2}");
     }
 
     void HandleTap(int playerIndex)
     {
-        if (isGameOver) return;
+        if (gameState == GameState.GameOver)
+        {
+            RestartGame();
+            return;
+        }
+
+        if (!StartGameIfNeeded()) return;
         if (!players.ContainsKey(playerIndex)) SpawnPlayer(playerIndex);
 
-        currentState = STATE_GAME_RUNNING;
         var p = players[playerIndex];
-        ForceVisibleGameplay(playerIndex, p, Color.green, 1.8f);
-        EnsureDebugReactionMarker(Color.green);
         if (p.CurrentState == PlayerJump.State.Idle)
             p.TapJump();
-        lastMessageSummary = $"Game running • tap P{playerIndex}";
-        SetVisibleStatus(lastMessageSummary);
-        UpdateRuntimeOverlay(lastMessageSummary);
-        if (uiManager != null) uiManager.HideGameOver();
         Debug.Log($"[JumpJump] P{playerIndex} tap");
     }
 
@@ -240,20 +195,17 @@ public class JumpJumpGameManager : MonoBehaviour
 
     void SpawnPlayer(int playerIndex)
     {
+        if (playerPrefab == null)
+        {
+            Debug.LogError("[JumpJump] playerPrefab is null!");
+            return;
+        }
+
         Vector3 spawnPos = spawnPointRoot != null ? spawnPointRoot.position : Vector3.up * 2;
-        GameObject go;
-        if (playerPrefab != null)
-        {
-            go = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
-        }
-        else
-        {
-            Debug.LogWarning("[JumpJump] playerPrefab is null, using cube fallback.");
-            go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            go.transform.position = spawnPos;
-        }
+        var go = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
         go.name = $"Player_{playerIndex}";
-        go.transform.localScale = Vector3.one * 1.15f;
+        go.transform.localScale = Vector3.one * 2.0f;
+        go.SetActive(true);
 
         var pj = go.GetComponent<PlayerJump>();
         if (pj == null) pj = go.AddComponent<PlayerJump>();
@@ -266,17 +218,96 @@ public class JumpJumpGameManager : MonoBehaviour
         pj.OnLandedOnPlatform = (player) => OnPlayerLanded(player);
         pj.OnFellToDeath = (player) => OnPlayerDied(player);
 
+        EnsureVisibleMarker(go, pj.playerColor);
+        EnsurePlayerLabel(go, playerIndex);
+        ForceCameraFocus(go.transform);
+
         players[playerIndex] = pj;
         scores[playerIndex] = 0;
 
         // 相机跟随第一个玩家
-        if (cameraFollow != null && cameraFollow.target == null)
+        if (cameraFollow != null && (cameraFollow.target == null || playerIndex == 0))
             cameraFollow.SetTarget(go.transform);
 
-        FocusCameraOn(go.transform);
-        PaintVisible(go, GetColor(playerIndex));
+        if (splitScreenRig != null)
+            splitScreenRig.BindPlayer(playerIndex, go.transform);
 
         Debug.Log($"[JumpJump] P{playerIndex} spawned at {spawnPos}");
+    }
+
+    void EnsureVisibleMarker(GameObject playerRoot, Color color)
+    {
+        if (playerRoot == null) return;
+
+        var existing = playerRoot.transform.Find("VisibleMarker");
+        if (existing != null) return;
+
+        var marker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        marker.name = "VisibleMarker";
+        marker.transform.SetParent(playerRoot.transform, false);
+        marker.transform.localPosition = new Vector3(0f, 1.0f, 0f);
+        marker.transform.localScale = new Vector3(3.0f, 3.0f, 3.0f);
+
+        var collider = marker.GetComponent<Collider>();
+        if (collider != null) Destroy(collider);
+
+        var renderer = marker.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            var shader = Shader.Find("Unlit/Color");
+            if (shader == null) shader = Shader.Find("Standard");
+            var material = new Material(shader);
+            material.color = color;
+            renderer.material = material;
+        }
+    }
+
+    void EnsurePlayerLabel(GameObject playerRoot, int playerIndex)
+    {
+        if (playerRoot == null) return;
+
+        var existing = playerRoot.transform.Find("PlayerLabel");
+        if (existing != null) return;
+
+        var label = new GameObject("PlayerLabel");
+        label.transform.SetParent(playerRoot.transform, false);
+        label.transform.localPosition = new Vector3(0f, 3.8f, 0f);
+        label.transform.localScale = Vector3.one * 0.08f;
+
+        var text = label.AddComponent<TextMesh>();
+        text.text = $"P{playerIndex}";
+        text.fontSize = 220;
+        text.characterSize = 0.35f;
+        text.anchor = TextAnchor.MiddleCenter;
+        text.alignment = TextAlignment.Center;
+        text.color = Color.white;
+    }
+
+    void ForceCameraFocus(Transform target)
+    {
+        if (target == null) return;
+
+        if (cameraFollow != null)
+        {
+            cameraFollow.offset = new Vector3(0f, 2.5f, -4.5f);
+            cameraFollow.smoothSpeed = 12f;
+            cameraFollow.SetTarget(target);
+        }
+
+        if (splitScreenRig != null)
+        {
+            splitScreenRig.cameraOffset = new Vector3(0f, 2.5f, -4.5f);
+            splitScreenRig.smoothSpeed = 12f;
+            splitScreenRig.BindPlayer(0, target);
+        }
+
+        var cam = Camera.main;
+        if (cam != null)
+        {
+            cam.fieldOfView = 45f;
+            cam.transform.position = target.position + new Vector3(0f, 2.5f, -4.5f);
+            cam.transform.LookAt(target.position + Vector3.up * 0.5f);
+        }
     }
 
     Color GetColor(int pi)
@@ -329,7 +360,7 @@ public class JumpJumpGameManager : MonoBehaviour
     {
         if (isGameOver) return;
         isGameOver = true;
-        currentState = STATE_GAME_OVER;
+        UpdateGameState(GameState.GameOver);
 
         // 找出赢家
         int winner = 0;
@@ -348,6 +379,7 @@ public class JumpJumpGameManager : MonoBehaviour
             uiManager.UpdateStatus($"🏁 Game Over! Winner: P{winner}");
             uiManager.ShowGameOver(bestScore);
         }
+        UpdateRuntimeOverlay();
 
         Debug.Log($"[JumpJump] Game Over! Winner: P{winner}, Score: {bestScore}");
     }
@@ -387,305 +419,200 @@ public class JumpJumpGameManager : MonoBehaviour
                 }
             }
         }
+    }
 
-        FlushPendingUnityAck();
+    private bool StartGameIfNeeded()
+    {
+        if (gameState == GameState.GameOver)
+            return false;
 
-        if (receiverHit && debugReactionMarker != null)
+        if (gameState == GameState.Waiting)
         {
-            var pulse = 1f + Mathf.Sin(Time.time * 8f) * 0.08f;
-            debugReactionMarker.transform.localScale = Vector3.one * (1.35f * pulse);
+            UpdateGameState(GameState.Running);
+            if (uiManager != null)
+            {
+                uiManager.UpdateStatus("Running");
+                uiManager.HideGameOver();
+            }
         }
+        visibleTick++;
+
+        return true;
+    }
+
+    private void RestartGame()
+    {
+        isGameOver = false;
+        players.Clear();
+        scores.Clear();
+        playerColors.Clear();
+
+        UpdateGameState(GameState.Waiting);
+
+        if (uiManager != null)
+        {
+            uiManager.UpdateStatus("Waiting for players...");
+            uiManager.UpdateScore(0);
+            uiManager.UpdatePower(0f);
+            uiManager.HideGameOver();
+        }
+        UpdateRuntimeOverlay();
+
+        Debug.Log("[JumpJump] Restarted");
+    }
+
+    private void UpdateGameState(GameState state)
+    {
+        gameState = state;
+        UpdateRuntimeOverlay();
     }
 
     void OnGUI()
     {
-        if (debugBoxStyle == null)
+        var style = new GUIStyle(GUI.skin.label)
         {
-            debugBoxStyle = new GUIStyle(GUI.skin.box)
+            fontSize = 22,
+            normal = { textColor = Color.white }
+        };
+
+        GUI.color = new Color(0f, 0f, 0f, 0.7f);
+        GUI.Box(new Rect(16, 16, 360, 170), GUIContent.none);
+        GUI.color = Color.white;
+        GUI.Label(new Rect(32, 28, 320, 24), "Unity ready: yes", style);
+        GUI.Label(new Rect(32, 54, 320, 24), $"Receiver hit: {(receiverHit ? "yes" : "no")}", style);
+        GUI.Label(new Rect(32, 80, 320, 24), $"Last message: {lastMessageType}", style);
+        GUI.Label(new Rect(32, 106, 320, 24), $"Last playerIndex: {lastPlayerIndex}", style);
+        GUI.Label(new Rect(32, 132, 320, 24), $"Player count: {players.Count} | State: {gameState} | Tick: {visibleTick}", style);
+
+        if (players.Count > 0 && lastPlayerIndex >= 0)
+        {
+            Color playerColor = GetColor(lastPlayerIndex);
+            GUI.color = new Color(playerColor.r, playerColor.g, playerColor.b, 0.95f);
+            GUI.DrawTexture(new Rect(Screen.width * 0.5f - 70, Screen.height * 0.5f - 70, 140, 140), Texture2D.whiteTexture);
+            GUI.color = Color.white;
+            GUIStyle center = new GUIStyle(GUI.skin.label)
             {
-                fontSize = 14,
-                alignment = TextAnchor.UpperLeft,
-                normal =
-                {
-                    textColor = Color.white
-                },
-                padding = new RectOffset(12, 12, 10, 10)
+                fontSize = 34,
+                alignment = TextAnchor.MiddleCenter,
+                normal = { textColor = Color.black }
             };
+            GUI.Label(new Rect(Screen.width * 0.5f - 120, Screen.height * 0.5f - 26, 240, 52), $"P{lastPlayerIndex}", center);
         }
 
-        if (debugLabelStyle == null)
+        GUI.color = Color.white;
+        var hintStyle = new GUIStyle(GUI.skin.label)
         {
-            debugLabelStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = 14,
-                alignment = TextAnchor.UpperLeft,
-                wordWrap = true,
-                normal =
-                {
-                    textColor = Color.white
-                }
-            };
-        }
-
-        var areaWidth = 320f;
-        var areaHeight = 150f;
-        var areaX = Mathf.Max(12f, (Screen.width - areaWidth) * 0.5f);
-        var area = new Rect(areaX, 12f, areaWidth, areaHeight);
-        var prevContentColor = GUI.contentColor;
-        GUI.contentColor = receiverHit ? new Color(0.35f, 1f, 0.45f) : Color.white;
-        GUI.Box(area, GUIContent.none, debugBoxStyle);
-        GUILayout.BeginArea(new Rect(area.x + 12f, area.y + 10f, area.width - 24f, area.height - 20f));
-        GUILayout.Label("Unity ready: yes", debugLabelStyle);
-        GUILayout.Label($"Receiver hit: {(receiverHit ? "yes" : "no")}", debugLabelStyle);
-        GUILayout.Label($"Last message: {lastMessageType}", debugLabelStyle);
-        GUILayout.Label($"Game state: {currentState}", debugLabelStyle);
-        GUILayout.Label($"Player count: {players.Count}", debugLabelStyle);
-        GUILayout.Label($"Last playerIndex: {(receivedAnyMessage ? lastMessagePlayerIndex.ToString() : "-")}", debugLabelStyle);
-        GUILayout.Label($"Visible tick: {visibleTick}", debugLabelStyle);
-        GUILayout.EndArea();
-        GUI.contentColor = prevContentColor;
-    }
-
-    public string CurrentState => currentState;
-    public int PlayerCount => players.Count;
-
-    private void FlushPendingUnityAck()
-    {
-        if (string.IsNullOrEmpty(pendingUnityAckJson))
-            return;
-
-        if (PartyGameBridge.Instance == null)
-            return;
-
-        var ackJson = pendingUnityAckJson;
-        pendingUnityAckJson = null;
-        Debug.Log($"[JumpJump] → JS ACK flush: {ackJson}");
-        PartyGameBridge.Instance.SendUnityAckJson(ackJson);
-    }
-
-    private void ForceVisibleGameplay(int playerIndex, PlayerJump player, Color brightColor, float scaleMultiplier)
-    {
-        if (player == null) return;
-
-        receiverHit = true;
-        currentState = STATE_GAME_RUNNING;
-
-        var visiblePos = new Vector3(0f, 1.5f + 0.1f * playerIndex, 0f);
-        player.transform.position = visiblePos;
-        player.transform.localScale = Vector3.one * scaleMultiplier;
-        PaintVisible(player.gameObject, brightColor);
-        FocusCameraOn(player.transform);
-    }
-
-    private void EnsureDebugReactionMarker(Color markerColor)
-    {
-        var cam = Camera.main;
-        if (cam == null)
-            return;
-
-        if (debugReactionMarker == null)
-        {
-            debugReactionMarker = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            debugReactionMarker.name = "DebugReactionMarker";
-
-            var collider = debugReactionMarker.GetComponent<Collider>();
-            if (collider != null) Destroy(collider);
-
-            debugReactionMarker.transform.SetParent(cam.transform, false);
-            debugReactionMarker.transform.localPosition = new Vector3(0f, 0f, 3f);
-            debugReactionMarker.transform.localRotation = Quaternion.identity;
-            debugReactionMarker.transform.localScale = Vector3.one * 1.35f;
-        }
-
-        debugReactionMarker.SetActive(true);
-
-        var renderer = debugReactionMarker.GetComponentInChildren<Renderer>();
-        if (renderer != null && renderer.material != null)
-        {
-            renderer.material.color = markerColor;
-        }
-    }
-
-    private void PaintVisible(GameObject go, Color brightColor)
-    {
-        if (go == null) return;
-
-        var renderer = go.GetComponentInChildren<Renderer>();
-        if (renderer != null && renderer.material != null)
-        {
-            renderer.material.color = brightColor;
-        }
-    }
-
-    private void FocusCameraOn(Transform target)
-    {
-        if (target == null) return;
-
-        if (cameraFollow != null)
-        {
-            cameraFollow.offset = new Vector3(0f, 4f, -8f);
-            cameraFollow.smoothSpeed = Mathf.Max(cameraFollow.smoothSpeed, 10f);
-            cameraFollow.SetTarget(target);
-        }
-
-        var cam = Camera.main;
-        if (cam != null)
-        {
-            cam.transform.position = new Vector3(0f, 4f, -8f);
-            cam.transform.LookAt(new Vector3(0f, 1f, 0f));
-        }
-    }
-
-    private void CacheSceneUIText()
-    {
-        sceneStatusText = null;
-        sceneScoreText = null;
-        scenePowerText = null;
-
-        var texts = Resources.FindObjectsOfTypeAll<Text>();
-        foreach (var text in texts)
-        {
-            if (text == null || text.gameObject == null)
-                continue;
-
-            if (!text.gameObject.scene.IsValid() || !text.gameObject.scene.isLoaded)
-                continue;
-
-            var value = text.text ?? string.Empty;
-            if (sceneStatusText == null && (value.Contains("Waiting for players") || value.Contains("Last message:") || value.Contains("Game running")))
-            {
-                sceneStatusText = text;
-                continue;
-            }
-
-            if (sceneScoreText == null && value.StartsWith("Score:"))
-            {
-                sceneScoreText = text;
-                continue;
-            }
-
-            if (scenePowerText == null && value.StartsWith("Power:"))
-            {
-                scenePowerText = text;
-            }
-        }
-    }
-
-    private void SetVisibleStatus(string status)
-    {
-        if (uiManager != null)
-        {
-            uiManager.UpdateStatus(status);
-        }
-
-        if (sceneStatusText == null)
-        {
-            CacheSceneUIText();
-        }
-
-        if (sceneStatusText != null)
-        {
-            sceneStatusText.text = status;
-            sceneStatusText.color = receiverHit ? new Color(0.35f, 1f, 0.45f) : Color.white;
-        }
+            fontSize = 20,
+            normal = { textColor = Color.white }
+        };
+        string hint = gameState == GameState.Waiting
+            ? "Scan controller and press button"
+            : (gameState == GameState.GameOver ? "Tap to restart" : "Hold/release to jump");
+        GUI.Label(new Rect(16, Screen.height - 44, 420, 28), hint, hintStyle);
     }
 
     private void EnsureRuntimeOverlay()
     {
-        if (runtimeOverlayRoot != null)
+        if (runtimeOverlayCanvas != null) return;
+
+        var canvasGo = new GameObject("RuntimeGameplayOverlay");
+        canvasGo.transform.SetParent(transform, false);
+
+        runtimeOverlayCanvas = canvasGo.AddComponent<Canvas>();
+        runtimeOverlayCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        runtimeOverlayCanvas.sortingOrder = 10000;
+        canvasGo.AddComponent<CanvasScaler>();
+        canvasGo.AddComponent<GraphicRaycaster>();
+
+        var swatchGo = new GameObject("PlayerSwatch");
+        swatchGo.transform.SetParent(canvasGo.transform, false);
+        var swatchRect = swatchGo.AddComponent<RectTransform>();
+        swatchRect.anchorMin = new Vector2(0.5f, 0.5f);
+        swatchRect.anchorMax = new Vector2(0.5f, 0.5f);
+        swatchRect.pivot = new Vector2(0.5f, 0.5f);
+        swatchRect.anchoredPosition = Vector2.zero;
+        swatchRect.sizeDelta = new Vector2(180f, 180f);
+        runtimePlayerSwatch = swatchGo.AddComponent<Image>();
+        runtimePlayerSwatch.color = new Color(0.35f, 0.35f, 0.35f, 0.75f);
+
+        var labelGo = new GameObject("PlayerLabel");
+        labelGo.transform.SetParent(canvasGo.transform, false);
+        var labelRect = labelGo.AddComponent<RectTransform>();
+        labelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        labelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        labelRect.pivot = new Vector2(0.5f, 0.5f);
+        labelRect.anchoredPosition = new Vector2(0f, -140f);
+        labelRect.sizeDelta = new Vector2(360f, 60f);
+        runtimePlayerLabel = labelGo.AddComponent<Text>();
+        runtimePlayerLabel.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        runtimePlayerLabel.alignment = TextAnchor.MiddleCenter;
+        runtimePlayerLabel.fontSize = 34;
+        runtimePlayerLabel.color = Color.white;
+
+        var stateGo = new GameObject("StateLabel");
+        stateGo.transform.SetParent(canvasGo.transform, false);
+        var stateRect = stateGo.AddComponent<RectTransform>();
+        stateRect.anchorMin = new Vector2(0.5f, 0.5f);
+        stateRect.anchorMax = new Vector2(0.5f, 0.5f);
+        stateRect.pivot = new Vector2(0.5f, 0.5f);
+        stateRect.anchoredPosition = new Vector2(0f, 160f);
+        stateRect.sizeDelta = new Vector2(460f, 120f);
+        runtimeStateLabel = stateGo.AddComponent<Text>();
+        runtimeStateLabel.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        runtimeStateLabel.alignment = TextAnchor.MiddleCenter;
+        runtimeStateLabel.fontSize = 24;
+        runtimeStateLabel.color = Color.white;
+    }
+
+    private void UpdateRuntimeOverlay()
+    {
+        if (runtimeOverlayCanvas == null)
             return;
 
-        runtimeOverlayRoot = new GameObject("RuntimeOverlayCanvas");
-        var canvas = runtimeOverlayRoot.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 5000;
-        runtimeOverlayRoot.AddComponent<CanvasScaler>();
-        runtimeOverlayRoot.AddComponent<GraphicRaycaster>();
+        if (runtimePlayerSwatch != null)
+        {
+            if (players.Count > 0 && lastPlayerIndex >= 0)
+            {
+                var c = GetColor(lastPlayerIndex);
+                runtimePlayerSwatch.color = new Color(c.r, c.g, c.b, 0.95f);
+            }
+            else
+            {
+                runtimePlayerSwatch.color = new Color(0.35f, 0.35f, 0.35f, 0.75f);
+            }
+        }
 
-        var panel = new GameObject("RuntimeOverlayPanel");
-        panel.transform.SetParent(runtimeOverlayRoot.transform, false);
-        runtimeOverlayPanel = panel.AddComponent<Image>();
-        runtimeOverlayPanel.color = new Color(0f, 0f, 0f, 0.65f);
+        if (runtimePlayerLabel != null)
+        {
+            runtimePlayerLabel.text = players.Count > 0 && lastPlayerIndex >= 0
+                ? $"P{lastPlayerIndex} • {lastMessageType}"
+                : "Scan controller and press";
+        }
 
-        var panelRect = runtimeOverlayPanel.rectTransform;
-        panelRect.anchorMin = new Vector2(0.5f, 1f);
-        panelRect.anchorMax = new Vector2(0.5f, 1f);
-        panelRect.pivot = new Vector2(0.5f, 1f);
-        panelRect.anchoredPosition = new Vector2(0f, -16f);
-        panelRect.sizeDelta = new Vector2(640f, 150f);
-
-        var textObj = new GameObject("RuntimeOverlayText");
-        textObj.transform.SetParent(panel.transform, false);
-        runtimeOverlayText = textObj.AddComponent<Text>();
-        runtimeOverlayText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        runtimeOverlayText.fontSize = 24;
-        runtimeOverlayText.alignment = TextAnchor.MiddleCenter;
-        runtimeOverlayText.color = Color.white;
-        runtimeOverlayText.horizontalOverflow = HorizontalWrapMode.Wrap;
-        runtimeOverlayText.verticalOverflow = VerticalWrapMode.Overflow;
-
-        var textRect = runtimeOverlayText.rectTransform;
-        textRect.anchorMin = Vector2.zero;
-        textRect.anchorMax = Vector2.one;
-        textRect.offsetMin = new Vector2(24f, 16f);
-        textRect.offsetMax = new Vector2(-24f, -16f);
+        if (runtimeStateLabel != null)
+        {
+            runtimeStateLabel.text = $"State: {gameState}\nPlayers: {players.Count}  Tick: {visibleTick}\nReceiver: {(receiverHit ? "yes" : "no")}";
+        }
     }
 
-    private void UpdateRuntimeOverlay(string status)
+    private void EnsureSplitScreenRig()
     {
-        EnsureRuntimeOverlay();
-
-        if (runtimeOverlayText != null)
+        if (splitScreenRig != null)
         {
-            runtimeOverlayText.text =
-                $"Unity ready: yes\n" +
-                $"Receiver hit: {(receiverHit ? "yes" : "no")}\n" +
-                $"Last message: {lastMessageType}\n" +
-                $"Status: {status}\n" +
-                $"Player count: {players.Count}  |  Visible tick: {visibleTick}";
-            runtimeOverlayText.color = receiverHit ? new Color(0.8f, 1f, 0.85f) : Color.white;
+            splitScreenRig.primaryCamera = cameraFollow != null ? cameraFollow.GetComponent<Camera>() : splitScreenRig.primaryCamera;
+            splitScreenRig.Setup();
+            return;
         }
 
-        if (runtimeOverlayPanel != null)
+        Camera primaryCamera = cameraFollow != null ? cameraFollow.GetComponent<Camera>() : Camera.main;
+        if (primaryCamera == null)
         {
-            runtimeOverlayPanel.color = receiverHit ? new Color(0.05f, 0.2f, 0.05f, 0.82f) : new Color(0f, 0f, 0f, 0.65f);
+            Debug.LogWarning("[JumpJump] No camera found for split screen rig.");
+            return;
         }
+
+        splitScreenRig = SplitScreenCameraRig.Create(primaryCamera);
+        splitScreenRig.cameraOffset = cameraFollow != null ? cameraFollow.offset : new Vector3(0f, 5f, -10f);
+        splitScreenRig.smoothSpeed = cameraFollow != null ? cameraFollow.smoothSpeed : 5f;
     }
-
-    private void SetVisibleScore(int score)
-    {
-        if (uiManager != null)
-        {
-            uiManager.UpdateScore(score);
-        }
-
-        if (sceneScoreText == null)
-        {
-            CacheSceneUIText();
-        }
-
-        if (sceneScoreText != null)
-        {
-            sceneScoreText.text = $"Score: {score}";
-        }
-    }
-
-    private void SetVisiblePower(float power)
-    {
-        if (uiManager != null)
-        {
-            uiManager.UpdatePower(power);
-        }
-
-        if (scenePowerText == null)
-        {
-            CacheSceneUIText();
-        }
-
-        if (scenePowerText != null)
-        {
-            scenePowerText.text = $"Power: {power:P0}";
-        }
-    }
-
 }

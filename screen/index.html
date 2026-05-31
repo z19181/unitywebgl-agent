@@ -197,39 +197,54 @@
       z-index: 1000;
     }
 
-    #unityAckBar {
+    /* ========= 中央直播态 HUD ========= */
+    #liveHud {
       position: fixed;
-      bottom: calc(40px + var(--safe-bottom));
-      right: calc(10px + var(--safe-right));
-      background: rgba(0,0,0,0.75);
-      color: #51cf66;
-      padding: 8px 12px;
-      border-radius: 5px;
-      font-size: 12px;
-      z-index: 1000;
-      max-width: min(520px, 40vw);
-      word-break: break-word;
-      border: 1px solid rgba(81, 207, 102, 0.35);
-    }
-
-    #gameStateBanner {
-      position: fixed;
-      top: calc(16px + var(--safe-top));
       left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      display: none;
-      min-width: 320px;
-      max-width: min(70vw, 640px);
-      padding: 12px 18px;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: bold;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 280px;
+      min-height: 220px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      z-index: 1100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      color: #d3ffd8;
-      background: rgba(20, 90, 30, 0.92);
-      border: 1px solid rgba(81, 207, 102, 0.55);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+    }
+    #liveHudBadge {
+      width: 140px;
+      height: 140px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: #fff;
+      margin-bottom: 14px;
+      background: #4b4b4b;
+      box-shadow: 0 0 0 8px rgba(255,255,255,0.06);
+    }
+    #liveHudTitle {
+      font-size: 26px;
+      font-weight: bold;
+      line-height: 1.2;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+    #liveHudMeta {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #d7d7d7;
+      max-width: 260px;
       word-break: break-word;
     }
   </style>
@@ -250,6 +265,13 @@
   <div id="playerList">
     <h3>👥 玩家列表</h3>
     <div id="players"><div style="opacity:0.5;">暂无玩家</div></div>
+  </div>
+
+  <!-- 中央直播态 HUD -->
+  <div id="liveHud">
+    <div id="liveHudBadge">WAIT</div>
+    <div id="liveHudTitle">等待玩家输入</div>
+    <div id="liveHudMeta">扫描控制器并按住蓄力按钮，松开后会在这里显示最新输入。</div>
   </div>
   
   <!-- Unity 容器 -->
@@ -273,8 +295,6 @@
   
   <!-- 状态栏 -->
   <div id="statusBar">正在连接服务器...</div>
-  <div id="unityAckBar">Unity ACK: waiting for input...</div>
-  <div id="gameStateBanner">Waiting for players...</div>
   
   <script>
     // ========================================
@@ -305,66 +325,9 @@
     const loadingOverlay = document.getElementById('loadingOverlay');
     const sdkOnlyOverlay = document.getElementById('sdkOnlyOverlay');
     const sdkOnlyStatus = document.getElementById('sdkOnlyStatus');
-    const unityAckBar = document.getElementById('unityAckBar');
-    const gameStateBanner = document.getElementById('gameStateBanner');
-
-    window.__lastUnityAck = null;
-
-    function renderUnityAck(payload) {
-      if (!unityAckBar) return;
-      if (!payload) {
-        unityAckBar.textContent = 'Unity ACK: waiting for input...';
-        return;
-      }
-
-      const type = payload.type || 'unknown';
-      const playerIndex = payload.playerIndex ?? '-';
-      const playerCount = payload.playerCount ?? '-';
-      const state = payload.state || 'unknown';
-      const prefix = payload.received === false ? 'Unity ACK: ERROR' : 'Unity ACK';
-      unityAckBar.textContent = `${prefix}: ${type} player=${playerIndex} players=${playerCount} state=${state}`;
-    }
-
-    function showGameStateBanner(text, kind = 'running') {
-      if (!gameStateBanner) return;
-      gameStateBanner.textContent = text;
-      gameStateBanner.style.display = 'block';
-      if (kind === 'running') {
-        gameStateBanner.style.background = 'rgba(20, 90, 30, 0.92)';
-        gameStateBanner.style.borderColor = 'rgba(81, 207, 102, 0.55)';
-        gameStateBanner.style.color = '#d3ffd8';
-      } else if (kind === 'warn') {
-        gameStateBanner.style.background = 'rgba(120, 80, 20, 0.92)';
-        gameStateBanner.style.borderColor = 'rgba(255, 193, 7, 0.55)';
-        gameStateBanner.style.color = '#fff1c2';
-      } else {
-        gameStateBanner.style.background = 'rgba(20, 20, 20, 0.88)';
-        gameStateBanner.style.borderColor = 'rgba(255,255,255,0.25)';
-        gameStateBanner.style.color = '#f3f3f3';
-      }
-    }
-
-    window.__partyGameUnityAck = function(payload) {
-      let ack = payload;
-      if (typeof payload === 'string') {
-        try {
-          ack = JSON.parse(payload);
-        } catch (error) {
-          ack = {
-            received: false,
-            type: 'parse_error',
-            error: error.message,
-            rawPayload: payload,
-          };
-        }
-      }
-
-      window.__lastUnityAck = ack;
-      document.body.setAttribute('data-unity-ack', 'true');
-      renderUnityAck(ack);
-      console.log('[UnityACK]', ack);
-      log(`Unity ACK: ${ack.type || 'unknown'} player=${ack.playerIndex ?? '-'} players=${ack.playerCount ?? '-'}`);
-    };
+    const liveHudBadgeEl = document.getElementById('liveHudBadge');
+    const liveHudTitleEl = document.getElementById('liveHudTitle');
+    const liveHudMetaEl = document.getElementById('liveHudMeta');
     
     // ========================================
     // 日志
@@ -373,6 +336,20 @@
       if (!CONFIG.enableDebugLog) return;
       console.log(`[Screen] ${message}`);
       statusBarEl.textContent = message;
+    }
+
+    function colorForIndex(playerIndex) {
+      const palette = ['#ff6b6b', '#4dabf7', '#51cf66', '#ffd43b', '#cc5de8', '#22b8cf', '#ffffff', '#ff922b'];
+      return palette[Math.abs(playerIndex || 0) % palette.length];
+    }
+
+    function updateLiveHud({ title, badge, meta, color }) {
+      if (liveHudBadgeEl) {
+        liveHudBadgeEl.textContent = badge || 'WAIT';
+        liveHudBadgeEl.style.background = color || '#4b4b4b';
+      }
+      if (liveHudTitleEl) liveHudTitleEl.textContent = title || '等待玩家输入';
+      if (liveHudMetaEl) liveHudMetaEl.innerHTML = meta || '扫描控制器并按住蓄力按钮，松开后会在这里显示最新输入。';
     }
 
     // ========================================
@@ -488,6 +465,24 @@
             break;
             
           case 'game_message':
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed && parsed.playerIndex !== undefined) {
+                updateLiveHud({
+                  title: `最新输入：${parsed.type || 'unknown'}`,
+                  badge: `P${parsed.playerIndex}`,
+                  meta: parsed.data ? `payload: ${typeof parsed.data === 'string' ? parsed.data : JSON.stringify(parsed.data)}` : '控制器输入已收到',
+                  color: colorForIndex(parsed.playerIndex),
+                });
+              }
+            } catch (e) {
+              updateLiveHud({
+                title: '输入已收到',
+                badge: 'OK',
+                meta: '解析失败，但消息已转发到 Unity。',
+                color: '#5f7cff',
+              });
+            }
             // 转发给 Unity
             forwardToUnity(data);
             break;
@@ -520,6 +515,12 @@
       // v0.4.2: QR code with CDN fallback
       const qrHTML = renderQRCode(controllerUrl, maxPlayers);
       qrUrlEl.innerHTML = qrHTML;
+      updateLiveHud({
+        title: '房间已创建',
+        badge: currentRoomId,
+        meta: '扫码加入或复制链接。Unity 已准备就绪，等待控制器输入。',
+        color: '#5f7cff',
+      });
 
       document.getElementById('closeRoomBtn').style.display = 'inline-block';
       log(`Room created: ${currentRoomId}`);
@@ -550,6 +551,12 @@
 
       log(`Player joined: ${playerName} (index: ${playerIndex}, total: ${playerCount})`);
       renderPlayerList();
+      updateLiveHud({
+        title: `玩家加入：P${playerIndex}`,
+        badge: `P${playerIndex}`,
+        meta: `${players.length}/${window.currentMaxPlayers || '?'} 人已加入。点击控制器开始输入。`,
+        color: colorForIndex(playerIndex),
+      });
     }
     
     function handlePlayerLeft(message) {
@@ -564,6 +571,12 @@
 
       log(`Player left: index ${playerIndex}, total: ${playerCount}`);
       renderPlayerList();
+      updateLiveHud({
+        title: `玩家离开：P${playerIndex}`,
+        badge: `P${playerIndex}`,
+        meta: `${players.length}/${window.currentMaxPlayers || '?'} 人在线。`,
+        color: '#8a8a8a',
+      });
     }
     
     // v0.2.2: 处理 players.changed
@@ -574,6 +587,15 @@
       }
       log(`Players changed: ${players.map(p => `P${p.playerIndex}(${p.playerName})`).join(', ')}`);
       renderPlayerList();
+      if (players.length > 0) {
+        const first = players[0];
+        updateLiveHud({
+          title: '玩家列表更新',
+          badge: `P${first.playerIndex}`,
+          meta: `${players.length}/${window.currentMaxPlayers || '?'} 人在线。`,
+          color: colorForIndex(first.playerIndex),
+        });
+      }
     }
 
     function renderPlayerList() {
@@ -608,21 +630,28 @@
       }
       
       try {
-        const targetObject = 'PartyGameBridge';
-        const targetMethod = 'OnPlatformMessage';
-        log(`[Screen] Forwarding to Unity target=${targetObject}.${targetMethod} payload=${jsonMessage.substring(0, 140)}...`);
-
+        log(`Forwarding to Unity: ${jsonMessage.substring(0, 100)}...`);
         try {
           const parsed = JSON.parse(jsonMessage);
-          const messageType = parsed.type || parsed.event || 'unknown';
-          const playerIndex = parsed.playerIndex ?? '-';
-          showGameStateBanner(`Unity received ${messageType} • P${playerIndex}`, 'running');
-        } catch (parseError) {
-          showGameStateBanner('Unity received input', 'warn');
+          if (parsed && parsed.type) {
+            updateLiveHud({
+              title: `最新输入：${parsed.type}`,
+              badge: `P${parsed.playerIndex ?? '?'}`,
+              meta: parsed.data ? `payload: ${typeof parsed.data === 'string' ? parsed.data : JSON.stringify(parsed.data)}` : '控制器输入已收到',
+              color: colorForIndex(parsed.playerIndex ?? 0),
+            });
+          }
+        } catch (e) {
+          updateLiveHud({
+            title: '消息转发中',
+            badge: '...',
+            meta: '已收到消息，正在送往 Unity。',
+            color: '#5f7cff',
+          });
         }
-
-        // 调用 Unity 的 PartyGameBridge.OnPlatformMessage 方法
-        unityInstance.SendMessage(targetObject, targetMethod, jsonMessage);
+        
+        // 调用 Unity 的 PartyGameBridge.OnMessageReceived 方法
+        unityInstance.SendMessage('PartyGameBridge', 'OnMessageReceived', jsonMessage);
       } catch (error) {
         log(`Error forwarding to Unity: ${error.message}`);
       }
@@ -682,7 +711,6 @@
           
           // Hide the SDK-only overlay if it was showing
           if (sdkOnlyOverlay) sdkOnlyOverlay.classList.remove('visible');
-          renderUnityAck(null);
           
           // 隐藏加载界面
           loadingOverlay.classList.add('hidden');
@@ -716,7 +744,6 @@
         log('Failed to load Unity loader script');
         isSdkOnlyMode = true;
         if (sdkOnlyOverlay) sdkOnlyOverlay.classList.add('visible');
-        renderUnityAck({ received: false, type: 'loader_missing', playerIndex: '-', playerCount: '-', state: 'SDK_ONLY' });
         if (loadingOverlay) loadingOverlay.classList.add('hidden');
       };
       
